@@ -22,7 +22,11 @@ class RUDRegistrationView(generics.RetrieveUpdateDestroyAPIView):
 class LicenseListCreateView(generics.ListCreateAPIView):
     queryset = License.objects.all()
     serializer_class = LicenseCreateSerializer
-    
+
+    def perform_create(self, serializer):
+        print("perform_create enterd")
+        serializer.save(user_info=self.request.user)
+
 class LicenseUserListView(generics.RetrieveDestroyAPIView):
     queryset=License.objects.all()
     serializer_class=LicenseSingleInfoSerializer
@@ -43,11 +47,21 @@ class RUDQualityView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QualitySerializer
 
 
-"""Quality Checklist """
-class QualityCheckListCreateAPIView(generics.ListCreateAPIView):
-    queryset = CheckList.objects.all()
-    serializer_class = QualityCheckListSerializer
+"""Safety"""
 
-class RUDQualityCheckView(generics.RetrieveUpdateDestroyAPIView):
+class SafetyListCreateAPIView(generics.ListCreateAPIView):
+    queryset = SafetyLibrary.objects.all()
+    serializer_class = SafetySerializer
+
+class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SafetyLibrary.objects.all()
+    serializer_class = SafetySerializer
+
+"""Checklist """
+class CheckListCreateAPIView(generics.ListCreateAPIView):
     queryset = CheckList.objects.all()
-    serializer_class = QualityCheckListSerializer
+    serializer_class = CheckListSerializer
+
+class RUDCheckView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CheckList.objects.all()
+    serializer_class = CheckListSerializer

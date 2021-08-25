@@ -16,14 +16,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class LicenseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
-        fields = ("user_info", "designation", "license_id","status",)
-        read_only_fields = ('license_id', )
+        fields = ("user_info", "designation", "license_id","status","created_at","end_at","tenure",)
+        read_only_fields = ('license_id',"tenure",)
 
 class LicenseInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
-        fields = ("user_info", "designation", "license_id","status",)
-        read_only_fields = ('license_id', )
+        fields = ("user_info", "designation", "license_id","status","tenure","end_at",)
+        read_only_fields = ('license_id', "tenure",)
 
 
 
@@ -53,7 +53,12 @@ class QualitySerializer(serializers.ModelSerializer):
         fields = "__all__" 
 
 
-class QualityCheckListSerializer(serializers.ModelSerializer):
+class SafetySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SafetyLibrary
+        fields = "__all__" 
+
+class CheckListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
         fields = "__all__" 

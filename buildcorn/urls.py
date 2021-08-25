@@ -10,12 +10,15 @@ urlpatterns = [
     path('license/update/<int:pk>',UpdateLicenseView.as_view()),
     path('license/user/<int:pk>', LicenseUserListView.as_view()),
 
+    ###########  check-list api's ##################
+    path('check/list_or_create',CheckListCreateAPIView.as_view()),
+    path('check/rud/<int:pk>',RUDCheckView.as_view()),
+
     ########### quality assurence  api's ##################
     path('quality/list_or_create',QualityListCreateAPIView.as_view()),
     path('quality/rud/<int:pk>',RUDQualityView.as_view()),
 
-    ########### quality check-list api's ##################
-    path('quality/check/list_or_create',QualityCheckListCreateAPIView.as_view()),
-    path('quality/check/rud/<int:pk>',RUDQualityCheckView.as_view()),
-
+    ########### safety assurence  api's ##################
+    path('safety/list_or_create',SafetyListCreateAPIView.as_view()),
+    path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
 ]
