@@ -1,0 +1,20 @@
+
+<nav class="navbar navbar-white sticky-top bg-white flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Big Space</a>
+    <input class="form-control form-control-white w-70" type="text" placeholder="Search" aria-label="Search">
+    <ul class="navbar-nav px-3">
+        {% if request.user.is_authenticated %}
+        {{ request.user.username }}
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
+        </li>
+        {% else %}
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'signup' %}">SignUp</a>
+        </li>
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

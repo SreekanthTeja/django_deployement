@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block leads %}
+
+<div class="container">
+    <form id="form-data" method="POST">
+        {% csrf_token %}
+        <input type="text" name="username">
+        <input type="password" name="password">
+        <input type="text" name="locaion">
+        <button type="button">Send</button>
+    </form>
+</div>
+<script>
+    $(function(){
+        
+        $("button").click(function(e){
+            e.preventDefault()
+            var data = $("#form-data").serializeArray();
+            var csrf = data.shift()
+            console.log(data);
+            
+            $.ajax({
+                method:'POST',
+                data:data,
+                url:"{% url 'blog' %}",
+                headers:{
+                    "X-CSRFToken":csrf.value
+                },
+                success:function(res){
+                    console.log(res);
+                    
+                },
+                error:function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

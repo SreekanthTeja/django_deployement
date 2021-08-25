@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block leads %}
+
+<div class="container">
+    <h3 class="text-dark">The list of leads</h3>
+    <a href="#"><button class="btn text-secondary float-center" type="button">Create</button></a>
+    <button class="btn  float-right" type="button">Create</button>
+    <table id="posts-table" class="table">
+        <thead class="thead-dark">
+            <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Agent</th>
+            <th scope="col">Adress</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+            {% for lead in leads %}
+            <tr>
+                <th scope="row" ><a href="{% url 'lead-details' lead.slug %}">{{lead.first_name}}</a></th>
+                <td>{{lead.last_name}}</th>
+                <td>{{lead.agent.user.email}}</th>
+                <td>{{lead.address.city}}</th>
+            </tr>
+            {% endfor %}
+            
+        </tbody>
+        </table>
+</div>
+{% endblock %}
