@@ -84,12 +84,14 @@ class QualitySerializer(serializers.ModelSerializer):
     class Meta:
         model = QualityLibrary
         fields = "__all__" 
+        read_only_fields = ('quality_id', )
 
 
 class SafetySerializer(serializers.ModelSerializer):
     class Meta:
         model = SafetyLibrary
         fields = "__all__" 
+        read_only_fields = ('safety_id', )
 
 class CheckListSerializer(serializers.ModelSerializer):
     class Meta:
