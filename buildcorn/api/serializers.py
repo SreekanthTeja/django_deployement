@@ -10,7 +10,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("user_id","username","email","phone", "name","address", "city",
-                  "state", "gstin", "pincode", "status", "no_licenses", )
+                  "state", "gstin", "pincode", "status", "no_licenses","published_date","end_at", )
         read_only_fields = ("user_id",)
 
 class DeviceSerializer(serializers.ModelSerializer):

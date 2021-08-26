@@ -16,7 +16,7 @@ class User(AbstractUser):
     gstin = models.CharField(max_length=50)
     pincode = models.PositiveSmallIntegerField(default=000000)
     status = models.BooleanField(default=True)
-    published_date = models.DateField(auto_now_add=True, blank=True, null=True)
+    published_date = models.DateField( blank=True, null=True)
     end_at = models.DateField(blank=True, null=True)
     no_licenses = models.PositiveSmallIntegerField(default=0)
 
