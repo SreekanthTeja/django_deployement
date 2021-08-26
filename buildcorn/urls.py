@@ -8,7 +8,7 @@ urlpatterns = [
     ########### user license api's ##################
     path('license/list_or_create',LicenseListCreateView.as_view()),
     path('license/update/<int:pk>',UpdateLicenseView.as_view()),
-    path('license/user/<int:pk>', LicenseUserListView.as_view()),
+    path('license/rd/<int:pk>', RDLicenseView.as_view()),
 
     ###########  check-list api's ##################
     path('check/list_or_create',CheckListCreateAPIView.as_view()),

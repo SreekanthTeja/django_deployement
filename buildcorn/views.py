@@ -3,7 +3,9 @@ from rest_framework import generics
 from .api.serializers import *
 from .models import *
 from django.contrib.auth import get_user_model
-
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 User = get_user_model()
 
 
@@ -24,16 +26,30 @@ class LicenseListCreateView(generics.ListCreateAPIView):
     serializer_class = LicenseCreateSerializer
 
     def perform_create(self, serializer):
-        print("perform_create enterd")
-        serializer.save(user_info=self.request.user)
-
-class LicenseUserListView(generics.RetrieveDestroyAPIView):
-    queryset=License.objects.all()
-    serializer_class=LicenseSingleInfoSerializer
-
+        user= self.request.user
+        print(user.no_licenses)
+        try:
+            user.no_licenses += 1
+            user.save()
+        except Exception(e):
+            print(e)
+        finally:
+            serializer.save()
 class UpdateLicenseView(generics.UpdateAPIView):
     queryset = License.objects.all()
-    serializer_class = LicenseCreateSerializer
+    serializer_class = LicenseUpdateSerializer
+
+class RDLicenseView(generics.RetrieveDestroyAPIView):
+    queryset = License.objects.all()
+    serializer_class = LicenseSingleInfoSerializer
+    def delete(self, request, pk):
+        licensee = self.queryset.get(id = pk)
+        licensee.delete()
+        user = User.objects.get(id = request.user.id)
+        user.no_licenses -= 1
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT) 
+
 
 
 """Quality"""

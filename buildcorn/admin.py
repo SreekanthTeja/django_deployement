@@ -5,3 +5,5 @@ from .models import *
 admin.site.register(License)
 admin.site.register(CheckList)
 admin.site.register(QualityLibrary)
+admin.site.register(SafetyLibrary)
+admin.site.register(DeviceName)

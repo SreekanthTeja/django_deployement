@@ -12,15 +12,21 @@ def licenseid():
 
 User = get_user_model()
 
+class DeviceName(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
 
 class License(models.Model):
     user_info = models.ForeignKey(User, on_delete = models.CASCADE)
     designation = models.CharField(max_length=50, null=True, blank=True)
     license_id = models.CharField(default=licenseid, max_length=20)
-    created_at = models.DateField(auto_now_add=True, verbose_name="Start Date", blank=True, null=True)
+    created_at = models.DateField( verbose_name="Start Date", blank=True, null=True)
     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
     tenure = models.FloatField(blank=True, null=True, default=0)
     status = models.BooleanField(default=False)
+    device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
+
     def __str__(self):
         return f"{self.designation}"
 
@@ -49,6 +55,7 @@ class CheckList(models.Model):
         return self.name
 class QualityLibrary(models.Model):
     TYPE = (('quality','Quality'),('safety','Safety'))
+    quality_id = models.CharField(default=licenseid, max_length=30)
     date = models.DateField(blank=True, null=True)
     status = models.BooleanField(default= True)
     name = models.CharField(max_length=120)
@@ -59,6 +66,7 @@ class QualityLibrary(models.Model):
 
 class SafetyLibrary(models.Model):
     TYPE = (('quality','Quality'),('safety','Safety'))
+    safety_id = models.CharField(default=licenseid, max_length=30)
     date = models.DateField(blank=True, null=True)
     status = models.BooleanField(default= True)
     name = models.CharField(max_length=120)
