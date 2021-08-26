@@ -9,9 +9,9 @@ User = get_user_model()
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("user_id","username","email","phone", "name","address", "city",
+        fields = ("id","user_id","username","email","phone", "name","address", "city",
                   "state", "gstin", "pincode", "status", "no_licenses","published_date","end_at", )
-        read_only_fields = ("user_id",)
+        read_only_fields = ("user_id","id",)
 
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,14 +22,14 @@ class DeviceSerializer(serializers.ModelSerializer):
 class LicenseUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("user_id","username","name","email","phone",)
-        read_only_fields = ("user_id",)
+        fields = ("id","user_id","username","name","email","phone",)
+        read_only_fields = ("user_id","id",)
 
 class LicenseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
-        fields = ("user_info", "designation", "license_id","status","created_at","end_at","tenure","device_name",)
-        read_only_fields = ('license_id',"tenure",)
+        fields = ("id","user_info", "designation", "license_id","status","created_at","end_at","tenure","device_name",)
+        read_only_fields = ('license_id',"tenure","id",)
 
     def validate(self, data):
         print(data)
@@ -47,8 +47,8 @@ class LicenseUpdateSerializer(serializers.ModelSerializer):
     user_info = LicenseUserSerializer()
     class Meta:
         model = License
-        fields = ("user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name")
-        read_only_fields = ('license_id', "tenure",)
+        fields = ("id","user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name")
+        read_only_fields = ('license_id', "tenure","id",)
     
     def update(self,instance, validated_data):
         print(instance)
@@ -75,8 +75,8 @@ class LicenseSingleInfoSerializer(serializers.ModelSerializer):
     device_name = DeviceSerializer()
     class Meta:
         model = License
-        fields = ("user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name",)
-        read_only_fields = ('license_id', "tenure",)
+        fields = ("id","user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name",)
+        read_only_fields = ('license_id', "tenure","id",)
 
 
 
@@ -84,18 +84,18 @@ class QualitySerializer(serializers.ModelSerializer):
     class Meta:
         model = QualityLibrary
         fields = "__all__" 
-        read_only_fields = ('quality_id', )
+        read_only_fields = ('quality_id',"id", )
 
 
 class SafetySerializer(serializers.ModelSerializer):
     class Meta:
         model = SafetyLibrary
         fields = "__all__" 
-        read_only_fields = ('safety_id', )
+        read_only_fields = ('safety_id', "id",)
 
 class CheckListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
         fields = "__all__" 
-        read_only_fields = ('checklist_id', )
+        read_only_fields = ('checklist_id', "id",)
 
