@@ -11,6 +11,9 @@ urlpatterns = [
     path('license/update/<int:pk>',UpdateLicenseView.as_view()),
     path('license/rd/<int:pk>', RDLicenseView.as_view()),
 
+
+    ###########  quality safety type list view  ##################
+    path('type/list',QSTypeListAPIView.as_view()),
     ###########  check-list api's ##################
     path('device/list',DeviceListAPIView.as_view()),
 

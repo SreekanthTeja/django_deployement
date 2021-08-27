@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework import views
 from .api.serializers import *
 from .models import *
 from django.contrib.auth import get_user_model
@@ -45,7 +46,6 @@ class UpdateLicenseView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = License.objects.all()
     serializer_class = LicenseUpdateSerializer
-    lookup_field = "pk"
     
 
 class RDLicenseView(generics.RetrieveDestroyAPIView):
@@ -64,6 +64,14 @@ class RDLicenseView(generics.RetrieveDestroyAPIView):
 class DeviceListAPIView(generics.ListAPIView):
     queryset = DeviceName.objects.all()
     serializer_class = DeviceSerializer
+
+
+class QSTypeListAPIView(views.APIView):
+    def get(self, request):
+        typee = QualityLibrary.TYPE
+        d1 = {"id":[],"name":[]}
+        l2 = [d1["id"].append(row[i]) if i == 0 else d1["name"].append(row[i]) for i in range(len(typee)) for row in typee]
+        return Response(d1)
 """Quality"""
 
 class QualityListCreateAPIView(generics.ListCreateAPIView):
