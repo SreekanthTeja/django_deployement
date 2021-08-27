@@ -60,7 +60,7 @@ class QualityLibrary(models.Model):
     status = models.BooleanField(default= True)
     name = models.CharField(max_length=120)
     quality_type = models.CharField(choices=TYPE, max_length=10)
-    check_list  = models.ManyToManyField(CheckList)
+    check_list  = models.ManyToManyField(CheckList, blank=True)
     def __str__(self):
         return self.name
 
@@ -71,6 +71,6 @@ class SafetyLibrary(models.Model):
     status = models.BooleanField(default= True)
     name = models.CharField(max_length=120)
     quality_type = models.CharField(choices=TYPE, max_length=10)
-    check_list  = models.ManyToManyField(CheckList)
+    check_list  = models.ManyToManyField(CheckList,  blank=True)
     def __str__(self):
         return self.name

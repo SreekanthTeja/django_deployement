@@ -21,7 +21,11 @@ class RUDRegistrationView(generics.RetrieveUpdateDestroyAPIView):
     License
 """
 
-class LicenseListCreateView(generics.ListCreateAPIView):
+
+class LicenseListAPIView(generics.ListAPIView):
+    queryset = License.objects.all()
+    serializer_class = LicenseListSerializer
+class LicenseListCreateView(generics.CreateAPIView):
     queryset = License.objects.all()
     serializer_class = LicenseCreateSerializer
 
@@ -51,7 +55,9 @@ class RDLicenseView(generics.RetrieveDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT) 
 
 
-
+class DeviceListAPIView(generics.ListAPIView):
+    queryset = DeviceName.objects.all()
+    serializer_class = DeviceSerializer
 """Quality"""
 
 class QualityListCreateAPIView(generics.ListCreateAPIView):

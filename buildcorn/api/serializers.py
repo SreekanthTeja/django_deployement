@@ -25,6 +25,13 @@ class LicenseUserSerializer(serializers.ModelSerializer):
         fields = ("id","user_id","username","name","email","phone",)
         read_only_fields = ("user_id","id",)
 
+class LicenseListSerializer(serializers.ModelSerializer):
+    device_name = DeviceSerializer()
+    user_info = LicenseUserSerializer()
+    class Meta:
+        model = License
+        fields = ("id","user_info", "designation", "license_id","status","created_at","end_at","tenure","device_name",)
+        read_only_fields = ('license_id',"tenure","id",)
 class LicenseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
