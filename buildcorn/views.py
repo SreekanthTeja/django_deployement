@@ -69,8 +69,7 @@ class DeviceListAPIView(generics.ListAPIView):
 class QSTypeListAPIView(views.APIView):
     def get(self, request):
         typee = QualityLibrary.TYPE
-        d1 = {"id":[],"name":[]}
-        l2 = [d1["id"].append(row[i]) if i == 0 else d1["name"].append(row[i]) for i in range(len(typee)) for row in typee]
+        d1 = [{"id":i[0],"name":i[1]} for i in typee]
         return Response(d1)
 """Quality"""
 
