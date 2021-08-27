@@ -21,7 +21,7 @@ class License(models.Model):
     user_info = models.ForeignKey(User, on_delete = models.CASCADE)
     designation = models.CharField(max_length=50, null=True, blank=True)
     license_id = models.CharField(default=licenseid, max_length=20)
-    created_at = models.DateField( verbose_name="Start Date", blank=True, null=True)
+    created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
     tenure = models.FloatField(blank=True, null=True, default=0)
     status = models.BooleanField(default=False)

@@ -12,6 +12,7 @@ User = get_user_model()
 class RegistrationListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
+    
 class RUDRegistrationView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
@@ -26,6 +27,7 @@ class LicenseListAPIView(generics.ListAPIView):
     queryset = License.objects.all()
     serializer_class = LicenseListSerializer
 class LicenseListCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = License.objects.all()
     serializer_class = LicenseCreateSerializer
 
@@ -39,11 +41,15 @@ class LicenseListCreateView(generics.CreateAPIView):
             print(e)
         finally:
             serializer.save()
-class UpdateLicenseView(generics.UpdateAPIView):
+class UpdateLicenseView(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = License.objects.all()
     serializer_class = LicenseUpdateSerializer
+    lookup_field = "pk"
+    
 
 class RDLicenseView(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = License.objects.all()
     serializer_class = LicenseSingleInfoSerializer
     def delete(self, request, pk):

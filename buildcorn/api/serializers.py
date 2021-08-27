@@ -24,6 +24,8 @@ class LicenseUserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id","user_id","username","name","email","phone",)
         read_only_fields = ("user_id","id",)
+        # lookup_field = 'username'
+        
 
 class LicenseListSerializer(serializers.ModelSerializer):
     device_name = DeviceSerializer()
@@ -32,6 +34,8 @@ class LicenseListSerializer(serializers.ModelSerializer):
         model = License
         fields = ("id","user_info", "designation", "license_id","status","created_at","end_at","tenure","device_name",)
         read_only_fields = ('license_id',"tenure","id",)
+
+
 class LicenseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
@@ -40,10 +44,12 @@ class LicenseCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         print(data)
-        if not data["end_at"]:
+        if not data.get("user_info"):
+            raise serializers.ValidationError("Select the candidate")
+        if not data.get("end_at"):
             raise serializers.ValidationError("Provide end date")
-        elif not data["created_at"]:
-            raise serializers.ValidationError("Provide Start date")
+        elif not data.get("created_at"):
+            raise serializers.ValidationError("Provide Start date and must be before end date")
         else:
             return data
 
@@ -51,19 +57,29 @@ class LicenseCreateSerializer(serializers.ModelSerializer):
 
 
 class LicenseUpdateSerializer(serializers.ModelSerializer):
-    user_info = LicenseUserSerializer()
+    # user_info = LicenseUserSerializer()
     class Meta:
         model = License
         fields = ("id","user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name")
         read_only_fields = ('license_id', "tenure","id",)
-    
+        # lookup_field = 'user_info__username'
+    def validate(self, data):
+        print(data)
+        if not data.get("designation"):
+            raise serializers.ValidationError("Select the candidate")
+        if not data.get("end_at"):
+            raise serializers.ValidationError("Provide end date")
+        elif not data.get("created_at"):
+            raise serializers.ValidationError("Provide Start date and must be before end date")
+        else:
+            return data
     def update(self,instance, validated_data):
-        print(instance)
+        print(instance.user_info)
         user_info = validated_data.pop('user_info')
-        instance.user_info.username = user_info.get("username")
-        instance.user_info.name = user_info.get("name")
-        instance.user_info.phone = user_info.get("phone")
-        instance.user_info.email = user_info.get("email")
+        # instance.user_info.username = user_info.get("username")
+        # instance.user_info.name = user_info.get("name")
+        # instance.user_info.phone = user_info.get("phone")
+        # instance.user_info.email = user_info.get("email")
         
         instance.device_name = validated_data.get("device_name")
         instance.designation = validated_data.get("designation")

@@ -7,6 +7,12 @@ def uniqueid():
     return uuid.uuid4().node
 
 class User(AbstractUser):
+    # username = None
+    # email = models.EmailField(_('email address'), unique=True)
+
+    # USERNAME_FIELD = 'email'
+    # REQUIRED_FIELDS = []
+    
     user_id = models.CharField(default=uniqueid, max_length=30)
     phone = models.CharField(max_length=15,null=True, blank=True)
     name = models.CharField(max_length=501)
