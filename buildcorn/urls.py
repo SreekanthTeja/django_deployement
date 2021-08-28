@@ -2,8 +2,8 @@ from django.urls import path
 from .views import *
 urlpatterns = [
     ########### user registration api's ##################
-    path('list_or_create',RegistrationListCreateView.as_view()),
-    path('rud/<int:pk>',RUDRegistrationView.as_view()),
+    path('list_or_create',UserListCreateView.as_view()),
+    path('rud/<int:pk>',RUDUserView.as_view()),
 
     ########### user license api's ##################
     path('license/list',LicenseListAPIView.as_view()),
