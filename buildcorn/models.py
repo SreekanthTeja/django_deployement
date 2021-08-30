@@ -51,6 +51,7 @@ class CheckList(models.Model):
     checklist_id =  models.CharField(default=licenseid, max_length=30)
     text = models.TextField(default="its a verified list")
     name = models.CharField(max_length=120)
+    status = models.BooleanField(default=False, blank=True, null=True)
     def __str__(self):
         return self.name
 class QualityLibrary(models.Model):
