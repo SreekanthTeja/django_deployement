@@ -28,4 +28,12 @@ urlpatterns = [
     ########### safety assurence  api's ##################
     path('safety/list_or_create',SafetyListCreateAPIView.as_view()),
     path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
+
+    ########### banner  api's ##################
+    path('banner/list_or_create',BannerListCreateAPIView.as_view()),
+    path('banner/rud/<int:pk>',RUDBannerView.as_view()),
+
+    ########### faq  api's ##################
+    path('faq/list_or_create',FAQListCreateAPIView.as_view()),
+    path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 ]

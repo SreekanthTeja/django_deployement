@@ -13,6 +13,7 @@ User = get_user_model()
     User Registrtion for comapany
 """
 
+
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
@@ -20,11 +21,6 @@ class UserListCreateView(generics.ListCreateAPIView):
 class RUDUserView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
-
-
-"""
-    License
-"""
 
 """License list api view """
 class LicenseListAPIView(generics.ListAPIView):
@@ -104,8 +100,28 @@ class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
 class CheckListCreateAPIView(generics.ListCreateAPIView):
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
-
+    
 """Checklist read, update, delete"""
 class RUDCheckView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
+
+"""Banner list create"""
+class BannerListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+    
+"""Banner read, update, delete"""
+class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+
+"""FAQ list create"""
+class FAQListCreateAPIView(generics.ListCreateAPIView):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer
+    
+"""FAQ read, update, delete"""
+class RUDFAQView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer

@@ -75,3 +75,22 @@ class SafetyLibrary(models.Model):
     check_list  = models.ManyToManyField(CheckList,  blank=True)
     def __str__(self):
         return self.name
+
+class Banner(models.Model):
+    name = models.CharField(max_length=30)
+    image = models.ImageField(upload_to="images/merchendise/%Y/%m/%d")
+    class Meta:
+        ordering = ("id",)
+    def __str__(self):
+        return self.name
+    
+
+class FAQ(models.Model):
+    faq_id = models.CharField(max_length=50,default=licenseid)
+    question = models.CharField(max_length=30)
+    answer = models.CharField(max_length=30)
+    status = models.BooleanField(default=False, blank=True, null=True)
+    class Meta:
+        ordering = ("id",)
+    def __str__(self):
+        return self.name

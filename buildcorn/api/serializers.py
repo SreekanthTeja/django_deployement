@@ -62,11 +62,10 @@ class LicenseUpdateSerializer(serializers.ModelSerializer):
         model = License
         fields = ("id","user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name")
         read_only_fields = ('license_id', "tenure","id",)
-        # lookup_field = 'user_info__username'
     def validate(self, data):
         print(data)
         if not data.get("designation"):
-            raise serializers.ValidationError("Select the candidate")
+            raise serializers.ValidationError("Provide designation")
         if not data.get("end_at"):
             raise serializers.ValidationError("Provide end date")
         elif not data.get("created_at"):
@@ -76,6 +75,8 @@ class LicenseUpdateSerializer(serializers.ModelSerializer):
     def update(self,instance, validated_data):
         print(instance.user_info)
         user_info = validated_data.pop('user_info')
+
+        
         # instance.user_info.username = user_info.get("username")
         # instance.user_info.name = user_info.get("name")
         # instance.user_info.phone = user_info.get("phone")
@@ -107,7 +108,7 @@ class QualitySerializer(serializers.ModelSerializer):
     class Meta:
         model = QualityLibrary
         fields = "__all__" 
-        read_only_fields = ('quality_id',"id", )
+        read_only_fields = ('quality_id',"id",)
 
 
 class SafetySerializer(serializers.ModelSerializer):
@@ -121,4 +122,15 @@ class CheckListSerializer(serializers.ModelSerializer):
         model = CheckList
         fields = "__all__" 
         read_only_fields = ('checklist_id', "id",)
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = "__all__" 
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = "__all__" 
+        read_only_fields = ('faq_id', "id",)
 
