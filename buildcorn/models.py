@@ -78,7 +78,7 @@ class SafetyLibrary(models.Model):
 
 class Banner(models.Model):
     name = models.CharField(max_length=30)
-    image = models.ImageField(upload_to="images/merchendise/%Y/%m/%d")
+    image = models.ImageField(upload_to="images/%Y/%m/%d")
     class Meta:
         ordering = ("id",)
     def __str__(self):
@@ -87,10 +87,10 @@ class Banner(models.Model):
 
 class FAQ(models.Model):
     faq_id = models.CharField(max_length=50,default=licenseid)
-    question = models.CharField(max_length=30)
-    answer = models.CharField(max_length=30)
+    question = models.CharField(max_length=300)
+    answer = models.TextField(blank=True, null=True)
     status = models.BooleanField(default=False, blank=True, null=True)
     class Meta:
         ordering = ("id",)
     def __str__(self):
-        return self.name
+        return self.question

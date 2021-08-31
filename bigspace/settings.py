@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "corsheaders",
     'accounts',
-    'blogs',
     'buildcorn',
     'rest_framework',
 ]
@@ -152,7 +151,7 @@ STATICFILES_DIRS = [
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = "static_root"
-MEDIA_ROOT = "media_root"
+MEDIA_ROOT = "media"
 MEDIA_URL = '/media/'
 
 # Default primary key field type
