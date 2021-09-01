@@ -55,7 +55,7 @@ class CheckList(models.Model):
     def __str__(self):
         return self.name
 class QualityLibrary(models.Model):
-    TYPE = (('quality','Quality'),('safety','Safety'))
+    TYPE = (('quality','Quality'),)
     quality_id = models.CharField(default=licenseid, max_length=30)
     date = models.DateField(auto_now_add=True,blank=True, null=True)
     status = models.BooleanField(default= True)
@@ -66,7 +66,7 @@ class QualityLibrary(models.Model):
         return self.name
 
 class SafetyLibrary(models.Model):
-    TYPE = (('quality','Quality'),('safety','Safety'))
+    TYPE = (('quality','Quality'),)
     safety_id = models.CharField(default=licenseid, max_length=30)
     date = models.DateField(auto_now_add=True,blank=True, null=True)
     status = models.BooleanField(default= True)
