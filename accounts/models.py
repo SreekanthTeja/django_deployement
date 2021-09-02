@@ -64,15 +64,12 @@ class User(AbstractUser):
         return self.email
 User._meta.get_field("email")._unique=True
 
-class Addres(models.Model):
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    other_info = models.TextField()
-    pincode = models.PositiveIntegerField()
-    class Meta:
-        ordering = ("-id",)
-    def __str__(self):
-        return f"{self.state} ==> {self.city}"
+# class Addres(models.Model):
+    
+#     class Meta:
+#         ordering = ("-id",)
+#     def __str__(self):
+#         return f"{self.state} ==> {self.city}"
 
 
 class Company(models.Model):
@@ -84,9 +81,12 @@ class Company(models.Model):
     gstin = models.CharField(max_length=50)
     name = models.CharField(max_length=15,null=True, blank=True)
     url = models.URLField(blank=True, null=True)
-    addres = models.ForeignKey(Addres, on_delete = models.SET_NULL, null=True)
     status = models.BooleanField(default=True)
     contact_person = models.ForeignKey(User, related_name="contact_person", on_delete=models.CASCADE)
+    state = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    addres = models.TextField()
+    pincode = models.PositiveIntegerField()
     
     
     class Meta:
