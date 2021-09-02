@@ -19,6 +19,7 @@ urlpatterns = [
 
     ###########  check-list api's ##################
     path('check/list_or_create',CheckListCreateAPIView.as_view()),
+    path('check/list',CheckListAPIView.as_view()),
     path('check/rud/<int:pk>',RUDCheckView.as_view()),
 
     ########### quality assurence  api's ##################
@@ -36,4 +37,9 @@ urlpatterns = [
     ########### faq  api's ##################
     path('faq/list_or_create',FAQListCreateAPIView.as_view()),
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
+
+    ########### forms  urls ##################
+    path('ui/check/list',CheckListFormView.as_view(), name='checklist-list'),
+    path('ui/check/create',CheckListFCreateFormView.as_view(), name='checklist-create'),
+    path('ui/check/detail/<int:pk>',ChecklistDetailView.as_view(), name='checklist-detail'),
 ]

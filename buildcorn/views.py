@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from rest_framework import generics
 from rest_framework import views
 from .api.serializers import *
@@ -7,7 +7,13 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser
 User = get_user_model()
+
+
+class IsSuperUser(IsAdminUser):
+    def has_permission(self, request, view):
+        return User.SUPER_ADMIN==request.user.user_type
 
 """
     User Registrtion for comapany
@@ -96,11 +102,20 @@ class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SafetyLibrary.objects.all()
     serializer_class = SafetySerializer
 
-"""Checklist list create"""
+
+
+"""Checklist list create for super_admin only"""
 class CheckListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsSuperUser,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
-    
+
+
+
+class CheckListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = CheckList.objects.all()
+    serializer_class = CheckListSerializer
 """Checklist read, update, delete"""
 class RUDCheckView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CheckList.objects.all()
@@ -125,3 +140,42 @@ class FAQListCreateAPIView(generics.ListCreateAPIView):
 class RUDFAQView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
+
+
+"""
+forms handling
+"""
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import generic
+from .forms import *
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
+class CheckListFCreateFormView(LoginRequiredMixin,generic.CreateView):
+    permission_classes = (IsSuperUser,)
+    template_name = "buildcron/checklist_create.html"
+    form_class = CheckListCreateForm
+    # context_object_name = "checklists"
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.user_type=='SA':
+            # return HttpResponse({"error":"You dont have permissions"})
+            raise PermissionDenied()
+        return super(CheckListFCreateFormView, self).dispatch(request, *args, **kwargs)
+    def get_success_url(self):
+        return reverse("checklist-list")
+
+class CheckListFormView(LoginRequiredMixin,generic.ListView):
+    
+    template_name = "buildcron/check_list.html"
+    context_object_name = "checklists"
+    queryset = CheckList.objects.all()
+
+    def get_success_url(self):
+        return reverse("checklist-list")
+
+class ChecklistDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = "buildcron/checklist_detail.html"
+    context_object_name = "checklist"
+    queryset = CheckList.objects.all()
+
+    def get_success_url(self):
+        return reverse("buildcron:checklist-list")

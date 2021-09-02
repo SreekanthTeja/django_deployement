@@ -17,8 +17,14 @@ User = get_user_model()
 class CompanyListCreateView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    # def perform_create(self, serializer):
-    #     return serializer.save(user= self.request.user)
+    # def create(self, request):
+    #     print("perform_create enterd",request.data)
+    #     serializer = self.serializer_class(self.queryset, data=request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.user = User.objects.create_user(**request.data.pop("user"))
+    #         # serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors)
 
     
 class CompanyUpdateView(generics.RetrieveUpdateAPIView):
@@ -28,3 +34,4 @@ class CompanyUpdateView(generics.RetrieveUpdateAPIView):
 class CompanyRUDView(generics.RetrieveDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+

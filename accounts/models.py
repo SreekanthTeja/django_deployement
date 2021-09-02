@@ -1,8 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager, UserManager
 import uuid
 from django.utils import timezone
 # from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+
+
 
 # User = get_user_model()
 
@@ -11,10 +14,11 @@ def uniqueid():
     return uuid.uuid4().node
 
 
-class UserManager(BaseUserManager):
+class CustomUserManager(UserManager):
     def create_user(self, email, password=None, **extra_fields):
+        print(email, password)
         if email:
-            email = email.lower()
+            email = email
         now = timezone.now()
         user = self.model(
         email=email,
@@ -22,12 +26,16 @@ class UserManager(BaseUserManager):
         last_login=now,
         date_joined=now,
         **extra_fields
-    )
+        )
+
+        # password = make_password(password)
+        # password = self.check_password(password)
         user.set_password(password)
         user.save(using=self._db)
         return user
     
     def create_superuser(self, email, password):
+        print(email, password)
         """creates and saves new super user"""
         user = self.create_user(email, password)
         user.is_staff  = True
@@ -44,9 +52,11 @@ class User(AbstractUser):
     user_type = models.CharField(choices=USER_TYPE_CHOICES, default=TENENT, max_length=5)
     client_id = models.UUIDField(default=uuid.uuid4().node,)
     phone = models.CharField(max_length=15,null=True, blank=True)
+    
+    objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    objects = UserManager()
+    
     class Meta:
         ordering = ("-id",)
         
@@ -66,7 +76,7 @@ class Addres(models.Model):
 
 
 class Company(models.Model):
-    #employes = models.ManyToManyField()
+    # employes = models.ManyToManyField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     published_date = models.DateField( blank=True, null=True)
     end_at = models.DateField(blank=True, null=True)

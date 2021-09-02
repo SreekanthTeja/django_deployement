@@ -49,7 +49,7 @@ post_save.connect(calculate_tenure, sender=License)
 
 class CheckList(models.Model):
     checklist_id =  models.CharField(default=licenseid, max_length=30)
-    text = models.TextField(default="its a verified list")
+    question = models.TextField(default="Make your questions here")
     name = models.CharField(max_length=120)
     status = models.BooleanField(default=False, blank=True, null=True)
     def __str__(self):
