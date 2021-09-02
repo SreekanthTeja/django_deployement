@@ -16,10 +16,18 @@ class AddresSerializer(serializers.ModelSerializer):
         model = Addres
         fields = "__all__"
 
+
+
+class ContactPersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id","email","username",)
+
 """ Company register Serializer """
 class CompanySerializer(WritableNestedModelSerializer,serializers.ModelSerializer):
     user = UserSerializer(many = False)
     addres = AddresSerializer()
+    contact_person = ContactPersonSerializer()
 
     class Meta:
         model = Company
