@@ -23,8 +23,8 @@ class CompanySerializer(WritableNestedModelSerializer,serializers.ModelSerialize
 
     class Meta:
         model = Company
-        fields = ('user','name', 'gstin',"contact_person","status","published_date", "addres", 'end_at',)
-
+        fields = ("id",'user','name', 'gstin',"contact_person","status","published_date", "addres", 'end_at',)
+        read_only_fields = ("id",)
     # def validate(self, data):
     #     if not  data.get("user") :
     #         raise serializers.ValidationError('User must required ')
