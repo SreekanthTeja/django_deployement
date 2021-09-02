@@ -6,10 +6,11 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from accounts.models import *
 # User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ("username","email","password","phone",)
-        # read_only_fields = ("client_id","id",)
+        fields = ("id","client_id","username","email","password","phone",)
+        read_only_fields = ("client_id","id",)
 class AddresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Addres

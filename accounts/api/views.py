@@ -10,23 +10,24 @@ from rest_framework import status
 User = get_user_model()
 
 """
-    User Registrtion for comapany
+    User apis for comapany
 """
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def get_queryset(self):
+        return User.objects.exclude(user_type='TN')
+    
+class RUUserView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-
+"""
+    Company apis 
+"""
 class CompanyListCreateView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    # def create(self, request):
-    #     print("perform_create enterd",request.data)
-    #     serializer = self.serializer_class(self.queryset, data=request.data)
-    #     if serializer.is_valid(raise_exception=True):
-    #         serializer.user = User.objects.create_user(**request.data.pop("user"))
-    #         # serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors)
-
-    
 class CompanyUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
