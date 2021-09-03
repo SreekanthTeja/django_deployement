@@ -4,6 +4,7 @@ import uuid
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
+from accounts.models import Company
 
 
 # Create your models here.
@@ -11,6 +12,38 @@ def licenseid():
     return uuid.uuid4().node
 
 User = get_user_model()
+
+class Employee(models.Model):
+    # project = models.ForeignKey("Project", related_name="project_employee", on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=30)
+    designation = models.CharField(max_length=50, null=True, blank=True)
+    date = models.DateField(blank=True, null=True)
+    phone = models.CharField(max_length=15)
+    class Meta:
+        ordering = ("-id",)
+        
+    def __str__(self):
+        return self.name
+
+class Project(models.Model):
+    ON_SITE = 'Onsite'
+    OFF_SITE = 'Offsite'
+    PROJECT_TYPES= ((ON_SITE,'Onsite'), (OFF_SITE,'Offsite'))
+    comapany = models.ForeignKey(Company, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    created_at = models.DateField(auto_now_add=True)
+    approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
+    location = models.TextField()
+    employee = models.ManyToManyField(Employee, related_name="project_employee", blank=True)
+    typee = models.CharField(choices=PROJECT_TYPES,max_length=10)
+    class Meta:
+        ordering = ("-id",)
+        
+    def __str__(self):
+        return self.name
+
+
 
 class DeviceName(models.Model):
     name = models.CharField(max_length=50)

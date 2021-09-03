@@ -35,4 +35,7 @@ urlpatterns = [
     path('faq/list_or_create',FAQListCreateAPIView.as_view()),
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 
+    ########### faq  api's ##################
+    path('emp/list_or_create',EmployeeListCreateAPIView.as_view()),
+    path('emp/rud/<int:pk>',RUDEmployeeView.as_view()),
 ]

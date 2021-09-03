@@ -82,8 +82,8 @@ class Company(models.Model):
     addres = models.TextField()
     pincode = models.PositiveIntegerField()
     
-    # employes = models.ManyToManyField(Employee, blank=True, null=True)
-    # projects = models.ManyToManyField(Project, blank=True, null=True)
+    # employes = models.ManyToManyField(Employee, blank=True, )
+    # projects = models.ManyToManyField(Project, blank=True, )
     
     class Meta:
         ordering = ("-id",)
