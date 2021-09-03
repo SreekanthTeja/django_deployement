@@ -15,7 +15,7 @@ urlpatterns = [
     path('device/list',DeviceListAPIView.as_view()),
 
     ###########  check-list api's ##################
-    path('check/list_or_create',CheckListCreateAPIView.as_view()),
+    path('check/create',CheckListCreateAPIView.as_view()),
     path('check/list',CheckListAPIView.as_view()),
     path('check/rud/<int:pk>',RUDCheckView.as_view()),
 

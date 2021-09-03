@@ -63,17 +63,11 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 User._meta.get_field("email")._unique=True
-
-# class Addres(models.Model):
-    
-#     class Meta:
-#         ordering = ("-id",)
-#     def __str__(self):
-#         return f"{self.state} ==> {self.city}"
-
+User._meta.get_field("username").null=True
+User._meta.get_field("phone").null=True
+User._meta.get_field("password").null=True
 
 class Company(models.Model):
-    # employes = models.ManyToManyField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     published_date = models.DateField( blank=True, null=True)
     end_at = models.DateField(blank=True, null=True)
@@ -88,6 +82,8 @@ class Company(models.Model):
     addres = models.TextField()
     pincode = models.PositiveIntegerField()
     
+    # employes = models.ManyToManyField(Employee, blank=True, null=True)
+    # projects = models.ManyToManyField(Project, blank=True, null=True)
     
     class Meta:
         ordering = ("-id",)

@@ -32,7 +32,7 @@ class CompanyUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
     
-class CompanyRUDView(generics.RetrieveDestroyAPIView):
+class CompanyRDView(generics.RetrieveDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
 

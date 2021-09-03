@@ -13,6 +13,7 @@ User = get_user_model()
 
 class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
+        print("......",request.user)
         return User.SUPER_ADMIN==request.user.user_type
 
 """License list api view """
@@ -92,8 +93,8 @@ class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
 
 
 """Checklist list create for super_admin only"""
-class CheckListCreateAPIView(generics.ListCreateAPIView):
-    permission_classes = (IsSuperUser,)
+class CheckListCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsSuperUser,IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 
