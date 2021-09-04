@@ -13,18 +13,7 @@ def licenseid():
 
 User = get_user_model()
 
-class Employee(models.Model):
-    # project = models.ForeignKey("Project", related_name="project_employee", on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=30)
-    designation = models.CharField(max_length=50, null=True, blank=True)
-    date = models.DateField(blank=True, null=True)
-    phone = models.CharField(max_length=15)
-    class Meta:
-        ordering = ("-id",)
-        
-    def __str__(self):
-        return self.name
+
 
 class Project(models.Model):
     ON_SITE = 'Onsite'
@@ -33,9 +22,9 @@ class Project(models.Model):
     comapany = models.ForeignKey(Company, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     created_at = models.DateField(auto_now_add=True)
-    approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
+    approver = models.ForeignKey(User, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
-    employee = models.ManyToManyField(Employee, related_name="project_employee", blank=True)
+    employee = models.ManyToManyField(User, related_name="project_employee", blank=True)
     typee = models.CharField(choices=PROJECT_TYPES,max_length=10)
     class Meta:
         ordering = ("-id",)

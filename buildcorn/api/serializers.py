@@ -139,12 +139,12 @@ class FAQSerializer(serializers.ModelSerializer):
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Employee
-        fields = "__all__" 
+        model = User
+        fields = ("id","first_name","email","phone","designation",) 
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
-        model = Project
+        model = User
         fields = "__all__" 

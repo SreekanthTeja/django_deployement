@@ -12,11 +12,9 @@ User = get_user_model()
 """
     User apis for comapany
 """
-class UserListView(generics.ListAPIView):
+class UserCreateListView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    def get_queryset(self):
-        return User.objects.exclude(user_type='TN')
     
 class RUUserView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
@@ -28,6 +26,10 @@ class RUUserView(generics.RetrieveUpdateAPIView):
 class CompanyListCreateView(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    
+    def perform_create(self, serializer):
+        User.user_type = User.TENENT 
+        serializer.save()
 class CompanyUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
@@ -35,4 +37,30 @@ class CompanyUpdateView(generics.RetrieveUpdateAPIView):
 class CompanyRDView(generics.RetrieveDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+
+class EmployeeSignup(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def create(self, request, **kwargs):
+        cid = kwargs["cid"]
+        user = User.objects.create_user(**request.data)
+        company = Company.objects.filter(company_id= cid)
+        print(company)
+        company[0].employees.add(user.id)
+        return Response({"status":"Successfull registerd"})
+class EmployeeListAPIView(generics.RetrieveAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanyEmployeeListSerializer
+    lookup_field = "company_id"
+    
+class ContactPersonAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = ContactPersonSerializer
+
+    def get_queryset(self):
+        user = self.queryset.filter(user_type=User.SUPER_ADMIN)
+        return user
+
+
+
 

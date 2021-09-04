@@ -132,11 +132,11 @@ class RUDFAQView(generics.RetrieveUpdateDestroyAPIView):
 
 """Employee list create"""
 class EmployeeListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Employee.objects.all()
+    queryset = User.objects.all()
     serializer_class = EmployeeSerializer
 
 """FAQ read, update, delete"""
 class RUDEmployeeView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Employee.objects.all()
+    queryset = User.objects.all()
     serializer_class = EmployeeSerializer
 
