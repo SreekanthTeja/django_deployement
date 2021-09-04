@@ -3,16 +3,16 @@ from .views import *
 urlpatterns = [
    
     ########### user license api's ##################
-    path('license/list',LicenseListAPIView.as_view()),
-    path('license/create',LicenseListCreateView.as_view()),
-    path('license/update/<int:pk>',UpdateLicenseView.as_view()),
-    path('license/rd/<int:pk>', RDLicenseView.as_view()),
-
+    # path('license/list',LicenseListAPIView.as_view()),
+    # path('license/create',LicenseListCreateView.as_view()),
+    # path('license/update/<int:pk>',UpdateLicenseView.as_view()),
+    # path('license/rd/<int:pk>', RDLicenseView.as_view()),
 
     ###########  quality safety type list view  ##################
-    path('type/list',QSTypeListAPIView.as_view()),
     ###########  check-list api's ##################
-    path('device/list',DeviceListAPIView.as_view()),
+    # path('device/list',DeviceListAPIView.as_view()),
+
+    path('type/list',QSTypeListAPIView.as_view()),
 
     ###########  check-list api's ##################
     path('check/create',CheckListCreateAPIView.as_view()),
@@ -36,6 +36,7 @@ urlpatterns = [
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 
     ########### faq  api's ##################
-    path('emp/list_or_create',EmployeeListCreateAPIView.as_view()),
-    path('emp/rud/<int:pk>',RUDEmployeeView.as_view()),
+    path('project/list_or_create',ProjectListCreateAPIView.as_view()),
+    path('project/rud/<int:pk>',RUDProjectView.as_view()),
 ]
+

@@ -5,11 +5,10 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from rest_framework_swagger.views import get_swagger_view
-
-schema_view = get_swagger_view(title='Pastebin API')
 urlpatterns = [
-    path('swagger',schema_view,  name="docs"),
+    path('sheet/apis', TemplateView.as_view(template_name='swagger.html', extra_context={'schema_url':'openapi-schema'}), name='swagger-ui'),
+    path('redoc', TemplateView.as_view(template_name='redoc.html', extra_context={'schema_url':'openapi-schema'}), name='redoc'),
+    path('openapi', get_schema_view(title="APIs", description="All APIs", version="1.0.0"), name='openapi-schema'),
     path('admin/', admin.site.urls),
     path('',TemplateView.as_view(template_name = 'base.html'), name = 'base-page'),
     path('accounts/', include('accounts.urls')),

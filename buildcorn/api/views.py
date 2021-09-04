@@ -16,51 +16,51 @@ class IsSuperUser(IsAdminUser):
         print("......",request.user)
         return User.SUPER_ADMIN==request.user.user_type
 
-"""License list api view """
-class LicenseListAPIView(generics.ListAPIView):
-    queryset = License.objects.all()
-    serializer_class = LicenseListSerializer
+# """License list api view """
+# class LicenseListAPIView(generics.ListAPIView):
+#     queryset = License.objects.all()
+#     serializer_class = LicenseListSerializer
 
-"""License create api view """
-class LicenseListCreateView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = License.objects.all()
-    serializer_class = LicenseCreateSerializer
-    def perform_create(self, serializer):
-        user= self.request.user
-        print(user.no_licenses)
-        try:
-            user.no_licenses += 1
-            user.save()
-        except Exception(e):
-            print(e)
-        finally:
-            serializer.save()
+# """License create api view """
+# class LicenseListCreateView(generics.CreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     queryset = License.objects.all()
+#     serializer_class = LicenseCreateSerializer
+#     def perform_create(self, serializer):
+#         user= self.request.user
+#         print(user.no_licenses)
+#         try:
+#             user.no_licenses += 1
+#             user.save()
+#         except Exception(e):
+#             print(e)
+#         finally:
+#             serializer.save()
 
-"""License update api view """
-class UpdateLicenseView(generics.RetrieveUpdateAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = License.objects.all()
-    serializer_class = LicenseUpdateSerializer
+# """License update api view """
+# class UpdateLicenseView(generics.RetrieveUpdateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     queryset = License.objects.all()
+#     serializer_class = LicenseUpdateSerializer
 
     
-"""License  pecific read delete api view """
-class RDLicenseView(generics.RetrieveDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = License.objects.all()
-    serializer_class = LicenseSingleInfoSerializer
-    def delete(self, request, pk):
-        licensee = self.queryset.get(id = pk)
-        licensee.delete()
-        user = User.objects.get(id = request.user.id)
-        user.no_licenses -= 1
-        user.save()
-        return Response(status=status.HTTP_204_NO_CONTENT) 
+# """License  pecific read delete api view """
+# class RDLicenseView(generics.RetrieveDestroyAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     queryset = License.objects.all()
+#     serializer_class = LicenseSingleInfoSerializer
+#     def delete(self, request, pk):
+#         licensee = self.queryset.get(id = pk)
+#         licensee.delete()
+#         user = User.objects.get(id = request.user.id)
+#         user.no_licenses -= 1
+#         user.save()
+#         return Response(status=status.HTTP_204_NO_CONTENT) 
 
-"""Device names list api view """
-class DeviceListAPIView(generics.ListAPIView):
-    queryset = DeviceName.objects.all()
-    serializer_class = DeviceSerializer
+# """Device names list api view """
+# class DeviceListAPIView(generics.ListAPIView):
+#     queryset = DeviceName.objects.all()
+#     serializer_class = DeviceSerializer
 
 """Inspection Type  list api view """
 class QSTypeListAPIView(views.APIView):
@@ -69,6 +69,17 @@ class QSTypeListAPIView(views.APIView):
         d1 = [{"id":i[0],"name":i[1]} for i in typee]
         return Response(d1)
 
+
+
+"""Projects adding and listing  """
+class ProjectListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+"""Projects read, update, delete api view """
+class RUDProjectView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
 
 """Quality list create api view """
 class QualityListCreateAPIView(generics.ListCreateAPIView):
@@ -130,13 +141,4 @@ class RUDFAQView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FAQSerializer
 
 
-"""Employee list create"""
-class EmployeeListCreateAPIView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = EmployeeSerializer
-
-"""FAQ read, update, delete"""
-class RUDEmployeeView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = EmployeeSerializer
 

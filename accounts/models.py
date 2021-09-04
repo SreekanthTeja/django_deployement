@@ -97,4 +97,9 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+# def send_email_to_admin(sender, instance, **kwargs):
+#     if not instance.username:
+#         instance.username = uuid.uuid4().node
+# pre_save.connect(set_username, sender=User)
+
     

@@ -38,7 +38,7 @@ class CompanyUpdateSerializer(WritableNestedModelSerializer):
         model = Company
         fields = "__all__"
 
-    
+
 
 
 
