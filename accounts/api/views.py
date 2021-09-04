@@ -29,6 +29,7 @@ class CompanyListCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         User.user_type = User.TENENT 
+        User.is_active = False
         serializer.save()
 class CompanyUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Company.objects.all()

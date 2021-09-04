@@ -94,14 +94,14 @@ class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
 
 """Checklist list create for super_admin only"""
 class CheckListCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsSuperUser,IsAuthenticated,)
+    # permission_classes = (IsSuperUser,IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 
 
 
 class CheckListAPIView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 """Checklist read, update, delete"""

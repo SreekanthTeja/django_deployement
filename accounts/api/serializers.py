@@ -26,21 +26,19 @@ class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializ
     class Meta:
         model = Company
         fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","published_date","pincode","state","city", "addres", 'end_at',)
-        read_only_fields = ("id",)
+        read_only_fields = ("id",'company_id',)
     def validate(self, data):
         if not  data.get("name") :
             raise serializers.ValidationError('provide company name')
         return data
 
     
-    
-
-    
-""" Company register Serializer """
-class CompanyUpdateSerializer(serializers.ModelSerializer):
+class CompanyUpdateSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Company
         fields = "__all__"
+
+    
 
 
 
