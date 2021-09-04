@@ -8,11 +8,11 @@ User = get_user_model()
 
 """ Users register Serializer """
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    # password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ("id","client_id","first_name","email","password","phone",)
-        read_only_fields = ("client_id","id",)
+        fields = ("id","client_id","first_name","email","phone",)
+        read_only_fields = ("client_id","id","password",)
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -21,19 +21,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 """ Company register Serializer """
-class CompanySerializer(WritableNestedModelSerializer,serializers.ModelSerializer):
-    
+class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Company
-        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","published_date","pincode","state","city", "addres", 'end_at',"employees")
-        read_only_fields = ("id","employees",)
+        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","published_date","pincode","state","city", "addres", 'end_at',)
+        read_only_fields = ("id",)
     def validate(self, data):
         if not  data.get("name") :
             raise serializers.ValidationError('provide company name')
         return data
 
     
+    
 
+    
+""" Company register Serializer """
 class CompanyUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
