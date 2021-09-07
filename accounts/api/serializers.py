@@ -6,16 +6,17 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 from accounts.models import *
 User = get_user_model()
 
-""" Users register Serializer """
+""" Users  Serializer """
 class UserSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ("id","client_id","first_name","email","phone",)
+        fields = ("id","client_id","first_name","email","phone_number",'password')
         read_only_fields = ("client_id","id","password",)
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        user.user_type = User.TENENT
         user.save()
         return user
 
@@ -25,18 +26,24 @@ class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializ
     user = UserSerializer()
     class Meta:
         model = Company
-        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","published_date","pincode","state","city", "addres", 'end_at',)
+        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","pincode","state","city", "addres","payment_success")
         read_only_fields = ("id",'company_id',)
-    def validate(self, data):
-        if not  data.get("name") :
-            raise serializers.ValidationError('provide company name')
-        return data
+    
+    
 
     
+    
+    
 class CompanyUpdateSerializer(WritableNestedModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Company
         fields = "__all__"
+
+    
+
+    
+    
 
 
 

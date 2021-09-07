@@ -3,12 +3,10 @@ from .views import *
 
 urlpatterns = [
     ############# signup for normal users ################################
-    path('user/list_or_signup',UserCreateListView.as_view(), name='user-list'),
-    path('user/ru/<int:pk>',RUUserView.as_view(), name='user-read_update'),
+    path('user/superadmin',SuperAdminListView.as_view(), name='user-list'),
 
     path('company/list_or_create',CompanyListCreateView.as_view(), name='company-list-create'),
-    path('company/rd/<int:pk>',CompanyRDView.as_view(), name='company-rd'),
-    path('company/update/<int:pk>',CompanyUpdateView.as_view(), name='company-update'),
+    path('company/rud/<int:pk>',CompanyRUDView.as_view(), name='company-update'),
 
     ############# signup for employee users ################################
     path('company/emp/signup/<int:cid>',EmployeeSignup.as_view(), name='emp-signup'),
