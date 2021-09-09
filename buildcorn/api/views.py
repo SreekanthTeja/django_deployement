@@ -73,13 +73,33 @@ class QSTypeListAPIView(views.APIView):
 
 """Projects adding and listing  """
 class ProjectListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    def perform_create(self, serializer):
+        print(self.request.user)
+        company = Company.objects.get(user__email=self.request.user)
+        print(company)
+        serializer.save(company=company)
+
+
 
 """Projects read, update, delete api view """
 class RUDProjectView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+class ProjectUsersView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    def get_queryset(self):
+
+        print(self.request.user)
+        company = Company.objects.get(user__email=self.request.user)
+        
+
+
 
 """Quality list create api view """
 class QualityListCreateAPIView(generics.ListCreateAPIView):

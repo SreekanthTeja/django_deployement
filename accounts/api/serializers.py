@@ -39,6 +39,12 @@ class CompanyUpdateSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Company
         fields = "__all__"
+        read_only_fields = ("id",'company_id',)
+
+class PlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = "__all__"
 
     
 

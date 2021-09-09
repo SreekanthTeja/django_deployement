@@ -107,7 +107,9 @@ User = get_user_model()
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = "__all__" 
+        # fields = "__all__"
+        exclude = ("employee",)
+
 
 class QualitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -142,9 +144,6 @@ class FAQSerializer(serializers.ModelSerializer):
 
 
 
-# class EmployeeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ("id","first_name","email","phone","designation",) 
+ 
 
 

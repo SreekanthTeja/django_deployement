@@ -48,15 +48,22 @@ def licenseid():
 
 User = get_user_model()
 class Project(models.Model):
+    company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     ON_SITE = 'Onsite'
     OFF_SITE = 'Offsite'
+    INSPECTION_DONE='D'
+    INSPECTION_PENDING='P'
+    INSPECTION_TYPES = ((INSPECTION_DONE,'Done'),(INSPECTION_PENDING,'Pending'))
     PROJECT_TYPES= ((ON_SITE,'Onsite'), (OFF_SITE,'Offsite'))
     name = models.CharField(max_length=50)
     created_at = models.DateField(auto_now_add=True)
+    phase = models.CharField(max_length=50, blank=True, null=True)
+    updated_at = models.DateField(auto_now=True, blank=True, null=True)
     approver = models.ForeignKey(User, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
     employee = models.ManyToManyField(User, related_name="project_employee", blank=True)
     typee = models.CharField(choices=PROJECT_TYPES,max_length=10)
+    inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     class Meta:
         ordering = ("-id",)
         
@@ -64,7 +71,6 @@ class Project(models.Model):
         return self.name
 
 class QualityLibrary(models.Model):
-    # TYPE = (('quality','Quality'),)
     quality_id = models.CharField(default=licenseid, max_length=30)
     date = models.DateField(auto_now_add=True,blank=True, null=True)
     status = models.BooleanField(default= True)

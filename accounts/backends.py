@@ -13,11 +13,11 @@ class ModelBackend(backends.ModelBackend):
         try:
             # print(username)
             user = User.objects.get(Q(email__iexact=username))
-            print(user, password)
+            # print(user, password)
         except User.DoesNotExist:
             User().set_password(password)
         else:
-            print(user.check_password(password))
+            # print(user.check_password(password))
             if user.check_password(password) and self.user_can_authenticate(user):
                 # print(".......",user, password)
                 return user

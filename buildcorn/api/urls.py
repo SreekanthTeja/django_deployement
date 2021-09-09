@@ -35,8 +35,9 @@ urlpatterns = [
     path('faq/list_or_create',FAQListCreateAPIView.as_view()),
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 
-    ########### faq  api's ##################
+    ########### project  api's ##################
     path('project/list_or_create',ProjectListCreateAPIView.as_view()),
     path('project/rud/<int:pk>',RUDProjectView.as_view()),
+    path('project/users',ProjectUsersView.as_view()),
 ]
 
