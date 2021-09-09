@@ -62,6 +62,14 @@ class IsSuperUser(IsAdminUser):
 #     queryset = DeviceName.objects.all()
 #     serializer_class = DeviceSerializer
 
+"""License ApiView"""
+
+class LicenseAPIView(generics.ListAPIView):
+    permission_classes = (IsSuperUser,)
+    queryset = License.objects.all()
+    serializer_class = LicenseSerializer
+    
+
 """Inspection Type  list api view """
 class QSTypeListAPIView(views.APIView):
     def get(self, request):
@@ -97,7 +105,7 @@ class ProjectUsersView(generics.ListAPIView):
 
         print(self.request.user)
         company = Company.objects.get(user__email=self.request.user)
-        
+
 
 
 

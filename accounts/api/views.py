@@ -52,6 +52,7 @@ class SuperAdminListView(generics.ListAPIView):
         return User.objects.filter(user_type=User.SUPER_ADMIN)
 
 
+
 class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
@@ -96,6 +97,8 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
 class PlanListView(generics.ListAPIView):
     queryset = Plan.objects.all()
     serializer_class = PlanSerializer
+    # def get(self, request):
+    #     print(request.get_full_)
     
     
 """Company apis end"""
@@ -115,28 +118,15 @@ class PaymentResponseView(views.APIView):
                 "status": Payment.PAYMENT_FAILED,
                 "detail": "Payment failed",
             })
-        payment_create(payment)
-        # payment.status = Payment.PAYMENT_DONE
-        # payment.updated_at = timezone.now()
-        # payment.save()
+        # payment_create(payment)
         holder_data = payment.holder
         data = json.loads(holder_data)
-        # user_create(data["user_details"])
-        # user = User.objects.create_user(**data["user_details"])
-        # user.user_type = User.TENENT
-        # user.save()
-        company_create(data["user_details"],data["company_details"], data["plan_details"])
-        # contact_person = data["company_details"].pop("contact_person")
-        # contact_person = User.objects.get(id = contact_person)
-        # company = Company.objects.create(user= user, contact_person=contact_person, **data["company_details"])
-        # company.license_purchased = data["plan_details"]["license_count"]
-        # company.save()
-
+        company_create(payment,data["user_details"],data["company_details"], data["plan_details"])
         # msg_html = render_to_string('user_invoice_mail.html', {'payment': payment})
         # send_mail(
         #     'Payment Success',
         #     "Your Subscription activation success",
-        #     'support@nquantum.ai',
+        #     'support@buildcron.com',
         #     [request.user.email],
         #     html_message=msg_html,
         # )
@@ -150,9 +140,13 @@ class PaymentResponseView(views.APIView):
 
 
 from accounts.razorpayment import *
+# from django.contrib.sites.models import Site
 
+# current_site = Site.objects.get_current()
+# current_site.domain
 class PaymentView(views.APIView):
     def post(self, request, *args, **kwargs):
+
         indata = request.data
         user_details = indata["user_details"]
         company_details = indata["company_details"]
@@ -164,9 +158,12 @@ class PaymentView(views.APIView):
         # gst_amount = amount+(amount/100)*plan_details["gst"]
         # final_amount = round(amount, 2)
         # print(user_details["first_name"])
-        url = "http://127.0.0.1:8000/accounts/api/payment/success"
+        schema = request.scheme
+        absolute_url = request.META['HTTP_HOST']
+        print(schema, type(schema))
+        url = "{schema}://{absolute_url}/accounts/api/payment/success".format(schema = schema, absolute_url =absolute_url)
         data = {
-            # "customer_details": user_details["first_name"],
+            # "customer": user_details["first_name"],
             "type": "link",
             "amount": amount*100,
             "currency": "INR",
@@ -183,7 +180,7 @@ class PaymentView(views.APIView):
         payment.company_name = company_details["name"]
         payment.amount = amount
         payment.save()
-        print(response)
+        # print(response)
         return Response({
             "next": response["short_url"],
             'status': payment.status,

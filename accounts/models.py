@@ -107,8 +107,8 @@ class Payment(models.Model):
     class Meta:
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'
-    def __str__(self):
-        return self.payment_id
+    # def __str__(self):
+    #     return self.payment_id
 
 
 

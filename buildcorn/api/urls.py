@@ -12,7 +12,10 @@ urlpatterns = [
     ###########  check-list api's ##################
     # path('device/list',DeviceListAPIView.as_view()),
 
+    path('license', LicenseAPIView.as_view()),
+
     path('type/list',QSTypeListAPIView.as_view()),
+
 
     ###########  check-list api's ##################
     path('check/create',CheckListCreateAPIView.as_view()),

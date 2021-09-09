@@ -26,8 +26,8 @@ class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializ
     user = UserSerializer()
     class Meta:
         model = Company
-        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","pincode","state","city", "addres","payment_success")
-        read_only_fields = ("id",'company_id',)
+        fields = ("id",'user','name','company_id', 'gstin',"contact_person","status","pincode","state","city", "addres","license_purchased")
+        read_only_fields = ("id",'company_id',"license_purchased")
     
     
 

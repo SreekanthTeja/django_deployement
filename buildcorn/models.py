@@ -6,7 +6,10 @@ from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
 from accounts.models import Company
 
+def licenseid():
+    return uuid.uuid4().node
 
+User = get_user_model()
 # Create your models here.
 
 # class DeviceName(models.Model):
@@ -14,18 +17,20 @@ from accounts.models import Company
 #     def __str__(self):
 #         return self.name
 
-# class License(models.Model):
-#     user_info = models.ForeignKey(User, on_delete = models.CASCADE)
-#     designation = models.CharField(max_length=50, null=True, blank=True)
-#     license_id = models.CharField(default=licenseid, max_length=20)
-#     created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
-#     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
-#     tenure = models.FloatField(blank=True, null=True, default=0)
-#     status = models.BooleanField(default=False)
-#     device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
+class License(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    # designation = models.CharField(max_length=50, null=True, blank=True)
+    license_id = models.CharField(default=licenseid, max_length=20)
+    created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
+    end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
+    status = models.BooleanField(default=True)
+    # tenure = models.FloatField(blank=True, null=True, default=0)
+    # device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
+    class Meta:
+        ordering = ("-id",)
 
-#     def __str__(self):
-#         return f"{self.designation}"
+    def __str__(self):
+        return f"{self.user.first_name}"
 
 
 # def calculate_tenure(sender,instance,**kwargs):
@@ -43,10 +48,7 @@ from accounts.models import Company
 #     return instance
 
 # post_save.connect(calculate_tenure, sender=License)
-def licenseid():
-    return uuid.uuid4().node
 
-User = get_user_model()
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     ON_SITE = 'Onsite'

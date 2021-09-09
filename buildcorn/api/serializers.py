@@ -4,6 +4,7 @@ from buildcorn.models import *
 from accounts.models import *
 from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+from accounts.api.serializers import UserSerializer
 User = get_user_model()
 
 # class UserCreateSerializer(serializers.ModelSerializer):
@@ -102,7 +103,16 @@ User = get_user_model()
 #         fields = ("id","user_info", "designation", "license_id","status","tenure","created_at","end_at","device_name",)
 #         read_only_fields = ('license_id', "tenure","id",)
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("first_name","email")
 
+class LicenseSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = License
+        fields = "__all__"
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
