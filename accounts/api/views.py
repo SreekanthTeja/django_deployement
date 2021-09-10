@@ -13,11 +13,12 @@ import json
 
 from accounts.api.utils import *
 
-
+User = get_user_model()
 class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
-        print("......",request.user)
-        return User.SUPER_ADMIN==request.user.user_type
+        return request.user.user_type==User.SUPER_ADMIN
+
+        
 # class CompanyRDView(generics.RetrieveDestroyAPIView):
 #     queryset = Company.objects.all()
 #     serializer_class = CompanySerializer
@@ -45,7 +46,7 @@ class IsSuperUser(IsAdminUser):
 #         user = self.queryset.filter(user_type=User.SUPER_ADMIN)
 #         return user
 
-User = get_user_model()
+
 """
     SuperUsers list
 """
@@ -57,18 +58,18 @@ class SuperAdminListView(generics.ListAPIView):
 
 
 
-class CompanyListCreateView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsSuperUser)
+class CompanyCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
 
 
 class CompanyListView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,IsSuperUser)
+    permission_classes = ( IsAuthenticated,)
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
 class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
     def update(self, request, *args, **kwargs):
@@ -155,10 +156,6 @@ class PaymentResponseView(views.APIView):
 
 
 from accounts.razorpayment import *
-# from django.contrib.sites.models import Site
-
-# current_site = Site.objects.get_current()
-# current_site.domain
 class PaymentView(views.APIView):
     def post(self, request, *args, **kwargs):
 
