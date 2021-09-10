@@ -13,7 +13,11 @@ import json
 
 from accounts.api.utils import *
 
-    
+
+class IsSuperUser(IsAdminUser):
+    def has_permission(self, request, view):
+        print("......",request.user)
+        return User.SUPER_ADMIN==request.user.user_type
 # class CompanyRDView(generics.RetrieveDestroyAPIView):
 #     queryset = Company.objects.all()
 #     serializer_class = CompanySerializer
@@ -53,7 +57,18 @@ class SuperAdminListView(generics.ListAPIView):
 
 
 
+class CompanyListCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+
+
+class CompanyListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser)
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
 class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated)
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
     def update(self, request, *args, **kwargs):

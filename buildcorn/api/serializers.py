@@ -120,8 +120,25 @@ class ProjectSerializer(serializers.ModelSerializer):
         # fields = "__all__"
         exclude = ("employee",)
 
+class CheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckList
+        fields = "__all__" 
+        read_only_fields = ( "id","checklist_id",)
+
+    def create(self, validated_data):
+        quality = QualityLibrary.objects.get(id=self.initial_data["quality_id"])
+        checklist = CheckList.objects.create(**validated_data)
+        checklist.save()
+        quality.checklist.add(checklist)
+        quality.save()
+        return checklist
+
+    # def update(self, instance, validated_data):
+    #     print(instance)
 
 class QualitySerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many =True)
     class Meta:
         model = QualityLibrary
         fields = "__all__" 
@@ -134,11 +151,7 @@ class SafetySerializer(serializers.ModelSerializer):
         fields = "__all__" 
         read_only_fields = ('safety_id', "id",)
 
-class CheckListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CheckList
-        fields = "__all__" 
-        read_only_fields = ( "id",)
+
 
 
 class BannerSerializer(serializers.ModelSerializer):

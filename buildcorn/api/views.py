@@ -139,6 +139,7 @@ class CheckListCreateAPIView(generics.CreateAPIView):
 
 
 
+
 class CheckListAPIView(generics.ListAPIView):
     # permission_classes = (IsAuthenticated,)
     queryset = CheckList.objects.all()

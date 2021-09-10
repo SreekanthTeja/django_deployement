@@ -4,8 +4,8 @@ from .views import *
 urlpatterns = [
     ############# signup for normal users ################################
     path('user/superadmin',SuperAdminListView.as_view(), name='user-list'),
-
-    # path('company/list_or_create',CompanyListCreateView.as_view(), name='company-list-create'),
+    path('company/list',CompanyListView.as_view()),
+    path('company/create/admin',CompanyListCreateView.as_view()),
     path('company/rud/<int:pk>',CompanyRUDView.as_view(), name='company-update'),
 
     path('plans',PlanListView.as_view()),

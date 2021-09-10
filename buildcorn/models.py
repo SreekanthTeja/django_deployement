@@ -19,11 +19,11 @@ User = get_user_model()
 
 class License(models.Model):
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-    # designation = models.CharField(max_length=50, null=True, blank=True)
     license_id = models.CharField(default=licenseid, max_length=20)
     created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
     status = models.BooleanField(default=True)
+    # designation = models.CharField(max_length=50, null=True, blank=True)
     # tenure = models.FloatField(blank=True, null=True, default=0)
     # device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
     class Meta:
@@ -49,6 +49,9 @@ class License(models.Model):
 
 # post_save.connect(calculate_tenure, sender=License)
 
+# class Employee(models.Model):
+
+
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     ON_SITE = 'Onsite'
@@ -72,34 +75,37 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+
+class CheckList(models.Model):
+    # qid = models.ForeignKey(QualityLibrary, on_delete= models.SET_NULL, null=True, blank=True, )
+    # sid = models.ForeignKey(SafetyLibrary, on_delete= models.SET_NULL, null=True, blank=True )
+    checklist_id =  models.CharField(default=licenseid, max_length=30)
+    question = models.TextField()
+    answer = models.CharField(max_length=120, blank=True, null=True)
+    status = models.BooleanField(default=False, blank=True, null=True)
+    def __str__(self):
+        return self.question
+
 class QualityLibrary(models.Model):
     quality_id = models.CharField(default=licenseid, max_length=30)
-    date = models.DateField(auto_now_add=True,blank=True, null=True)
-    status = models.BooleanField(default= True)
+    created_at = models.DateField(auto_now_add=True,blank=True, null=True)
     name = models.CharField(max_length=120)
-    quality_type = models.CharField(default="Quality", max_length=10)
+    typee = models.CharField(default="Quality", max_length=10, blank=True, null=True)
+    # status = models.BooleanField(default= True)
+    checklist = models.ManyToManyField(CheckList, blank=True)
     def __str__(self):
         return self.name
 
 class SafetyLibrary(models.Model):
-    # TYPE = (('safety','Safety'),)
     safety_id = models.CharField(default=licenseid, max_length=30)
-    date = models.DateField(auto_now_add=True,blank=True, null=True)
-    status = models.BooleanField(default= True)
+    created_at = models.DateField(auto_now_add=True,blank=True, null=True)
     name = models.CharField(max_length=120)
-    quality_type = models.CharField(default="Safety", max_length=10)
+    typee = models.CharField(default="Safety", max_length=10, blank=True, null=True)
+    # status = models.BooleanField(default= True)
+    checklist = models.ManyToManyField(CheckList, blank=True)
     def __str__(self):
         return self.name
 
-class CheckList(models.Model):
-    qid = models.ForeignKey(QualityLibrary, on_delete= models.SET_NULL, null=True, blank=True, )
-    sid = models.ForeignKey(SafetyLibrary, on_delete= models.SET_NULL, null=True, blank=True )
-    checklist_id =  models.CharField(default=licenseid, max_length=30)
-    question = models.TextField()
-    answer = models.CharField(max_length=120)
-    status = models.BooleanField(default=False, blank=True, null=True)
-    def __str__(self):
-        return self.question
 
 class Banner(models.Model):
     name = models.CharField(max_length=30)
