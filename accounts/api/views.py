@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework import views
 import json
+from rest_framework import serializers
 
 from accounts.api.utils import *
 
@@ -158,11 +159,13 @@ class PaymentResponseView(views.APIView):
 from accounts.razorpayment import *
 class PaymentView(views.APIView):
     def post(self, request, *args, **kwargs):
-
         indata = request.data
-        user_details = indata["user_details"]
-        company_details = indata["company_details"]
-        plan_details = indata["plan_details"]
+        user_details = indata.get("user_details",None)
+        company_details = indata.get("company_details", None)
+        plan_details = indata.get("plan_details", None)
+        
+        if user_details == None or company_details==None or plan_details==None:
+            raise serializers.ValidationError("some details are missing")
         amount = float(plan_details["ammount"])
         # cgst = float(indata('cgst'))
         # sgst = float(indata('sgst'))

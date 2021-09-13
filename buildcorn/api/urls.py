@@ -2,43 +2,38 @@ from django.urls import path
 from .views import *
 urlpatterns = [
    
-    ########### user license api's ##################
-    # path('license/list',LicenseListAPIView.as_view()),
-    # path('license/create',LicenseListCreateView.as_view()),
-    # path('license/update/<int:pk>',UpdateLicenseView.as_view()),
-    # path('license/rd/<int:pk>', RDLicenseView.as_view()),
-
-    ###########  quality safety type list view  ##################
-    ###########  check-list api's ##################
-    # path('device/list',DeviceListAPIView.as_view()),
-
-    path('license', LicenseAPIView.as_view()),
 
     path('type/list',QSTypeListAPIView.as_view()),
+    ###########  license url's ##################
+    path('license', LicenseAPIView.as_view()),
+
+    ###########  employee url's ##################
+    path('emp', EmployeeAPIView.as_view()),
+    path('emp/create', EmployeeCreateAPIView.as_view()),
 
 
-    ###########  check-list api's ##################
+    ###########  check-list url's ##################
     path('check/create',CheckListCreateAPIView.as_view()),
     path('check/list',CheckListAPIView.as_view()),
     path('check/rud/<int:pk>',RUDCheckView.as_view()),
 
-    ########### quality assurence  api's ##################
+    ########### quality assurence  url's ##################
     path('quality/list_or_create',QualityListCreateAPIView.as_view()),
     path('quality/rud/<int:pk>',RUDQualityView.as_view()),
 
-    ########### safety assurence  api's ##################
+    ########### safety assurence  url's ##################
     path('safety/list_or_create',SafetyListCreateAPIView.as_view()),
     path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
 
-    ########### banner  api's ##################
+    ########### banner  url's ##################
     path('banner/list_or_create',BannerListCreateAPIView.as_view()),
     path('banner/rud/<int:pk>',RUDBannerView.as_view()),
 
-    ########### faq  api's ##################
+    ########### faq  url's ##################
     path('faq/list_or_create',FAQListCreateAPIView.as_view()),
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 
-    ########### project  api's ##################
+    ########### project  url's ##################
     path('project/list_or_create',ProjectListCreateAPIView.as_view()),
     path('project/rud/<int:pk>',RUDProjectView.as_view()),
     path('project/users',ProjectUsersView.as_view()),

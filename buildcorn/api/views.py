@@ -16,51 +16,7 @@ class IsSuperUser(IsAdminUser):
         print("......",request.user)
         return User.SUPER_ADMIN==request.user.user_type
 
-# """License list api view """
-# class LicenseListAPIView(generics.ListAPIView):
-#     queryset = License.objects.all()
-#     serializer_class = LicenseListSerializer
 
-# """License create api view """
-# class LicenseListCreateView(generics.CreateAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = License.objects.all()
-#     serializer_class = LicenseCreateSerializer
-#     def perform_create(self, serializer):
-#         user= self.request.user
-#         print(user.no_licenses)
-#         try:
-#             user.no_licenses += 1
-#             user.save()
-#         except Exception(e):
-#             print(e)
-#         finally:
-#             serializer.save()
-
-# """License update api view """
-# class UpdateLicenseView(generics.RetrieveUpdateAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = License.objects.all()
-#     serializer_class = LicenseUpdateSerializer
-
-    
-# """License  pecific read delete api view """
-# class RDLicenseView(generics.RetrieveDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = License.objects.all()
-#     serializer_class = LicenseSingleInfoSerializer
-#     def delete(self, request, pk):
-#         licensee = self.queryset.get(id = pk)
-#         licensee.delete()
-#         user = User.objects.get(id = request.user.id)
-#         user.no_licenses -= 1
-#         user.save()
-#         return Response(status=status.HTTP_204_NO_CONTENT) 
-
-# """Device names list api view """
-# class DeviceListAPIView(generics.ListAPIView):
-#     queryset = DeviceName.objects.all()
-#     serializer_class = DeviceSerializer
 
 """License ApiView"""
 
@@ -69,6 +25,22 @@ class LicenseAPIView(generics.ListAPIView):
     queryset = License.objects.all()
     serializer_class = LicenseSerializer
     
+
+"""Employees"""
+
+class EmployeeAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    def get_queryset(self):
+        if self.request.user.user_type == User.TENENT:
+            emp = self.queryset.filter(company__user=self.request.user)
+            return emp
+
+class EmployeeCreateAPIView(generics.CreateAPIView):
+    # permission_classes = (IsAuthenticated,)
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
 
 """Inspection Type  list api view """
 class QSTypeListAPIView(views.APIView):

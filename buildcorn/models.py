@@ -5,17 +5,13 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
 from accounts.models import Company
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 def licenseid():
     return uuid.uuid4().node
 
 User = get_user_model()
-# Create your models here.
-
-# class DeviceName(models.Model):
-#     name = models.CharField(max_length=50)
-#     def __str__(self):
-#         return self.name
 
 class License(models.Model):
     user = models.ForeignKey(User, on_delete = models.CASCADE)
@@ -49,7 +45,16 @@ class License(models.Model):
 
 # post_save.connect(calculate_tenure, sender=License)
 
-# class Employee(models.Model):
+class Employee(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Employee")
+    company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
+    designation = models.CharField(max_length=50, blank=True, null=True)
+    projects = models.ManyToManyField("Project",blank=True, related_name="employee_projects" )
+    created_at = models.DateField(auto_now_add=True, blank=True, null=True)
+    class Meta:
+        ordering = ("-id",)
+    def __str__(self):
+        return f"{self.user.email} is from {self.company.name}"
 
 
 class Project(models.Model):
@@ -64,9 +69,9 @@ class Project(models.Model):
     created_at = models.DateField(auto_now_add=True)
     phase = models.CharField(max_length=50, blank=True, null=True)
     updated_at = models.DateField(auto_now=True, blank=True, null=True)
-    approver = models.ForeignKey(User, related_name="project_approver", on_delete=models.CASCADE)
+    approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
-    employee = models.ManyToManyField(User, related_name="project_employee", blank=True)
+    employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
     typee = models.CharField(choices=PROJECT_TYPES,max_length=10)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     class Meta:
@@ -77,8 +82,6 @@ class Project(models.Model):
 
 
 class CheckList(models.Model):
-    # qid = models.ForeignKey(QualityLibrary, on_delete= models.SET_NULL, null=True, blank=True, )
-    # sid = models.ForeignKey(SafetyLibrary, on_delete= models.SET_NULL, null=True, blank=True )
     checklist_id =  models.CharField(default=licenseid, max_length=30)
     question = models.TextField()
     answer = models.CharField(max_length=120, blank=True, null=True)
