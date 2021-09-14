@@ -46,6 +46,7 @@ class License(models.Model):
 # post_save.connect(calculate_tenure, sender=License)
 
 class Employee(models.Model):
+    eid = models.CharField(default=licenseid, max_length=20)
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Employee")
     company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     designation = models.CharField(max_length=50, blank=True, null=True)

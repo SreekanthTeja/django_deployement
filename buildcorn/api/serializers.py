@@ -47,8 +47,8 @@ class EmployeeSerializer(WritableNestedModelSerializer):
     company = EmployeeCompanySerializer()
     class Meta:
         model = Employee
-        fields = ["id","user","company","designation","projects"]
-        read_only_fields = ["id",]
+        fields = ["id","eid","user","company","designation","projects","created_at"]
+        read_only_fields = ["id","eid","created_at"]
 
 
 
