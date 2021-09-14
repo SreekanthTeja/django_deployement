@@ -143,8 +143,8 @@ class PaymentResponseView(views.APIView):
         data = json.loads(holder_data)
         comp = company_create(payment,data["user_details"],data["company_details"], data["plan_details"])
         # print(comp) 
-        if comp["status"] == "exists":
-            return Response({'status':"Sorry the given  Email or Phone number already used"})
+        # if comp["status"] == "exists":
+        #     return Response({'status':"Sorry the given  Email or Phone number already used"})
         # msg_html = render_to_string('user_invoice_mail.html', {'payment': payment})
         # send_mail(
         #     'Payment Success',
