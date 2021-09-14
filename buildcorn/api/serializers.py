@@ -25,7 +25,7 @@ class LicenseSerializer(serializers.ModelSerializer):
 class EmployeeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "phone_number","id",)
+        fields = ("email","first_name", "phone_number","id",)
 
     def create(self, validated_data):
         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
