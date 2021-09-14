@@ -60,8 +60,8 @@ class EmployeeSerializer(WritableNestedModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        # fields = "__all__"
-        exclude = ("employee",)
+        fields = "__all__"
+        # exclude = ("employee",)
 
 class CheckListSerializer(serializers.ModelSerializer):
     class Meta:

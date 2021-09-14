@@ -34,9 +34,9 @@ def company_create(payment,user, company, plan):
     user.save()
     payment.user = user
     payment.save()
-    contact_person = company.pop("contact_person")
-    contact_person = User.objects.get(id = contact_person)
-    company = Company.objects.create(user= user, contact_person=contact_person, **company)
+    # contact_person = company.pop("contact_person", None)
+    # contact_person = User.objects.get(id = contact_person)
+    company = Company.objects.create(user= user, **company)
     company.license_purchased = plan["license_count"]
     company.save()
     licensee_create(user)
