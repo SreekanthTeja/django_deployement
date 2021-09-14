@@ -2,9 +2,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-
+from rest_framework.response import Response
 from accounts.models import *
+from django.db.models import Q
 User = get_user_model()
+
 
 """ Users  Serializer """
 class UserSerializer(serializers.ModelSerializer):
@@ -48,13 +50,6 @@ class PlanSerializer(serializers.ModelSerializer):
 
     
 
-    
-    
-
-
-
-
-
 class CompanyEmployeeListSerializer(serializers.ModelSerializer):
     employees = UserSerializer(many=True)
     class Meta:
@@ -67,6 +62,33 @@ class ContactPersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id","email",)
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+        def validate(self, attrs):
+            credentials = {
+                'email': '',
+                'password': attrs.get("password")
+            }
+            username = attrs.get("email")
+            password = attrs.get("password")
+            if username is None:
+                raise serializers.ValidationError('Username must required to login')
+            if password is None:
+                raise serializers.ValidationError('Password must required to login')
+            try:
+                user = authenticate(username=username, password= password)
+                print(user)
+                credentials['email'] = user.email
+            except User.DoesNotExist:
+                raise serializers.ValidationError('In-valid username or password')
+            data = super().validate(credentials)
+            data['email'] = user.email
+            data["first_name"] = user.first_name
+            data['role'] = user.user_type
+            return data
+            
+        
 
 
     

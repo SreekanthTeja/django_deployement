@@ -12,7 +12,7 @@ class ModelBackend(backends.ModelBackend):
             # print(username)
         try:
             # print(username)
-            user = User.objects.get(Q(email__iexact=username))
+            user = User.objects.get(Q(email__iexact=username) | Q(phone_number__iexact=username))
             # print(user, password)
         except User.DoesNotExist:
             User().set_password(password)

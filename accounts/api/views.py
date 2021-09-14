@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework import views
 import json
 from rest_framework import serializers
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from accounts.api.utils import *
 
@@ -19,6 +20,8 @@ class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
         return request.user.user_type==User.SUPER_ADMIN
 
+
+    
         
 # class CompanyRDView(generics.RetrieveDestroyAPIView):
 #     queryset = Company.objects.all()
