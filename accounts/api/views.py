@@ -117,8 +117,6 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
 class PlanListView(generics.ListAPIView):
     queryset = Plan.objects.all()
     serializer_class = PlanSerializer
-    # def get(self, request):
-    #     print(request.get_full_)
     
     
 """Company apis end"""

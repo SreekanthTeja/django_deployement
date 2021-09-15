@@ -28,8 +28,8 @@ class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializ
     user = UserSerializer()
     class Meta:
         model = Company
-        fields = ("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres",)
-        read_only_fields = ("id",'company_id',"status")
+        fields = ("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
+        read_only_fields = ("id",'company_id',"status","license_purchased")
     
     
 
@@ -85,13 +85,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             
             finally:
                 data = super().validate(credentials)
-                company_id = Company.objects.get(user__email=user.email)
-                # print(">>>",company_id.id)
-                # print("lllll",data)
+                try:
+                    company_id = Company.objects.get(user__email=user.email)
+                    if company_id:
+                        data['email'] = user.email
+                        data["first_name"] = user.first_name
+                        data['role'] = user.user_type
+                        data["company_id"] = company_id.id
+                        return data
+                except Exception as e:
+                    pass
                 data['email'] = user.email
                 data["first_name"] = user.first_name
                 data['role'] = user.user_type
-                data["company_id"] = company_id.id
                 return data
             
 

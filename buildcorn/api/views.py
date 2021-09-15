@@ -13,9 +13,13 @@ User = get_user_model()
 
 class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
-        print("......",request.user)
+        # print("......",request.user)
         return User.SUPER_ADMIN==request.user.user_type
 
+class IsTenentUser(IsAdminUser):
+    def has_permission(self, request, view):
+        # print("......",request.user)
+        return User.TENENT==request.user.user_type
 
 
 """License ApiView"""
@@ -26,10 +30,10 @@ class LicenseAPIView(generics.ListAPIView):
     serializer_class = LicenseSerializer
     
 
-"""Employees"""
+"""Employees start"""
 
 class EmployeeAPIView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     def get_queryset(self):
@@ -38,9 +42,31 @@ class EmployeeAPIView(generics.ListAPIView):
             return emp
 
 class EmployeeCreateAPIView(generics.CreateAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeCreateSerializer
+
+class RDEmployeeAPIView(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    def get_queryset(self):
+        if self.request.user.user_type == User.TENENT:
+            emp = self.queryset.filter(company__user=self.request.user)
+            return emp
+
+class EmployeeUpdateView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated, IsTenentUser)
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeUpdateSerializer
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+"""Employees ends"""
 
 """Inspection Type  list api view """
 class QSTypeListAPIView(views.APIView):
@@ -51,45 +77,62 @@ class QSTypeListAPIView(views.APIView):
 
 
 
-"""Projects adding and listing  """
-class ProjectListCreateAPIView(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated,)
+"""Projects Starts """
+class ProjectCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectCreateSerializer
     def perform_create(self, serializer):
         print(self.request.user)
         company = Company.objects.get(user__email=self.request.user)
         print(company)
         serializer.save(company=company)
 
-
-
-"""Projects read, update, delete api view """
-class RUDProjectView(generics.RetrieveUpdateDestroyAPIView):
+class ProjectListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-
-class ProjectUsersView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectListSerializer
     def get_queryset(self):
+        q = self.queryset.filter(company__user=self.request.user)
+        print('>>>>>',q)
+        return q
+"""Projects read, delete api view """
+class RUDProjectView(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Project.objects.all()
+    serializer_class = ProjectListSerializer
 
-        print(self.request.user)
-        company = Company.objects.get(user__email=self.request.user)
+class ProjectUpdateView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated, IsTenentUser)
+    queryset = Project.objects.all()
+    serializer_class = ProjectCreateSerializer
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+"""Projects Ends """
+
 
 
 
 
 """Quality list create api view """
-class QualityListCreateAPIView(generics.ListCreateAPIView):
+class QualityCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = QualityLibrary.objects.all()
-    serializer_class = QualitySerializer
+    serializer_class = QualityCreateSerializer
 
+class QualityListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = QualityLibrary.objects.all()
+    serializer_class = QualityListSerializer
 """Quality read, update, delete api view """
 class RUDQualityView(generics.RetrieveUpdateDestroyAPIView):
     queryset = QualityLibrary.objects.all()
-    serializer_class = QualitySerializer
+    serializer_class = RUDQualitySerializer
 
 
 """Safety list create api view """
@@ -105,7 +148,7 @@ class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
 
 """Checklist list create for super_admin only"""
 class CheckListCreateAPIView(generics.CreateAPIView):
-    # permission_classes = (IsSuperUser,IsAuthenticated,)
+    permission_classes = (IsSuperUser,IsAuthenticated)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 
@@ -113,11 +156,12 @@ class CheckListCreateAPIView(generics.CreateAPIView):
 
 
 class CheckListAPIView(generics.ListAPIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 """Checklist read, update, delete"""
 class RUDCheckView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
 

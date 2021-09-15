@@ -47,7 +47,7 @@ class License(models.Model):
 
 class Employee(models.Model):
     eid = models.CharField(default=licenseid, max_length=20)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Employee")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Employee", blank=True, null=True)
     company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     designation = models.CharField(max_length=50, blank=True, null=True)
     projects = models.ManyToManyField("Project",blank=True, related_name="employee_projects" )
@@ -73,7 +73,7 @@ class Project(models.Model):
     approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
     employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
-    typee = models.CharField(choices=PROJECT_TYPES,max_length=10)
+    typee = models.CharField(choices=PROJECT_TYPES,max_length=10, blank=True, null=True)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     class Meta:
         ordering = ("-id",)

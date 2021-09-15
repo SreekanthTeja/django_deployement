@@ -25,7 +25,7 @@ class LicenseSerializer(serializers.ModelSerializer):
 class EmployeeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email","first_name", "phone_number","id",)
+        fields = ("email","first_name","id",)
 
     def create(self, validated_data):
         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
@@ -42,35 +42,63 @@ class EmployeeCompanySerializer(serializers.ModelSerializer):
         company.save()
         return company
 
+class EmployeeProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ["id","name"]
 class EmployeeSerializer(WritableNestedModelSerializer):
+    user = EmployeeUserSerializer()
+    company = EmployeeCompanySerializer()
+    projects = EmployeeProjectSerializer(many=True)
+    class Meta:
+        model = Employee
+        fields = ["id","eid","user","company","designation","projects","created_at","projects"]
+        read_only_fields = ["id","eid","created_at","projects"]
+class EmployeeCreateSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
     company = EmployeeCompanySerializer()
     class Meta:
         model = Employee
-        fields = ["id","eid","user","company","designation","projects","created_at"]
+        fields = ["id","eid","user","company","designation","projects","created_at",]
         read_only_fields = ["id","eid","created_at"]
 
-
-
+class EmployeeUpdateSerializer(WritableNestedModelSerializer):
+    class Meta:
+        model = Employee
+        # fields = ["id","eid","user","company","designation","projects","created_at"]
+        # read_only_fields = ["id","eid","created_at"]
+        exclude = ["user"]
 
     # def create(self, validated_data):
 
 """Employee serializer ends"""
 
-class ProjectSerializer(serializers.ModelSerializer):
+"""Project serializer starts"""
+class ApproverSerializer(serializers.ModelSerializer):
+    user = EmployeeUserSerializer()
+    class Meta:
+        model=Employee
+        fields = ("id","user",)
+class ProjectListSerializer(serializers.ModelSerializer):
+    approver = ApproverSerializer()
+    employee = ApproverSerializer(many=True)
     class Meta:
         model = Project
         fields = "__all__"
-        # exclude = ("employee",)
+class ProjectCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+"""Project serializer ends"""
 
 class CheckListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
-        fields = "__all__" 
+        fields = ["id","checklist_id","question","answer","status"] 
         read_only_fields = ( "id","checklist_id",)
 
     def create(self, validated_data):
-        quality = QualityLibrary.objects.get(id=self.initial_data["quality_id"])
+        quality = QualityLibrary.objects.get(id=self.initial_data["qid"])
         checklist = CheckList.objects.create(**validated_data)
         checklist.save()
         quality.checklist.add(checklist)
@@ -80,13 +108,26 @@ class CheckListSerializer(serializers.ModelSerializer):
     # def update(self, instance, validated_data):
     #     print(instance)
 
-class QualitySerializer(serializers.ModelSerializer):
-    checklist = CheckListSerializer(many =True)
+
+"""Quality starts"""
+class QualityCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = QualityLibrary
         fields = "__all__" 
         read_only_fields = ('quality_id',"id",)
+class QualityListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = QualityLibrary
+        fields = ('quality_id',"id","name","checklist",) 
+        read_only_fields = ('quality_id',"id","checklist")
 
+class RUDQualitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QualityLibrary
+        fields = ("id","name")
+        read_only_fields = ("id",)
+"""Quality ends"""
 
 class SafetySerializer(serializers.ModelSerializer):
     class Meta:

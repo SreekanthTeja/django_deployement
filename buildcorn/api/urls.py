@@ -10,6 +10,8 @@ urlpatterns = [
     ###########  employee url's ##################
     path('emp', EmployeeAPIView.as_view()),
     path('emp/create', EmployeeCreateAPIView.as_view()),
+    path('emp/update/<int:pk>', EmployeeUpdateView.as_view()),
+    path('emp/rd/<int:pk>', RDEmployeeAPIView.as_view()),
 
 
     ###########  check-list url's ##################
@@ -18,7 +20,8 @@ urlpatterns = [
     path('check/rud/<int:pk>',RUDCheckView.as_view()),
 
     ########### quality assurence  url's ##################
-    path('quality/list_or_create',QualityListCreateAPIView.as_view()),
+    path('quality/create',QualityCreateAPIView.as_view()),
+    path('quality/list',QualityListAPIView.as_view()),
     path('quality/rud/<int:pk>',RUDQualityView.as_view()),
 
     ########### safety assurence  url's ##################
@@ -34,8 +37,9 @@ urlpatterns = [
     path('faq/rud/<int:pk>',RUDFAQView.as_view()),
 
     ########### project  url's ##################
-    path('project/list_or_create',ProjectListCreateAPIView.as_view()),
-    path('project/rud/<int:pk>',RUDProjectView.as_view()),
-    path('project/users',ProjectUsersView.as_view()),
+    path('project/create',ProjectCreateAPIView.as_view()),
+    path('project/list',ProjectListAPIView.as_view()),
+    path('project/rd/<int:pk>',RUDProjectView.as_view()),
+    path('project/update/<int:pk>', ProjectUpdateView.as_view())
 ]
 
