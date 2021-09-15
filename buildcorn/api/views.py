@@ -133,7 +133,9 @@ class QualityListAPIView(generics.ListAPIView):
 class RUDQualityView(generics.RetrieveUpdateDestroyAPIView):
     queryset = QualityLibrary.objects.all()
     serializer_class = RUDQualitySerializer
-
+class QualityCheckListView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = QualityLibrary.objects.all()
+    serializer_class = QualityCheckListSerializer
 
 """Safety list create api view """
 class SafetyListCreateAPIView(generics.ListCreateAPIView):

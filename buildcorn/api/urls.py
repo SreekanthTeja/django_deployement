@@ -23,6 +23,7 @@ urlpatterns = [
     path('quality/create',QualityCreateAPIView.as_view()),
     path('quality/list',QualityListAPIView.as_view()),
     path('quality/rud/<int:pk>',RUDQualityView.as_view()),
+    path('quality/checklist/<int:pk>',QualityCheckListView.as_view()),
 
     ########### safety assurence  url's ##################
     path('safety/list_or_create',SafetyListCreateAPIView.as_view()),

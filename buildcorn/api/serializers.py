@@ -127,6 +127,13 @@ class RUDQualitySerializer(serializers.ModelSerializer):
         model = QualityLibrary
         fields = ("id","name")
         read_only_fields = ("id",)
+
+class QualityCheckListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = QualityLibrary
+        fields = ("id","checklist",) 
+        read_only_fields = ("id","checklist")
 """Quality ends"""
 
 class SafetySerializer(serializers.ModelSerializer):
