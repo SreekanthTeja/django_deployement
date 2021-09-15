@@ -131,9 +131,11 @@ class QualityListAPIView(generics.ListAPIView):
     serializer_class = QualityListSerializer
 """Quality read, update, delete api view """
 class RUDQualityView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = QualityLibrary.objects.all()
     serializer_class = RUDQualitySerializer
-class QualityCheckListView(generics.RetrieveUpdateDestroyAPIView):
+class QualityCheckListView(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = QualityLibrary.objects.all()
     serializer_class = QualityCheckListSerializer
 

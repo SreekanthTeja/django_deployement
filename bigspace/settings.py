@@ -23,10 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+# SECRET_KEY = os.getenv('SECRET_KEY')]
+SECRET_KEY = 'django-insecure-z3=5f(3vlz#pw2sw_6or9vzi%=7f!)1#fh-4bsu@%88vrvzryb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,27 +89,19 @@ WSGI_APPLICATION = 'bigspace.wsgi.application'
 
 if DEBUG:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        },
-        # 'super_admin':{
+        # 'default': {
         #     'ENGINE': 'django.db.backends.sqlite3',
         #     'NAME': BASE_DIR / 'db.sqlite3',
-        # }
-
-    }
-else:
-    DATABASES = {
+        # },
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'djnago',
-            'USER': 'root',
-            'PASSWORD': 'rootroot',
-            'HOST': 'localhost',
-            'PORT': '3306',
-        }
+            'OPTIONS': {
+                'read_default_file': '/etc/buildcron/buildcron.cnf',
+            }
+        },
+
     }
+
 
 
 
