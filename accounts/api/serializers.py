@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework.response import Response
+from rest_framework.parsers import ParseError
 from accounts.models import *
 from django.db.models import Q
 User = get_user_model()
@@ -29,19 +30,15 @@ class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializ
     class Meta:
         model = Company
         fields = ("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
-        read_only_fields = ("id",'company_id',"status","license_purchased")
-    
-    
-
-    
+        read_only_fields = ("id",'company_id',"status",)
     
     
 class CompanyUpdateSerializer(WritableNestedModelSerializer):
     user = UserSerializer()
     class Meta:
         model = Company
-        fields = "__all__"
-        read_only_fields = ("id",'company_id',)
+        fields =("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
+        read_only_fields = ("id",'company_id',"status")
 
 class PlanSerializer(serializers.ModelSerializer):
     class Meta:
@@ -100,5 +97,27 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 data['role'] = user.user_type
                 return data
             
-
+"""Password reset"""
+import re
+class ResetPasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True, max_length=128)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
+# class ForgotPasswordAPIView(views.APIView):
+#     queryset = User.objects.all()
+#     def get_queryset(self,queryset,email):
+#         user_object = queryset.filter(email=email["email"])
+#         if user_object:
+#             for obj in user_object:
+#                 if obj.email:
+#                     return {"email":obj.email, "status":True}
+#         else:
+#             return {"email":"Sorry No email found", "status":False}
+#     def get(self, request,**kwargs):
+#         email = {"email":str(kwargs["email"])}
+#         queryset = self.get_queryset(self.queryset, email)
+#         if queryset["status"] == True:
+#             return Response(queryset, status=status.HTTP_200_OK)
+#         else:
+#             return Response(queryset, status=status.HTTP_400_BAD_REQUEST)
     

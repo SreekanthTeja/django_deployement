@@ -171,21 +171,25 @@ class RUDCheckView(generics.RetrieveUpdateDestroyAPIView):
 
 """Banner list create"""
 class BannerListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
     
 """Banner read, update, delete"""
 class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Banner.objects.all()
     serializer_class = BannerSerializer
 
 """FAQ list create"""
 class FAQListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
     
 """FAQ read, update, delete"""
 class RUDFAQView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
 

@@ -21,35 +21,6 @@ class IsSuperUser(IsAdminUser):
         return request.user.user_type==User.SUPER_ADMIN
 
 
-    
-        
-# class CompanyRDView(generics.RetrieveDestroyAPIView):
-#     queryset = Company.objects.all()
-#     serializer_class = CompanySerializer
-
-# class EmployeeSignup(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     def create(self, request, **kwargs):
-#         cid = kwargs["cid"]
-#         user = User.objects.create_user(**request.data)
-#         company = Company.objects.filter(company_id= cid)
-#         print(company)
-#         company[0].employees.add(user.id)
-#         return Response({"status":"Successfull registerd"})
-# class EmployeeListAPIView(generics.RetrieveAPIView):
-#     queryset = Company.objects.all()
-#     serializer_class = CompanyEmployeeListSerializer
-#     lookup_field = "company_id"
-    
-# class ContactPersonAPIView(generics.ListAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = ContactPersonSerializer
-
-#     def get_queryset(self):
-#         user = self.queryset.filter(user_type=User.SUPER_ADMIN)
-#         return user
-
 
 """
     SuperUsers list
@@ -78,23 +49,21 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CompanyUpdateSerializer
     def update(self, request, *args, **kwargs):
         data = request.data
-        try:
-            if data["user"]["id"]:
-                user_instance = User.objects.get(id= data["user"]["id"])
-                if "email" in data["user"]:
-                    user_instance.email = data["user"]["email"]
-                if "first_name" in data["user"]:
-                    user_instance.first_name = data["user"]["first_name"]
-                if "phone_number" in data["user"]:
-                    user_instance.first_name = data["user"]["phone_number"]
-                user_instance.save()
-
-        except Exception as e:
-            return Response({"status":"user object id required"})
-        
+        # print(data["user"]["id"])
+        if not data["user"].get("id"):
+            print(True)
+            raise serializers.ValidationError({'error':'user object id  required'})
+        user_instance = User.objects.get(id= data["user"].get("id"))
+        print(user_instance)
+        if "email" in data["user"]:
+            user_instance.email = data["user"].get("email")
+        if "first_name" in data["user"]:
+            user_instance.first_name = data["user"].get("first_name")
+        if "phone_number" in data["user"]:
+            user_instance.first_name = data["user"].get("phone_number")
+        user_instance.save()
         company_instance = self.get_object()
         try:
-
             if "user" in data :
                 company_instance.user = user_instance
             if "name" in data :
@@ -104,16 +73,21 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
             if "state" in data :
                 company_instance.state= data["state"]
             if "city" in data :
-                company_instance.state= data["city"]
+                company_instance.city= data["city"]
             if "pincode" in data :
-                company_instance.state= data["pincode"]
+                company_instance.pincode= data["pincode"]
             if "addres" in data :
-                company_instance.state= data["addres"]
+                company_instance.addres= data["addres"]
+            if "license_purchased" in data :
+                company_instance.license_purchased= data["license_purchased"]
             company_instance.save()
             return Response({'status':"Updated"})
         except Exception as e:
             pass
-            
+    def delete(self, request, pk):
+        user = User.objects.get(id=pk).delete()
+        return Response({'status':'Deleted'})
+
 class PlanListView(generics.ListAPIView):
     queryset = Plan.objects.all()
     serializer_class = PlanSerializer
@@ -157,8 +131,6 @@ class PaymentResponseView(views.APIView):
             "detail": "Payment success",
         }
         return Response(context)
-
-
 
 from accounts.razorpayment import *
 class PaymentView(views.APIView):
@@ -205,3 +177,25 @@ class PaymentView(views.APIView):
             'status': payment.status,
             'payment_id': payment.payment_id
         })
+
+class RestPasswordAPIView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = ResetPasswordSerializer
+    queryset = User.objects.all()
+    lookup_field = 'email'
+    def update(self, request,*args, **kwargs):
+        password = request.data.get('old_password')
+        instance = self.get_object()
+        if not User.objects.filter(email=request.user).exists():
+            raise serializers.ValidationError({"error":"We couldnt find this email in our database"})
+        if not  instance.check_password(password):
+            raise serializers.ValidationError({'status':'Old password is wrong'})
+        if len(request.data["new_password"]) < 8:
+            raise serializers.ValidationError({"error":"Password must be min 8 characters"})
+        if request.data["new_password"] != request.data["confirm_new_password"]:
+            raise serializers.ValidationError({"error":"Two password didn't match"})
+        password = request.data.get('confirm_new_password') 
+
+        instance.set_password(password)
+        instance.save()
+        return Response({"status":'Password reset done successfully'})

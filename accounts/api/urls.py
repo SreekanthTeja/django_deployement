@@ -12,4 +12,6 @@ urlpatterns = [
     path('plans',PlanListView.as_view()),
     path('payment/request', PaymentView.as_view()),
     path('payment/success', PaymentResponseView.as_view()),
+
+    path('password/<str:email>/reset',RestPasswordAPIView.as_view()),
 ]
