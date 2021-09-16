@@ -98,26 +98,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 return data
             
 """Password reset"""
-import re
+
 class ResetPasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=True, max_length=128)
+    old_password = serializers.CharField(required=False)
     new_password = serializers.CharField(required=True)
     confirm_new_password = serializers.CharField(required=True)
-# class ForgotPasswordAPIView(views.APIView):
-#     queryset = User.objects.all()
-#     def get_queryset(self,queryset,email):
-#         user_object = queryset.filter(email=email["email"])
-#         if user_object:
-#             for obj in user_object:
-#                 if obj.email:
-#                     return {"email":obj.email, "status":True}
-#         else:
-#             return {"email":"Sorry No email found", "status":False}
-#     def get(self, request,**kwargs):
-#         email = {"email":str(kwargs["email"])}
-#         queryset = self.get_queryset(self.queryset, email)
-#         if queryset["status"] == True:
-#             return Response(queryset, status=status.HTTP_200_OK)
-#         else:
-#             return Response(queryset, status=status.HTTP_400_BAD_REQUEST)
-    

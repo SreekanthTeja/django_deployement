@@ -184,12 +184,13 @@ class RestPasswordAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     lookup_field = 'email'
     def update(self, request,*args, **kwargs):
-        password = request.data.get('old_password')
         instance = self.get_object()
         if not User.objects.filter(email=request.user).exists():
             raise serializers.ValidationError({"error":"We couldnt find this email in our database"})
-        if not  instance.check_password(password):
+        password = request.data.get('old_password',None)
+        if password and not instance.check_password(password):
             raise serializers.ValidationError({'status':'Old password is wrong'})
+
         if len(request.data["new_password"]) < 8:
             raise serializers.ValidationError({"error":"Password must be min 8 characters"})
         if request.data["new_password"] != request.data["confirm_new_password"]:
