@@ -114,8 +114,9 @@ from datetime import timedelta
 current_time = timezone.now()
 class OTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp = models.PositiveSmallIntegerField(blank=True, null=True)
+    otp = models.PositiveIntegerField(blank=True, null=True)
     expiry = models.DateTimeField(default=timezone.now() + timedelta(hours=1), blank=True, null=True)
+    validated = models.BooleanField(default=False, blank=True, null=True)
     def __str__(self):
         return self.user.email
 

@@ -31,10 +31,7 @@ class EmployeeUserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
         user.save()
         return user
-class EmployeeUpdateUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("email","first_name","phone_number","id",)
+
     
 
 class EmployeeCompanySerializer(serializers.ModelSerializer):
@@ -67,34 +64,11 @@ class EmployeeCreateSerializer(WritableNestedModelSerializer):
         model = Employee
         fields = ["id","eid","user","company","designation","created_at",]
         read_only_fields = ["id","eid","created_at","company"]
-
-# class EmployeeUpdateSerializer(serializers.ModelSerializer):
-#     user = EmployeeUpdateUserSerializer()
-#     company = EmployeeCompanySerializer(required=False)
-#     class Meta:
-#         model = Employee
-#         fields = ["id","eid","company","user","designation","created_at"]
-#         read_only_fields = ["id","eid","company","created_at"]
-#     def update(self, instance,validated_data):
-#         user_obj = validated_data.pop("user")
-#         print(user_obj)
-#         # print(user_obj.get("id"))
-#         # u = User.objects.get(id=user_obj.get('id'))
-#         # print(u)
-#         user.email = user_obj.get('email',None)
-#         user.phone_number = user_obj.get('phone_number',None)
-#         user.first_name = user_obj.get('first_name',None)
-#         # designation = validated_data.get('designation',None)
-        
-#         instance.save()
-#         return instance
-        
-
-        # return user
-
-        # exclude = ["user"]
-
-    # def create(self, validated_data):
+class EmployeeRUDUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id","email","first_name","phone_number","is_active")
+        read_only_fields = ["id",]
 
 """Employee serializer ends"""
 

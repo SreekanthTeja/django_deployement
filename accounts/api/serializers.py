@@ -11,11 +11,6 @@ User = get_user_model()
 
 """ Users  Serializer """
 
-class UserUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("id","client_id","first_name","email","phone_number",)
-        read_only_fields = ("client_id","id",)
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
@@ -114,6 +109,9 @@ class ForgotPasswordSerializer(serializers.Serializer):
     email=serializers.EmailField(required=True)
     new_password = serializers.CharField(required=True)
     confirm_new_password = serializers.CharField(required=True)
+
+
+
 
 
 

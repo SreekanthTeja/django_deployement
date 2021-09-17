@@ -21,6 +21,10 @@ class IsTenentUser(IsAdminUser):
         # print("......",request.user)
         return User.TENENT==request.user.user_type
 
+class IsTenentOrUser(IsAdminUser):
+    def has_permission(self, request, view):
+        print("......",request.user)
+        return  request.user.user_type=='TN'
 
 """License ApiView"""
 
@@ -66,17 +70,11 @@ class RDEmployeeAPIView(generics.RetrieveDestroyAPIView):
         user = User.objects.get(id=pk).delete()
         return Response({'status':'Deleted'})
 
-# class EmployeeUpdateView(generics.UpdateAPIView):
-#     permission_classes = (IsAuthenticated, IsTenentUser)
-#     queryset = Employee.objects.all()
-#     serializer_class = EmployeeUpdateSerializer
-#     def update(self, request, *args, **kwargs):
-#         partial = kwargs.pop('partial', False)
-#         instance = self.get_object()
-#         serializer = self.get_serializer(instance, data=request.data, partial=partial)
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_update(serializer)
-#         return Response(serializer.data)
+    
+class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = User.objects.all()
+    serializer_class = EmployeeRUDUserSerializer
 """Employees ends"""
 
 """Inspection Type  list api view """

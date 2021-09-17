@@ -11,7 +11,7 @@ urlpatterns = [
     path('emp', EmployeeAPIView.as_view()),
     path('emp/create', EmployeeCreateAPIView.as_view()),
     
-    path('emp/rd/<int:pk>', RDEmployeeAPIView.as_view()),
+    path('emp/rud/<int:pk>', EmpRUDView.as_view()),
 
 
     ###########  check-list url's ##################
