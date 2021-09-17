@@ -46,7 +46,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f"{self.email}"
+        return self.email
 """Here plans is License"""
 class Plan(models.Model):
     name = models.CharField(max_length=50, default="Annual Plan")
@@ -76,7 +76,7 @@ class Company(models.Model):
         ordering = ("-id",)
         
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 class Payment(models.Model):
     PAYMENT_DONE = 1
@@ -109,10 +109,13 @@ class Payment(models.Model):
     # def __str__(self):
     #     return self.payment_id
 
+from django.utils import timezone
+from datetime import timedelta
+current_time = timezone.now()
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp = models.PositiveSmallIntegerField(blank=True, null=True)
+    expiry = models.DateTimeField(default=timezone.now() + timedelta(hours=1), blank=True, null=True)
+    def __str__(self):
+        return self.user.email
 
-
-
-# def send_email_to_admin(sender, instance, **kwargs):
-#     if not instance.username:
-#         instance.username = uuid.uuid4().node
-# pre_save.connect(set_username, sender=User)

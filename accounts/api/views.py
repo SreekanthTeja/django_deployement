@@ -14,13 +14,17 @@ from rest_framework import serializers
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from accounts.api.utils import *
+from buildcorn.models import Employee
 
 User = get_user_model()
 class IsSuperUser(IsAdminUser):
     def has_permission(self, request, view):
         return request.user.user_type==User.SUPER_ADMIN
 
-
+class IsTenentOrUser(IsAdminUser):
+    def has_permission(self, request, view):
+        print("......",request.user)
+        return  request.user.user_type=='TN'
 
 """
     SuperUsers list
@@ -200,3 +204,44 @@ class RestPasswordAPIView(generics.UpdateAPIView):
         instance.set_password(password)
         instance.save()
         return Response({"status":'Password reset done successfully'})
+
+
+class ForgotPasswordAPIView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ForgotPasswordSerializer
+    lookup_field = 'email'
+    def update(self, request,*args, **kwargs):
+        instance = self.get_object()
+        print(instance)
+        # if not User.objects.filter(email=request.user).exists():
+        #     raise serializers.ValidationError({"error":"We couldnt find this email in our database"})
+        # password = request.data.get('old_password',None)
+        # if password and not instance.check_password(password):
+        #     raise serializers.ValidationError({'status':'Old password is wrong'})
+
+        # if len(request.data["new_password"]) < 8:
+        #     raise serializers.ValidationError({"error":"Password must be min 8 characters"})
+        # if request.data["new_password"] != request.data["confirm_new_password"]:
+        #     raise serializers.ValidationError({"error":"Two password didn't match"})
+        # password = request.data.get('confirm_new_password') 
+
+        # instance.set_password(password)
+        # instance.save()
+        # return Response({"status":'Password reset done successfully'})
+
+
+class UserUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = User.objects.all()
+    serializer_class = UserUpdateSerializer
+
+from django.utils import timezone
+from datetime import timedelta, datetime
+# dt = datetime.today().replace(microsecond=0)
+class Test(views.APIView):
+    def get(self, request):
+        current_time = timezone.now() + timedelta(hours=1)
+        print(current_time)
+        return Response("ok")
+
+

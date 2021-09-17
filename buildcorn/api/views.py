@@ -45,6 +45,14 @@ class EmployeeCreateAPIView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Employee.objects.all()
     serializer_class = EmployeeCreateSerializer
+    
+    def perform_create(self, serializer):
+        comp = Company.objects.get(user__email=self.request.user)
+        print(serializer)
+        serializer.save(company=comp)
+    
+
+
 
 class RDEmployeeAPIView(generics.RetrieveDestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
@@ -54,18 +62,21 @@ class RDEmployeeAPIView(generics.RetrieveDestroyAPIView):
         if self.request.user.user_type == User.TENENT:
             emp = self.queryset.filter(company__user=self.request.user)
             return emp
+    def delete(self, request, pk):
+        user = User.objects.get(id=pk).delete()
+        return Response({'status':'Deleted'})
 
-class EmployeeUpdateView(generics.UpdateAPIView):
-    permission_classes = (IsAuthenticated, IsTenentUser)
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeUpdateSerializer
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+# class EmployeeUpdateView(generics.UpdateAPIView):
+#     permission_classes = (IsAuthenticated, IsTenentUser)
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeUpdateSerializer
+#     def update(self, request, *args, **kwargs):
+#         partial = kwargs.pop('partial', False)
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance, data=request.data, partial=partial)
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_update(serializer)
+#         return Response(serializer.data)
 """Employees ends"""
 
 """Inspection Type  list api view """

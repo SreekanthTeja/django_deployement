@@ -10,7 +10,7 @@ urlpatterns = [
     ###########  employee url's ##################
     path('emp', EmployeeAPIView.as_view()),
     path('emp/create', EmployeeCreateAPIView.as_view()),
-    path('emp/update/<int:pk>', EmployeeUpdateView.as_view()),
+    
     path('emp/rd/<int:pk>', RDEmployeeAPIView.as_view()),
 
 

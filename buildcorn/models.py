@@ -55,7 +55,7 @@ class Employee(models.Model):
     class Meta:
         ordering = ("-id",)
     def __str__(self):
-        return f"{self.user.email} is from {self.company.name}"
+        return self.user.email
 
 
 class Project(models.Model):
