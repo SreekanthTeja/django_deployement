@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import views
 from .serializers import *
@@ -7,20 +6,15 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
-from rest_framework import views
 import json
 from rest_framework import serializers
-from rest_framework_simplejwt.views import TokenObtainPairView
 import random
 from accounts.tasks import  send_otp
 from accounts.api.utils import *
 from buildcorn.models import Employee
+from bigspace.permissions import *
 
 User = get_user_model()
-class IsSuperUser(IsAdminUser):
-    def has_permission(self, request, view):
-        return request.user.user_type==User.SUPER_ADMIN
 
 
 
@@ -49,46 +43,47 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Company.objects.all()
     serializer_class = CompanyUpdateSerializer
-    def update(self, request, *args, **kwargs):
-        data = request.data
-        # print(data["user"]["id"])
-        if not data["user"].get("id"):
-            print(True)
-            raise serializers.ValidationError({'error':'user object id  required'})
-        user_instance = User.objects.get(id= data["user"].get("id"))
-        print(user_instance)
-        if "email" in data["user"]:
-            user_instance.email = data["user"].get("email")
-        if "first_name" in data["user"]:
-            user_instance.first_name = data["user"].get("first_name")
-        if "phone_number" in data["user"]:
-            user_instance.first_name = data["user"].get("phone_number")
-        user_instance.save()
-        company_instance = self.get_object()
-        try:
-            if "user" in data :
-                company_instance.user = user_instance
-            if "name" in data :
-                company_instance.name= data["name"]
-            if "gstin" in data :
-                company_instance.gstin= data["gstin"]
-            if "state" in data :
-                company_instance.state= data["state"]
-            if "city" in data :
-                company_instance.city= data["city"]
-            if "pincode" in data :
-                company_instance.pincode= data["pincode"]
-            if "addres" in data :
-                company_instance.addres= data["addres"]
-            if "license_purchased" in data :
-                company_instance.license_purchased= data["license_purchased"]
-            company_instance.save()
-            return Response({'status':"Updated"})
-        except Exception as e:
-            pass
     def delete(self, request, pk):
         user = User.objects.get(id=pk).delete()
         return Response({'status':'Deleted'})
+    # def update(self, request, *args, **kwargs):
+    #     data = request.data
+    #     # print(data["user"]["id"])
+    #     if not data["user"].get("id"):
+    #         print(True)
+    #         raise serializers.ValidationError({'error':'user object id  required'})
+    #     user_instance = User.objects.get(id= data["user"].get("id"))
+    #     print(user_instance)
+    #     if "email" in data["user"]:
+    #         user_instance.email = data["user"].get("email")
+    #     if "first_name" in data["user"]:
+    #         user_instance.first_name = data["user"].get("first_name")
+    #     if "phone_number" in data["user"]:
+    #         user_instance.first_name = data["user"].get("phone_number")
+    #     user_instance.save()
+    #     company_instance = self.get_object()
+    #     try:
+    #         if "user" in data :
+    #             company_instance.user = user_instance
+    #         if "name" in data :
+    #             company_instance.name= data["name"]
+    #         if "gstin" in data :
+    #             company_instance.gstin= data["gstin"]
+    #         if "state" in data :
+    #             company_instance.state= data["state"]
+    #         if "city" in data :
+    #             company_instance.city= data["city"]
+    #         if "pincode" in data :
+    #             company_instance.pincode= data["pincode"]
+    #         if "addres" in data :
+    #             company_instance.addres= data["addres"]
+    #         if "license_purchased" in data :
+    #             company_instance.license_purchased= data["license_purchased"]
+    #         company_instance.save()
+    #         return Response({'status':"Updated"})
+    #     except Exception as e:
+    #         pass
+    
 
 class PlanListView(generics.ListAPIView):
     queryset = Plan.objects.all()

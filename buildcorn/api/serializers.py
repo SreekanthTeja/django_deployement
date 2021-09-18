@@ -25,7 +25,7 @@ class LicenseSerializer(serializers.ModelSerializer):
 class EmployeeUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email","first_name","phone_number","id",)
+        fields = ("email","first_name","phone_number","id","is_active")
 
     def create(self, validated_data):
         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
@@ -52,10 +52,11 @@ class EmployeeProjectSerializer(serializers.ModelSerializer):
 class EmployeeSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
     company = EmployeeCompanySerializer()
-    projects = EmployeeProjectSerializer(many=True)
+    projects = EmployeeProjectSerializer(required=False,many=True)
     class Meta:
         model = Employee
-        fields = ["id","eid","user","company","designation","projects","created_at",]
+        fields = ["id","eid","user","company","designation","created_at","projects"]
+        depth = 3
         read_only_fields = ["id","eid","created_at","projects"]
 class EmployeeCreateSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
@@ -134,12 +135,30 @@ class QualityCheckListSerializer(serializers.ModelSerializer):
         fields = ("id","checklist",) 
         read_only_fields = ("id","checklist")
 """Quality ends"""
-
-class SafetySerializer(serializers.ModelSerializer):
+class SafetyCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SafetyLibrary
         fields = "__all__" 
-        read_only_fields = ('safety_id', "id",)
+        read_only_fields = ('quality_id',"id",)
+class SafetyListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = SafetyLibrary
+        fields = ('quality_id',"id","name","checklist",) 
+        read_only_fields = ('quality_id',"id","checklist")
+
+class RUDSafetySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SafetyLibrary
+        fields = ("id","name")
+        read_only_fields = ("id",)
+
+class SafetyCheckListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = SafetyLibrary
+        fields = ("id","checklist",) 
+        read_only_fields = ("id","checklist")
 
 
 
