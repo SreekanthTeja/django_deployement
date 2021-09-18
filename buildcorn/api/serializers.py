@@ -111,27 +111,38 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 """Project serializer ends"""
 
-class CheckListSerializer(serializers.ModelSerializer):
+class QualityCreateCheckListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckList
         fields = ["id","checklist_id","question","answer","status"] 
         read_only_fields = ( "id","checklist_id",)
 
     def create(self, validated_data):
-        try:
-            quality = QualityLibrary.objects.get(id=self.initial_data["pid"])
-            checklist = CheckList.objects.create(**validated_data)
-            checklist.save()
-            quality.checklist.add(checklist)
-            quality.save()
-            return checklist
-        except Exception as e:
-            safety = SafetyLibrary.objects.get(id=self.initial_data["pid"])
-            checklist = CheckList.objects.create(**validated_data)
-            checklist.save()
-            safety.checklist.add(checklist)
-            safety.save()
-            return checklist
+        quality = QualityLibrary.objects.get(id=self.initial_data["pid"])
+        checklist = CheckList.objects.create(**validated_data)
+        checklist.save()
+        quality.checklist.add(checklist)
+        quality.save()
+        return checklist
+class SafetyCreateCheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckList
+        fields = ["id","checklist_id","question","answer","status"] 
+        read_only_fields = ( "id","checklist_id",)
+    def create(self, validated_data):
+        safety = SafetyLibrary.objects.get(id=self.initial_data["pid"])
+        checklist = CheckList.objects.create(**validated_data)
+        checklist.save()
+        safety.checklist.add(checklist)
+        safety.save()
+        return checklist
+
+class CheckListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckList
+        fields = ["id","checklist_id","question","answer","status"] 
+        read_only_fields = ( "id","checklist_id",)
+    
 
 """Quality starts"""
 class QualityCreateSerializer(serializers.ModelSerializer):
@@ -140,7 +151,7 @@ class QualityCreateSerializer(serializers.ModelSerializer):
         fields = "__all__" 
         read_only_fields = ('quality_id',"id",)
 class QualityListSerializer(serializers.ModelSerializer):
-    checklist = CheckListSerializer(many=True)
+    # checklist = QualityCreateCheckListSerializer(many=True)
     class Meta:
         model = QualityLibrary
         fields = ('quality_id',"id","name","checklist",) 
@@ -153,7 +164,7 @@ class RUDQualitySerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
 class QualityCheckListSerializer(serializers.ModelSerializer):
-    checklist = CheckListSerializer(many=True)
+    checklist = QualityCreateCheckListSerializer(many=True)
     class Meta:
         model = QualityLibrary
         fields = ("id","checklist",) 
@@ -166,7 +177,7 @@ class SafetyCreateSerializer(serializers.ModelSerializer):
         fields = "__all__" 
         read_only_fields = ('safety_id',"id",)
 class SafetyListSerializer(serializers.ModelSerializer):
-    checklist = CheckListSerializer(many=True)
+    # checklist = SafetyCreateCheckListSerializer(many=True)
     class Meta:
         model = SafetyLibrary
         fields = ('safety_id',"id","name","checklist",) 
@@ -179,7 +190,7 @@ class RUDSafetySerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
 class SafetyCheckListSerializer(serializers.ModelSerializer):
-    checklist = CheckListSerializer(many=True)
+    checklist = SafetyCreateCheckListSerializer(many=True)
     class Meta:
         model = SafetyLibrary
         fields = ("id","checklist",) 

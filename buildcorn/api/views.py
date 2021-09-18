@@ -137,7 +137,12 @@ class SafetyCheckListView(generics.RetrieveDestroyAPIView):
 class CheckListCreateAPIView(generics.CreateAPIView):
     permission_classes = (IsSuperUser,IsAuthenticated)
     queryset = CheckList.objects.all()
-    serializer_class = CheckListSerializer
+    serializer_class = SafetyCreateCheckListSerializer
+
+class CheckListCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsSuperUser,IsAuthenticated)
+    queryset = CheckList.objects.all()
+    serializer_class = QualityCreateCheckListSerializer
 
 class CheckListAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
