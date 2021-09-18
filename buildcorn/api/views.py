@@ -58,6 +58,17 @@ class EmpRDView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = Employee.objects.all()
     serializer_class = EmployeeRDUserSerializer
+    def delete(self, request, pk):
+        emp = Employee.objects.get(id=pk)
+        print(emp.user.email)
+
+        if emp.user.email:
+            print(True)
+            user = User.objects.get(email=emp.user.email).delete()
+
+            return Response({'status':'Deleted'})
+        return Response({'status':'Unable to delete'})
+
     
 """Employees ends"""
 
