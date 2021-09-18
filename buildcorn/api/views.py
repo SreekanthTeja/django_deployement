@@ -29,11 +29,8 @@ class EmployeeAPIView(generics.ListAPIView):
     def get_queryset(self):
         print(self.request.user)
         if self.request.user.user_type == User.TENENT:
-            emp = self.queryset.filter(company__user=self.request.user)
-            print(emp)
-            project = Project.objects.filter(employee=emp[0])
-            print(project)
-            return emp
+            return self.queryset.filter(company__user=self.request.user)
+        
 
 class EmployeeCreateAPIView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
@@ -97,7 +94,7 @@ class ProjectUpdateView(generics.UpdateAPIView):
 
 """Quality list create api view """
 class QualityCreateAPIView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = QualityLibrary.objects.all()
     serializer_class = QualityCreateSerializer
 
@@ -118,13 +115,16 @@ class QualityCheckListView(generics.RetrieveDestroyAPIView):
 
 """Safety list create api view """
 class SafetyCreateAPIView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = SafetyLibrary.objects.all()
     serializer_class = SafetyCreateSerializer
 class SafetyListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = SafetyLibrary.objects.all()
     serializer_class = SafetyListSerializer
 """Safety read, update, delete api view """
 class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = SafetyLibrary.objects.all()
     serializer_class = RUDSafetySerializer
 
