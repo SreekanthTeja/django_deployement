@@ -45,9 +45,14 @@ class EmployeeCreateAPIView(generics.CreateAPIView):
         print(serializer)
         serializer.save(company=comp)
     
+# class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthenticated,IsTenentOrUser)
+#     queryset = User.objects.all()
+#     serializer_class = EmployeeRUDUserSerializer
+    
 class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
-    queryset = User.objects.all()
+    queryset = Employee.objects.all()
     serializer_class = EmployeeRUDUserSerializer
 """Employees ends"""
 

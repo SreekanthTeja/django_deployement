@@ -32,7 +32,12 @@ class EmployeeUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    
+class EmployeeProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ("name","id",)
+        # read_only_fields = ("name",)
+      
 
 class EmployeeCompanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,11 +70,26 @@ class EmployeeCreateSerializer(WritableNestedModelSerializer):
         model = Employee
         fields = ["id","eid","user","company","designation","created_at",]
         read_only_fields = ["id","eid","created_at","company"]
+# class EmployeeRUDUserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ("id","email","first_name","phone_number","is_active")
+#         read_only_fields = ["id",]
+
+#     def update(self, instance, validated_data):
+#         pri
+#         return instance
 class EmployeeRUDUserSerializer(serializers.ModelSerializer):
+    user = EmployeeUserSerializer(required=False)
+    projects = EmployeeProjectSerializer(required=False, many=True)
     class Meta:
-        model = User
-        fields = ("id","email","first_name","phone_number","is_active")
-        read_only_fields = ["id",]
+        model = Employee
+        fields = ("id","user","projects")
+        read_only_fields = ["id","user"]
+
+    def update(self, instance, validated_data):
+        print(validated_data, instance)
+        return instance
 
 """Employee serializer ends"""
 
@@ -81,7 +101,7 @@ class ApproverSerializer(serializers.ModelSerializer):
         fields = ("id","user",)
 class ProjectListSerializer(serializers.ModelSerializer):
     approver = ApproverSerializer()
-    employee = ApproverSerializer(many=True)
+    # employee = ApproverSerializer(many=True)
     class Meta:
         model = Project
         fields = "__all__"
@@ -98,12 +118,20 @@ class CheckListSerializer(serializers.ModelSerializer):
         read_only_fields = ( "id","checklist_id",)
 
     def create(self, validated_data):
-        quality = QualityLibrary.objects.get(id=self.initial_data["qid"])
-        checklist = CheckList.objects.create(**validated_data)
-        checklist.save()
-        quality.checklist.add(checklist)
-        quality.save()
-        return checklist
+        try:
+            quality = QualityLibrary.objects.get(id=self.initial_data["pid"])
+            checklist = CheckList.objects.create(**validated_data)
+            checklist.save()
+            quality.checklist.add(checklist)
+            quality.save()
+            return checklist
+        except Exception as e:
+            safety = SafetyLibrary.objects.get(id=self.initial_data["pid"])
+            checklist = CheckList.objects.create(**validated_data)
+            checklist.save()
+            safety.checklist.add(checklist)
+            safety.save()
+            return checklist
 
 """Quality starts"""
 class QualityCreateSerializer(serializers.ModelSerializer):

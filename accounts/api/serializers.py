@@ -74,29 +74,24 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 raise serializers.ValidationError('Username must required to login')
             if password is None:
                 raise serializers.ValidationError('Password must required to login')
-            try:
-                user = authenticate(username=username, password= password)
-                print(user)
-                credentials['email'] = user.email
-            except User.DoesNotExist:
+            user = authenticate(username=username, password= password)
+            if not user:
                 raise serializers.ValidationError('In-valid username or password')
-            
-            finally:
-                data = super().validate(credentials)
-                try:
-                    company_id = Company.objects.get(user__email=user.email)
-                    if company_id:
-                        data['email'] = user.email
-                        data["first_name"] = user.first_name
-                        data['role'] = user.user_type
-                        data["company_id"] = company_id.id
-                        return data
-                except Exception as e:
-                    pass
+            credentials['email'] = user.email
+            data = super().validate(credentials)
+            try:
+                company_id = Company.objects.get(user__email=user.email)
+                if company_id:
+                    data['email'] = user.email
+                    data["first_name"] = user.first_name
+                    data['role'] = user.user_type
+                    data["company_id"] = company_id.id
+                    return data
+            except Exception as e:
                 data['email'] = user.email
                 data["first_name"] = user.first_name
                 data['role'] = user.user_type
-                return data
+            return data
             
 """Password reset"""
 
