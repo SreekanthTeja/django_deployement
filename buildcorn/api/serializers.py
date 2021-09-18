@@ -105,10 +105,6 @@ class CheckListSerializer(serializers.ModelSerializer):
         quality.save()
         return checklist
 
-    # def update(self, instance, validated_data):
-    #     print(instance)
-
-
 """Quality starts"""
 class QualityCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -135,17 +131,18 @@ class QualityCheckListSerializer(serializers.ModelSerializer):
         fields = ("id","checklist",) 
         read_only_fields = ("id","checklist")
 """Quality ends"""
+
 class SafetyCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SafetyLibrary
         fields = "__all__" 
-        read_only_fields = ('quality_id',"id",)
+        read_only_fields = ('safety_id',"id",)
 class SafetyListSerializer(serializers.ModelSerializer):
     checklist = CheckListSerializer(many=True)
     class Meta:
         model = SafetyLibrary
-        fields = ('quality_id',"id","name","checklist",) 
-        read_only_fields = ('quality_id',"id","checklist")
+        fields = ('safety_id',"id","name","checklist",) 
+        read_only_fields = ('safety_id',"id","checklist")
 
 class RUDSafetySerializer(serializers.ModelSerializer):
     class Meta:
