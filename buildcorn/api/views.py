@@ -44,15 +44,15 @@ class EmployeeCreateAPIView(generics.CreateAPIView):
     
 class EmployeeUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeUpdateUserSerializer
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
+    queryset = User.objects.all()
+    serializer_class = EmployeeUserSerializer
+    # def update(self, request, *args, **kwargs):
+    #     partial = kwargs.pop('partial', False)
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_update(serializer)
+    #     return Response(serializer.data)
     
 class EmpRDView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
@@ -60,8 +60,6 @@ class EmpRDView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EmployeeRDUserSerializer
     def delete(self, request, pk):
         emp = Employee.objects.get(id=pk)
-        print(emp.user.email)
-
         if emp.user.email:
             print(True)
             user = User.objects.get(email=emp.user.email).delete()

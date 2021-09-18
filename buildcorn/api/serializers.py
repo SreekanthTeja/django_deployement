@@ -80,9 +80,9 @@ class EmployeeRDUserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id","user"]
 
 class EmployeeUpdateUserSerializer(serializers.ModelSerializer):
-    user = EmployeeUserSerializer(required=False)
+    # user = EmployeeUserSerializer(required=False)
     class Meta:
-        model = Employee
+        model = User
         fields = ("id","user","projects")
         read_only_fields = ["id","user"]
 
@@ -98,7 +98,7 @@ class ApproverSerializer(serializers.ModelSerializer):
         fields = ("id","user",)
 class ProjectListSerializer(serializers.ModelSerializer):
     approver = ApproverSerializer()
-    # employee = ApproverSerializer(many=True)
+    employee = ApproverSerializer(many=True)
     class Meta:
         model = Project
         fields = "__all__"

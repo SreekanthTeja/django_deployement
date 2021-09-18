@@ -71,7 +71,7 @@ class Project(models.Model):
     updated_at = models.DateField(auto_now=True, blank=True, null=True)
     approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
-    # employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
+    employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
     typee = models.CharField(choices=PROJECT_TYPES,max_length=10, blank=True, null=True)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     class Meta:
