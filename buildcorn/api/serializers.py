@@ -70,26 +70,23 @@ class EmployeeCreateSerializer(WritableNestedModelSerializer):
         model = Employee
         fields = ["id","eid","user","company","designation","created_at",]
         read_only_fields = ["id","eid","created_at","company"]
-# class EmployeeRUDUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ("id","email","first_name","phone_number","is_active")
-#         read_only_fields = ["id",]
 
-#     def update(self, instance, validated_data):
-#         pri
-#         return instance
-class EmployeeRUDUserSerializer(serializers.ModelSerializer):
+class EmployeeRDUserSerializer(serializers.ModelSerializer):
     user = EmployeeUserSerializer(required=False)
-    projects = EmployeeProjectSerializer(required=False, many=True)
+    projects = EmployeeProjectSerializer( many=True)
     class Meta:
         model = Employee
         fields = ("id","user","projects")
         read_only_fields = ["id","user"]
 
-    def update(self, instance, validated_data):
-        print(validated_data, instance)
-        return instance
+class EmployeeUpdateUserSerializer(serializers.ModelSerializer):
+    user = EmployeeUserSerializer(required=False)
+    class Meta:
+        model = Employee
+        fields = ("id","user","projects")
+        read_only_fields = ["id","user"]
+
+
 
 """Employee serializer ends"""
 

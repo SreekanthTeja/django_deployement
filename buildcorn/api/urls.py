@@ -3,7 +3,7 @@ from .views import *
 urlpatterns = [
     ###########  license url's ##################
     path('license', LicenseAPIView.as_view()),
-    
+
     ########### project  url's ##################
     path('project/create',ProjectCreateAPIView.as_view()),
     path('project/list',ProjectListAPIView.as_view()),
@@ -13,7 +13,8 @@ urlpatterns = [
     ###########  employee url's ##################
     path('emp', EmployeeAPIView.as_view()),
     path('emp/create', EmployeeCreateAPIView.as_view()),
-    path('emp/rud/<int:pk>', EmpRUDView.as_view()),
+    path('emp/update/<int:pk>', EmployeeUpdateAPIView.as_view()),
+    path('emp/rd/<int:pk>', EmpRDView.as_view()),
 
     ########### quality assurence  url's ##################
     path('quality/create',QualityCreateAPIView.as_view()),

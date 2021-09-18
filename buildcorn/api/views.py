@@ -42,15 +42,23 @@ class EmployeeCreateAPIView(generics.CreateAPIView):
         print(serializer)
         serializer.save(company=comp)
     
-# class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
-#     permission_classes = (IsAuthenticated,IsTenentOrUser)
-#     queryset = User.objects.all()
-#     serializer_class = EmployeeRUDUserSerializer
-    
-class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
+class EmployeeUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = Employee.objects.all()
-    serializer_class = EmployeeRUDUserSerializer
+    serializer_class = EmployeeUpdateUserSerializer
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+    
+class EmpRDView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeRDUserSerializer
+    
 """Employees ends"""
 
 
