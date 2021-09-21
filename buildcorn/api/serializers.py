@@ -24,22 +24,22 @@ class LicenseSerializer(serializers.ModelSerializer):
 """Normal user"""
 
 class EmployeeUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=False)
+    # password = serializers.CharField(write_only=True, required=False)
     class Meta:
         model = User
-        fields = ("id","first_name","email", "phone_number","is_active","password")
-        read_only_fields = ("id","password",)
+        fields = ("id","first_name","email", "phone_number","is_active",)
+        read_only_fields = ("id",)
     def create(self, validated_data):
-        # user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
-        user = User.objects.create_user(**validated_data)
+        user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
+        # user = User.objects.create_user(**validated_data)
         user.save()
         return user
 class EmployeeSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
     class Meta:
         model = Employee
-        fields = ("id","user",'eid', "company")
-        read_only_fields = ("id",'eid')
+        fields = ("id","user",'eid', "company","created_at")
+        read_only_fields = ("id",'eid',"created_at")
 """Normal user ends"""
 
 
