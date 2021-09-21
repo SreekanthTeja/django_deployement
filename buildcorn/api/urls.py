@@ -11,32 +11,35 @@ urlpatterns = [
     path('project/update/<int:pk>', ProjectUpdateView.as_view()),
 
     ###########  employee url's ##################
-    path('emp', EmployeeAPIView.as_view()),
-    path('emp/create', EmployeeCreateAPIView.as_view()),
-    path('emp/update/<int:pk>', EmployeeUpdateAPIView.as_view()),
-    path('emp/rd/<int:pk>', EmpRDView.as_view()),
+    path('emp/list_or_create', EmployeeAPIView.as_view()),
+    path('emp/rud/<int:pk>', EmpRUDView.as_view()),
 
-    ########### quality assurence  url's ##################
-    path('quality/create',QualityCreateAPIView.as_view()),
-    path('quality/list',QualityListAPIView.as_view()),
-    path('quality/rud/<int:pk>',RUDQualityView.as_view()),
-    path('quality/checklist/<int:pk>',QualityCheckListView.as_view()),
+    # ########### checklists   url's ##################
+    # path('checklist/create',ChecklistCreateAPIView.as_view()),
+    # path('checklist/list',CheckListAPIView.as_view()),
+    # path('checklist/rud/<int:pk>',RUDChecklistView.as_view()),
+    # path('checklist/checklist/<int:pk>',ChecklistCheckListView.as_view()),
 
     ########### safety assurence  url's ##################
-    path('safety/create',SafetyCreateAPIView.as_view()),
-    path('safety/list',SafetyListAPIView.as_view()),
-    path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
-    path('safety/checklist/<int:pk>',SafetyCheckListView.as_view()),
+    # path('safety/create',SafetyCreateAPIView.as_view()),
+    # path('safety/list',SafetyListAPIView.as_view()),
+    # path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
+    # path('safety/checklist/<int:pk>',SafetyCheckListView.as_view()),
+
     ###########  check-list url's ##################
+
+    path('quality/check/list',QualityCheckListAPIView.as_view()),
+    path('safety/check/list',SafetyCheckListAPIView.as_view()),
     path('check/create',CheckListCreateAPIView.as_view()),
-    path('check/list',CheckListAPIView.as_view()),
-    path('check/rud/<int:pk>',RUDCheckView.as_view()),
+    path('check/rd/<int:pk>',RDCheckView.as_view()),
+    path('check/update/<int:pk>',UpdateCheckView.as_view()),
 
-    ########### banner  url's ##################
-    path('banner/list_or_create',BannerListCreateAPIView.as_view()),
-    path('banner/rud/<int:pk>',RUDBannerView.as_view()),
+    # ########### banner  url's ##################
+    path('question/create',QuestionView.as_view()),
+    path('question/rud/<int:pk>',RUDQuestionView.as_view()),
 
-    ########### faq  url's ##################
-    path('faq/list_or_create',FAQListCreateAPIView.as_view()),
-    path('faq/rud/<int:pk>',RUDFAQView.as_view()),
+    # ########### quality  url's ##################
+    path('checklist/assign/project',AssignChecklistAPIView.as_view()),
+    # path('quality/type',QualityTypeAPIView.as_view()),
+    # path('safety/type',SafetyTypeAPIView.as_view()),
 ]

@@ -39,7 +39,6 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="Email Address", max_length=255, unique=True)
     client_id = models.CharField(default=uniqueid,max_length=70, null=True, blank=True)
     phone_number = PhoneNumberField(unique=True)
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -98,11 +97,6 @@ class Payment(models.Model):
     company_name = models.CharField(max_length=50, blank=True, null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE,related_name="plan_payments",null=True,blank=True)
     holder = models.TextField(blank=True, null=True)
-    # deleted = models.BooleanField(default=False)
-    # coupon_applied = models.ForeignKey(Coupon,null=True,blank=True,on_delete=models.CASCADE)
-    # subscription_discount = models.ForeignKey(SubscriptionDiscount,null=True,blank=True,on_delete=models.CASCADE,related_name="sub_discounts_payments")
-    # user_subscription_discount = models.ForeignKey(SubscriptionUserDiscount,null=True,blank=True,on_delete=models.CASCADE,related_name="sub_user_discounts_payments")
-
     class Meta:
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'
@@ -112,11 +106,11 @@ class Payment(models.Model):
 from django.utils import timezone
 from datetime import timedelta
 current_time = timezone.now()
-class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp = models.PositiveIntegerField(blank=True, null=True)
-    expiry = models.DateTimeField(default=timezone.now() + timedelta(hours=1), blank=True, null=True)
-    validated = models.BooleanField(default=False, blank=True, null=True)
-    def __str__(self):
-        return self.user.email
+# class OTP(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     otp = models.PositiveIntegerField(blank=True, null=True)
+#     expiry = models.DateTimeField(default=timezone.now() + timedelta(hours=1), blank=True, null=True)
+#     validated = models.BooleanField(default=False, blank=True, null=True)
+#     def __str__(self):
+#         return self.user.email
 

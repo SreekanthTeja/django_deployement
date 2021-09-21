@@ -47,67 +47,56 @@ class License(models.Model):
 
 class Employee(models.Model):
     eid = models.CharField(default=licenseid, max_length=20)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Employee", blank=True, null=True)
-    company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
-    designation = models.CharField(max_length=50, blank=True, null=True)
-    projects = models.ManyToManyField("Project",blank=True, related_name="employee_projects" )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="employee_user", blank=True, null=True)
+    company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="employee_company", blank=True, null=True)
     created_at = models.DateField(auto_now_add=True, blank=True, null=True)
     class Meta:
         ordering = ("-id",)
     def __str__(self):
         return self.user.email
 
+class Question(models.Model):
+    COMPILED = 'Compiled'
+    UNCOMPLETED = 'Not Compiled'
+    STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
+    checklist_id =  models.CharField(default=licenseid, max_length=30)
+    question = models.TextField()
+    status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
+    reason = models.TextField(blank=True, null=True)
+    def __str__(self):
+        return self.question
+
+class CheckList(models.Model):
+    Quality = 'Quality'
+    Safety = 'Safety' 
+    TYPES = ((Quality, 'Quality'),(Safety,'Safety'))
+    checklist_id = models.CharField(default=licenseid, max_length=30)
+    created_at = models.DateField(auto_now_add=True,blank=True, null=True)
+    name = models.CharField(max_length=120)
+    typee = models.CharField(choices=TYPES, max_length=10)
+    question = models.ManyToManyField(Question, blank=True)
+    def __str__(self):
+        return self.name
 
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
-    ON_SITE = 'Onsite'
-    OFF_SITE = 'Offsite'
     INSPECTION_DONE='D'
     INSPECTION_PENDING='P'
     INSPECTION_TYPES = ((INSPECTION_DONE,'Done'),(INSPECTION_PENDING,'Pending'))
-    PROJECT_TYPES= ((ON_SITE,'Onsite'), (OFF_SITE,'Offsite'))
     name = models.CharField(max_length=50)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True, blank=True, null=True)
-    approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
+    approver = models.ForeignKey(User, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
-    employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
-    typee = models.CharField(choices=PROJECT_TYPES,max_length=10, blank=True, null=True)
+    employee = models.ManyToManyField(User, related_name="project_employees", blank=True)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
+    checklists = models.ManyToManyField(CheckList, blank=True, related_name='project_checklists')
     class Meta:
         ordering = ("-id",)
         
     def __str__(self):
         return self.name
 
-
-class CheckList(models.Model):
-    checklist_id =  models.CharField(default=licenseid, max_length=30)
-    question = models.TextField()
-    answer = models.CharField(max_length=120, blank=True, null=True)
-    status = models.BooleanField(default=False, blank=True, null=True)
-    def __str__(self):
-        return self.question
-
-class QualityLibrary(models.Model):
-    quality_id = models.CharField(default=licenseid, max_length=30)
-    created_at = models.DateField(auto_now_add=True,blank=True, null=True)
-    name = models.CharField(max_length=120)
-    typee = models.CharField(default="Quality", max_length=10, blank=True, null=True)
-    # status = models.BooleanField(default= True)
-    checklist = models.ManyToManyField(CheckList, blank=True)
-    def __str__(self):
-        return self.name
-
-class SafetyLibrary(models.Model):
-    safety_id = models.CharField(default=licenseid, max_length=30)
-    created_at = models.DateField(auto_now_add=True,blank=True, null=True)
-    name = models.CharField(max_length=120)
-    typee = models.CharField(default="Safety", max_length=10, blank=True, null=True)
-    # status = models.BooleanField(default= True)
-    checklist = models.ManyToManyField(CheckList, blank=True)
-    def __str__(self):
-        return self.name
 
 
 class Banner(models.Model):

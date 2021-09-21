@@ -4,7 +4,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('token', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name='token_obtain_pair'),
-    path('user/superadmin',SuperAdminListView.as_view(), name='user-list'),
+    # path('nu/create',UserCreateView.as_view(), name='user-create'),
+
     path('company/list/admin',CompanyListView.as_view()),
     path('company/create/admin',CompanyCreateView.as_view()),
     path('company/rud/<int:pk>',CompanyRUDView.as_view(), name='company-update'),
@@ -16,6 +17,6 @@ urlpatterns = [
     # path('emp/rud/<int:pk>', UserUpdateView.as_view()),
     path('password/<str:email>/reset',RestPasswordAPIView.as_view()),
     path('password/<str:email>/forgot',RestPasswordAPIView.as_view()),
-    path('request/otp',OTPRequestAPIView.as_view()),
-    path('verify/otp',OTPVerifyAPIView.as_view()),
+#     path('request/otp',OTPRequestAPIView.as_view()),
+#     path('verify/otp',OTPVerifyAPIView.as_view()),
 ]

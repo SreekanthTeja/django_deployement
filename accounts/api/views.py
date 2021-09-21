@@ -16,19 +16,6 @@ from bigspace.permissions import *
 
 User = get_user_model()
 
-
-
-"""
-    SuperUsers list
-"""
-class SuperAdminListView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    def get_queryset(self):
-        return User.objects.filter(user_type=User.SUPER_ADMIN)
-
-
-
 class CompanyCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = Company.objects.all()
@@ -46,43 +33,7 @@ class CompanyRUDView(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, pk):
         user = User.objects.get(id=pk).delete()
         return Response({'status':'Deleted'})
-    # def update(self, request, *args, **kwargs):
-    #     data = request.data
-    #     # print(data["user"]["id"])
-    #     if not data["user"].get("id"):
-    #         print(True)
-    #         raise serializers.ValidationError({'error':'user object id  required'})
-    #     user_instance = User.objects.get(id= data["user"].get("id"))
-    #     print(user_instance)
-    #     if "email" in data["user"]:
-    #         user_instance.email = data["user"].get("email")
-    #     if "first_name" in data["user"]:
-    #         user_instance.first_name = data["user"].get("first_name")
-    #     if "phone_number" in data["user"]:
-    #         user_instance.first_name = data["user"].get("phone_number")
-    #     user_instance.save()
-    #     company_instance = self.get_object()
-    #     try:
-    #         if "user" in data :
-    #             company_instance.user = user_instance
-    #         if "name" in data :
-    #             company_instance.name= data["name"]
-    #         if "gstin" in data :
-    #             company_instance.gstin= data["gstin"]
-    #         if "state" in data :
-    #             company_instance.state= data["state"]
-    #         if "city" in data :
-    #             company_instance.city= data["city"]
-    #         if "pincode" in data :
-    #             company_instance.pincode= data["pincode"]
-    #         if "addres" in data :
-    #             company_instance.addres= data["addres"]
-    #         if "license_purchased" in data :
-    #             company_instance.license_purchased= data["license_purchased"]
-    #         company_instance.save()
-    #         return Response({'status':"Updated"})
-    #     except Exception as e:
-    #         pass
+   
     
 
 class PlanListView(generics.ListAPIView):
@@ -225,31 +176,31 @@ class ForgotPasswordAPIView(generics.UpdateAPIView):
 
 
 
-class OTPRequestAPIView(views.APIView):
-    def post(self,request, **kwargs ):
-        otp = random.randint(99999, 999999)
-        # send_request = send_otp(request.data["phone_number"],str(otp))
-        phone_number = request.data.get("phone_number",None)
-        user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
-        if user_object:
-            send_request = send_otp(phone_number,str(otp))
-            print(send_request)
-            if send_request['status']=='SENT':
-                user = User.objects.get(phone_number=phone_number)
-                try:
-                    emp = Employee.objects.get(user=user)
-                except Exception as e:
-                    raise serializers.ValidationError("Sorry user is  not a employee")
-                otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
-                if created:
-                    otp_obj.save()
-            return Response({"otp":otp,'Alert':"expires in a hour",'company':emp.company.name,'user_type':user.user_type})
-        return Response({'error':'Your credentials not found'})
+# class OTPRequestAPIView(views.APIView):
+#     def post(self,request, **kwargs ):
+#         otp = random.randint(99999, 999999)
+#         # send_request = send_otp(request.data["phone_number"],str(otp))
+#         phone_number = request.data.get("phone_number",None)
+#         user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
+#         if user_object:
+#             send_request = send_otp(phone_number,str(otp))
+#             print(send_request)
+#             if send_request['status']=='SENT':
+#                 user = User.objects.get(phone_number=phone_number)
+#                 try:
+#                     emp = Employee.objects.get(user=user)
+#                 except Exception as e:
+#                     raise serializers.ValidationError("Sorry user is  not a employee")
+#                 otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
+#                 if created:
+#                     otp_obj.save()
+#             return Response({"otp":otp,'Alert':"expires in a hour",'company':emp.company.name,'user_type':user.user_type})
+#         return Response({'error':'Your credentials not found'})
 
-class OTPVerifyAPIView(views.APIView):
-    def post(self, request):
-        if OTP.objects.filter(otp=request.data["otp"]).exists():
-            return Response({'status':'You are logged in!'})
-        raise serializers.ValidationError({'status':"incorrect otp"})
+# class OTPVerifyAPIView(views.APIView):
+#     def post(self, request):
+#         if OTP.objects.filter(otp=request.data["otp"]).exists():
+#             return Response({'status':'You are logged in!'})
+#         raise serializers.ValidationError({'status':"incorrect otp"})
 
 
