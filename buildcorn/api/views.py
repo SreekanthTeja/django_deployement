@@ -75,6 +75,7 @@ class ProjectListAPIView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectListSerializer
     def get_queryset(self):
+        print(self.request.user)
         q = self.queryset.filter(company__user=self.request.user)
         print('>>>>>',q)
         return q
@@ -160,8 +161,11 @@ class  ShowProjectAssign(generics.ListAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser,)
     queryset = Project.objects.all()
     serializer_class = ProjectAssignSerializer
-    def get_queryset(self):
-        return 
+    # lookup_field='typee'
+    def get_queryset(self, ):
+        # print(self.kwargs)
+        c = CheckList.objects.filter(typee=self.kwargs['typee'])
+        print(c)
 
 
 # class QualityTypeAPIView(generics.ListAPIView):

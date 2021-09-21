@@ -40,7 +40,7 @@ urlpatterns = [
 
     # ########### quality  url's ##################
     path('checklist/assign/project',AssignChecklistAPIView.as_view()),
-    path('show/assign/project',ShowProjectAssign.as_view()),
+    path('show/assign/project/<str:typee>',ShowProjectAssign.as_view()),
     # path('quality/type',QualityTypeAPIView.as_view()),
     # path('safety/type',SafetyTypeAPIView.as_view()),
 ]

@@ -88,9 +88,9 @@ class Project(models.Model):
     name = models.CharField(max_length=50)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True, blank=True, null=True)
-    approver = models.ForeignKey(User, related_name="project_approver", on_delete=models.CASCADE)
+    approver = models.ForeignKey(Employee, related_name="project_approver", on_delete=models.CASCADE)
     location = models.TextField()
-    employee = models.ManyToManyField(User, related_name="project_employees", blank=True)
+    employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     checklists = models.ManyToManyField(CheckList, blank=True, related_name='project_checklists')
     class Meta:

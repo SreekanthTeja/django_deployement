@@ -4,7 +4,7 @@ from buildcorn.models import *
 from accounts.models import *
 from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from accounts.api.serializers import UserSerializer
+# from accounts.api.serializers import UserSerializer
 import uuid
 User = get_user_model()
 
@@ -47,20 +47,22 @@ class EmployeeSerializer(WritableNestedModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','first_name','email']
-# class ApproverSerializer(serializers.ModelSerializer):
-#     user = UserSerializer()
-#     class Meta:
-#         model=Employee
-#         fields = ("id","user",)
+        fields = ('first_name','email',)
+class ApproverSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model= Employee
+        fields = ("id","user")
+
+
 class ProjectListSerializer(serializers.ModelSerializer):
-    approver = UserSerializer()
-    employee = UserSerializer(many=True)
+    approver = ApproverSerializer()
+    employee = ApproverSerializer(many=True)
     class Meta:
         model = Project
-        # fields = "__all__"
-        exclude = ['checklists']
+        fields = "__all__"
 class ProjectCreateSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Project
         fields = "__all__"
