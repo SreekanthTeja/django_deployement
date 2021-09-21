@@ -94,6 +94,30 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = '__all__'
 
+    def create(self, validated_data):
+        data = self.initial_data
+        type_id, typee = data.pop('type_id'), data.pop('typee')
+        if not type_id and typee:
+            raise serializers.ValidationError({'error':'Type id or Type is missing'})
+
+        try:
+            checklist = CheckList.objects.get(id=type_id, typee=typee)
+            print(checklist)
+            question = Question.objects.create(**data)
+            # if created:
+            question.save()
+            print(question)
+
+        except Exception as e:
+            raise serializers.ValidationError({'status':e})
+        checklist.question.add(question)
+        checklist.save()
+        return question
+        # # print(checklist)
+        # question = Question.objects.get_or_create(question=)
+        # checklist.question.
+
+
 # class SafetyCreateSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = SafetyLibrary

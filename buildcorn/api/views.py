@@ -103,7 +103,7 @@ class QualityCheckListAPIView(generics.ListAPIView):
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
     def get_queryset(self):
-        return CheckList.objects.filter(typee=CheckList.Quality)
+        return CheckList.objects.filter(typee=CheckList.Quality).order_by("-id")
 
 class SafetyCheckListAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
@@ -134,6 +134,7 @@ class QuestionView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    
 
 class RUDQuestionView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)

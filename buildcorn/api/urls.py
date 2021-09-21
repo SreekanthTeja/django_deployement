@@ -43,3 +43,4 @@ urlpatterns = [
     # path('quality/type',QualityTypeAPIView.as_view()),
     # path('safety/type',SafetyTypeAPIView.as_view()),
 ]
+

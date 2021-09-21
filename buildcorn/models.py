@@ -59,8 +59,10 @@ class Question(models.Model):
     COMPILED = 'Compiled'
     UNCOMPLETED = 'Not Compiled'
     STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
-    checklist_id =  models.CharField(default=licenseid, max_length=30)
+    ADMIN_STATUS = (('Valid','Valid'),('InValid','InValid'))
+    question_id =  models.CharField(default=licenseid, max_length=30)
     question = models.TextField()
+    admin_status=models.CharField(choices=ADMIN_STATUS, max_length=10, blank=True, null=True)
     status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
     reason = models.TextField(blank=True, null=True)
     def __str__(self):

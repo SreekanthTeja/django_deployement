@@ -22,3 +22,4 @@ class ModelBackend(backends.ModelBackend):
                 # print(".......",user, password)
                 return user
         return super().authenticate(request, username, password, **kwargs)
+
