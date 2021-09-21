@@ -47,7 +47,7 @@ class EmployeeSerializer(WritableNestedModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name','email',)
+        fields = ("id",'first_name','email',)
 class ApproverSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     class Meta:
@@ -62,7 +62,6 @@ class ProjectListSerializer(serializers.ModelSerializer):
         model = Project
         fields = "__all__"
 class ProjectCreateSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Project
         fields = "__all__"
