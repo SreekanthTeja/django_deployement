@@ -69,7 +69,7 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 class CheckQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Question
-        fields = ["id","question"]
+        fields = ["id","question","admin_status","question_id"]
 class CheckListSerializer(serializers.ModelSerializer):
     question = CheckQuestionSerializer(many=True,)
     class Meta:
