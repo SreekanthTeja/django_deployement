@@ -38,7 +38,8 @@ class EmployeeSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
     class Meta:
         model = Employee
-        fields = ("id","user", "company")
+        fields = ("id","user",'eid', "company")
+        fields = ("id",'eid')
 """Normal user ends"""
 
 
@@ -63,6 +64,16 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
+
+class CheckListAssignSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model=CheckList
+        fields = ['id','name','typee']
+class ProjectAssignSerializer(serializers.ModelSerializer):
+    checklists = CheckListAssignSerailizer(many=True)
+    class Meta:
+        model = Project
+        fields = ['id','name','checklists']
 """Project serializer ends"""
 
 

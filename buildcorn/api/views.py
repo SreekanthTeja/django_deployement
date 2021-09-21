@@ -154,7 +154,15 @@ class AssignChecklistAPIView(views.APIView):
             raise serializers.ValidationError({'status':e})
         project.checklists.set(checklist)
         project.save()
-        return Response({'status':"ok"})
+        return Response({'status':"Assignment successfully done"})
+
+class  ShowProjectAssign(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser,)
+    queryset = Project.objects.all()
+    serializer_class = ProjectAssignSerializer
+    def get_queryset(self):
+        return 
+
 
 # class QualityTypeAPIView(generics.ListAPIView):
 #     permission_classes = (IsAuthenticated,IsTenentUser,)
