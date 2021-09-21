@@ -39,7 +39,7 @@ class EmployeeSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Employee
         fields = ("id","user",'eid', "company")
-        fields = ("id",'eid')
+        read_only_fields = ("id",'eid')
 """Normal user ends"""
 
 
