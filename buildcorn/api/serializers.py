@@ -72,9 +72,11 @@ class CheckListAssignSerailizer(serializers.ModelSerializer):
         fields = ['id','name','typee']
 class ProjectAssignSerializer(serializers.ModelSerializer):
     checklists = CheckListAssignSerailizer(many=True)
+
     class Meta:
         model = Project
         fields = ['id','name','checklists']
+        
 """Project serializer ends"""
 
 

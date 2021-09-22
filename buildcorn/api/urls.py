@@ -39,8 +39,10 @@ urlpatterns = [
     path('question/rud/<int:pk>',RUDQuestionView.as_view()),
 
     # ########### quality  url's ##################
-    path('checklist/assign/project',AssignChecklistAPIView.as_view()),
-    path('show/assign/project/<str:typee>',ShowProjectAssign.as_view()),
+    path('quality/checklist/assign/project',QualityAssignChecklistAPIView.as_view()),
+    path('safety/checklist/assign/project',SafetyAssignChecklistAPIView.as_view()),
+    path('quality/project',QualityShowProjectAssign.as_view()),
+    path('safety/project',SafetyShowProjectAssign.as_view()),
     # path('quality/type',QualityTypeAPIView.as_view()),
     # path('safety/type',SafetyTypeAPIView.as_view()),
 ]

@@ -100,7 +100,7 @@ class ProjectUpdateView(generics.UpdateAPIView):
 
 """Checklist list create for super_admin only"""
 class QualityCheckListAPIView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = CheckList.objects.all()
     serializer_class = CheckListSerializer
     def get_queryset(self):
@@ -143,82 +143,53 @@ class RUDQuestionView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = QuestionSerializer
 
 
-class AssignChecklistAPIView(views.APIView):
+
+class QualityAssignChecklistAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentUser,)
     def post(self, request):
         data = request.data
+        check = data.get('checklists')
         try:
             project = Project.objects.get(id=data.get('project'))
-            checklist = CheckList.objects.filter(id__in=data.get('checklists'))
-            print(checklist)
+            checklists = CheckList.objects.filter(id__in=check)
         except Exception as e:
             raise serializers.ValidationError({'status':e})
-        project.checklists.set(checklist)
-        project.save()
+        # if len(check) ==1:
+        #     project.checklists.set([checklists[0].id])
+        project.checklists.set([i.id for i in checklists])
+        # project.save()
         return Response({'status':"Assignment successfully done"})
 
-class  ShowProjectAssign(generics.ListAPIView):
+class SafetyAssignChecklistAPIView(views.APIView):
+    permission_classes = (IsAuthenticated,IsTenentUser,)
+    def post(self, request):
+        data = request.data
+        check = data.get('checklists')
+        try:
+            project = Project.objects.get(id=data.get('project'))
+            checklists = CheckList.objects.filter(id__in=check)
+        except Exception as e:
+            raise serializers.ValidationError({'status':e})
+        project.checklists.set([i.id for i in checklists])
+        # project.save()
+        return Response({'status':"Assignment successfully done"})
+
+
+
+class  QualityShowProjectAssign(generics.ListAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser,)
     queryset = Project.objects.all()
     serializer_class = ProjectAssignSerializer
-    # lookup_field='typee'
-    def get_queryset(self, ):
-        # print(self.kwargs)
-        c = CheckList.objects.filter(typee=self.kwargs['typee'])
-        print(c)
+    def get_queryset(self):
+        return self.queryset.filter(checklists__typee=CheckList.Quality).distinct()
+    
 
-
-# class QualityTypeAPIView(generics.ListAPIView):
-#     permission_classes = (IsAuthenticated,IsTenentUser,)
-#     queryset = CheckList.objects.all()
-#     serializer_class = CheckListSerializer
-#     def get_queryset(self):
-#         return CheckList.objects.filter(typee=CheckList.Quality)
-
-
-
-
-# """Quality list create api view """
-# class QualityCreateAPIView(generics.CreateAPIView):
-#     permission_classes = (IsAuthenticated,IsSuperUser,)
-#     queryset = QualityLibrary.objects.all()
-#     serializer_class = QualityCreateSerializer
-
-# class QualityListAPIView(generics.ListAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = QualityLibrary.objects.all()
-#     serializer_class = QualityListSerializer
-# """Quality read, update, delete api view """
-# class RUDQualityView(generics.RetrieveUpdateDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = QualityLibrary.objects.all()
-#     serializer_class = RUDQualitySerializer
-
-# class QualityCheckListView(generics.RetrieveDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = QualityLibrary.objects.all()
-#     serializer_class = QualityCheckListSerializer
-
-# """Safety list create api view """
-# class SafetyCreateAPIView(generics.CreateAPIView):
-#     permission_classes = (IsAuthenticated,IsSuperUser,)
-#     queryset = SafetyLibrary.objects.all()
-#     serializer_class = SafetyCreateSerializer
-# class SafetyListAPIView(generics.ListAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = SafetyLibrary.objects.all()
-#     serializer_class = SafetyListSerializer
-# """Safety read, update, delete api view """
-# class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = SafetyLibrary.objects.all()
-#     serializer_class = RUDSafetySerializer
-
-# class SafetyCheckListView(generics.RetrieveDestroyAPIView):
-#     permission_classes = (IsAuthenticated,)
-#     queryset = SafetyLibrary.objects.all()
-#     serializer_class = SafetyCheckListSerializer
-
+class  SafetyShowProjectAssign(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser,)
+    queryset = Project.objects.all()
+    serializer_class = ProjectAssignSerializer
+    def get_queryset(self):
+        return self.queryset.filter(checklists__typee=CheckList.Safety).distinct()
 
 
 
