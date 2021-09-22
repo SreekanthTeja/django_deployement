@@ -13,6 +13,7 @@ from accounts.tasks import  send_otp
 from accounts.api.utils import *
 from buildcorn.models import Employee
 from bigspace.permissions import *
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 User = get_user_model()
 
@@ -176,31 +177,39 @@ class ForgotPasswordAPIView(generics.UpdateAPIView):
 
 
 
-# class OTPRequestAPIView(views.APIView):
-#     def post(self,request, **kwargs ):
-#         otp = random.randint(99999, 999999)
-#         # send_request = send_otp(request.data["phone_number"],str(otp))
-#         phone_number = request.data.get("phone_number",None)
-#         user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
-#         if user_object:
-#             send_request = send_otp(phone_number,str(otp))
-#             print(send_request)
-#             if send_request['status']=='SENT':
-#                 user = User.objects.get(phone_number=phone_number)
-#                 try:
-#                     emp = Employee.objects.get(user=user)
-#                 except Exception as e:
-#                     raise serializers.ValidationError("Sorry user is  not a employee")
-#                 otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
-#                 if created:
-#                     otp_obj.save()
-#             return Response({"otp":otp,'Alert':"expires in a hour",'company':emp.company.name,'user_type':user.user_type})
-#         return Response({'error':'Your credentials not found'})
+class OTPRequestAPIView(views.APIView):
+    def post(self,request, **kwargs ):
+        otp = random.randint(99999, 999999)
+        # send_request = send_otp(request.data["phone_number"],str(otp))
+        phone_number = request.data.get("phone_number",None)
+        user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
+        if user_object:
+            send_request = send_otp(phone_number,str(otp))
+            print(send_request)
+            if send_request['status']=='SENT':
+                user = User.objects.get(phone_number=phone_number)
+                try:
+                    emp = Employee.objects.get(user=user)
+                except Exception as e:
+                    raise serializers.ValidationError("Sorry user is  not a employee")
+                otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
+                if created:
+                    otp_obj.save()
+            return Response({"otp":otp,'Alert':"expires in a hour",'company':emp.company.name,'user_type':user.user_type})
+        return Response({'error':'Your credentials not found'})
 
-# class OTPVerifyAPIView(views.APIView):
-#     def post(self, request):
-#         if OTP.objects.filter(otp=request.data["otp"]).exists():
-#             return Response({'status':'You are logged in!'})
-#         raise serializers.ValidationError({'status':"incorrect otp"})
+from rest_framework_simplejwt.tokens import RefreshToken
+class OTPVerifyAPIView(TokenObtainPairView):
+    def post(self, request):
+        if OTP.objects.filter(otp=request.data["otp"]).exists():
+            user = User.objects.get(phone_number=request.data["phone_number"])
+            refresh = RefreshToken.for_user(user)
+            return Response({ 
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'username':user.first_name,
+                'role':user.user_type
+            })
+        raise serializers.ValidationError({'status':"incorrect otp"})
 
 
