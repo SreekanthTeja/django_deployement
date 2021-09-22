@@ -4,6 +4,7 @@ urlpatterns = [
     
     ########### api  urls ##################
     path('api/',include("buildcorn.api.urls")),
+    path('mob/api/',include("buildcorn.api_mobile.urls")),
     ########### forms  urls ##################
     path('ui/check/list',CheckListFormView.as_view(), name='checklist-list'),
     path('ui/check/create',CheckListFCreateFormView.as_view(), name='checklist-create'),
