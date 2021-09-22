@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework import status
 from bigspace.permissions import *
+import datetime
 
 User = get_user_model()
 
@@ -154,11 +155,10 @@ class QualityAssignChecklistAPIView(views.APIView):
             checklists = CheckList.objects.filter(id__in=check)
         except Exception as e:
             raise serializers.ValidationError({'status':e})
-        # if len(check) ==1:
-        #     project.checklists.set([checklists[0].id])
         project.checklists.set([i.id for i in checklists])
-        # project.save()
-        return Response({'status':"Assignment successfully done"})
+        date = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+        print(date)
+        return Response({'status':"Assignment successfully done",'date':date})
 
 class SafetyAssignChecklistAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentUser,)

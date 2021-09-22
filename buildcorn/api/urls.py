@@ -43,7 +43,5 @@ urlpatterns = [
     path('safety/checklist/assign/project',SafetyAssignChecklistAPIView.as_view()),
     path('quality/project',QualityShowProjectAssign.as_view()),
     path('safety/project',SafetyShowProjectAssign.as_view()),
-    # path('quality/type',QualityTypeAPIView.as_view()),
-    # path('safety/type',SafetyTypeAPIView.as_view()),
 ]
 

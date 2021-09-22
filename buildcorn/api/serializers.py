@@ -67,9 +67,10 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class CheckListAssignSerailizer(serializers.ModelSerializer):
+    # created_at = serializers.DateField(format="%d-%m-%Y",)
     class Meta:
         model=CheckList
-        fields = ['id','name','typee']
+        fields = ['id','name','typee','checklist_id',]
 class ProjectAssignSerializer(serializers.ModelSerializer):
     checklists = CheckListAssignSerailizer(many=True)
 
