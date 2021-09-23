@@ -43,5 +43,11 @@ urlpatterns = [
     path('safety/checklist/assign/project',SafetyAssignChecklistAPIView.as_view()),
     path('quality/project',QualityShowProjectAssign.as_view()),
     path('safety/project',SafetyShowProjectAssign.as_view()),
+
+    path('faq/list_or_create',FaqLCView.as_view()),
+    path('faq/rud',RUDFaqView.as_view()),
+
+
 ]
+
 

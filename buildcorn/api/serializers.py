@@ -132,6 +132,10 @@ class QuestionSerializer(serializers.ModelSerializer):
         # question = Question.objects.get_or_create(question=)
         # checklist.question.
 
+class FaqSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = '__all__'
 
 # class SafetyCreateSerializer(serializers.ModelSerializer):
 #     class Meta:

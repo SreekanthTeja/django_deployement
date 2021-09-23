@@ -33,9 +33,11 @@ class EmployeeAPIView(generics.ListCreateAPIView):
             return self.queryset.filter(company__user=self.request.user)
     def perform_create(self, serializer):
         comp = Company.objects.get(user__email=self.request.user)
-        serializer.save(company=comp)
+        if comp.license_purchased == 0:
+            raise serializers.ValidationError({'status':'Sorry  License wallet 0'})
         comp.license_purchased -= 1
         comp.save()
+        serializer.save(company=comp)
 
     
 class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
@@ -195,3 +197,13 @@ class  SafetyShowProjectAssign(generics.ListAPIView):
 
 
 
+class FaqLCView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = FAQ.objects.all()
+    serializer_class = FaqSerializer
+    
+
+class RUDFaqView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = FAQ.objects.all()
+    serializer_class = FaqSerializer
