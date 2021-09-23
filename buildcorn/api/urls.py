@@ -45,7 +45,7 @@ urlpatterns = [
     path('safety/project',SafetyShowProjectAssign.as_view()),
 
     path('faq/list_or_create',FaqLCView.as_view()),
-    path('faq/rud',RUDFaqView.as_view()),
+    path('faq/rud/<int:pk>',RUDFaqView.as_view()),
 
 
 ]
