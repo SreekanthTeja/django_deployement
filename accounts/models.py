@@ -48,7 +48,7 @@ class User(AbstractUser):
         return self.email
 """Here plans is License"""
 class Plan(models.Model):
-    name = models.CharField(max_length=50, default="Annual Plan")
+    name = models.CharField(max_length=50)
     license_count = models.PositiveIntegerField()
     features = models.TextField(blank=True, null=True, verbose_name = "Features")
     amount = models.FloatField()

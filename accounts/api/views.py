@@ -1,4 +1,5 @@
 from rest_framework import generics
+from django.shortcuts import render
 from rest_framework import views
 from .serializers import *
 from accounts.models import *
@@ -54,15 +55,24 @@ class PaymentResponseView(views.APIView):
         if status != "paid":
             payment.status = Payment.PAYMENT_FAILED
             payment.save()
-            return Response({
+            # return Response({
+            #     "invoice_id": invoice_id,
+            #     "status": Payment.PAYMENT_FAILED,
+            #     "detail": "Payment failed",
+            # })
+            context = {
                 "invoice_id": invoice_id,
-                "status": Payment.PAYMENT_FAILED,
-                "detail": "Payment failed",
-            })
+                "status": "Payment failed",
+                'time':payment.updated_at
+            }
+            # return Response(context)
+            return render(request, 'accounts/payment_fail.html',context)
         # payment_create(payment)
         holder_data = payment.holder
         data = json.loads(holder_data)
         comp = company_create(payment,data["user_details"],data["company_details"], data["plan_details"])
+        if comp:
+            return render(request, "accounts/payment_user.html",{"status":"Sorry given email or phone number already used "})
         # print(comp) 
         # if comp["status"] == "exists":
         #     return Response({'status':"Sorry the given  Email or Phone number already used"})
@@ -74,12 +84,19 @@ class PaymentResponseView(views.APIView):
         #     [request.user.email],
         #     html_message=msg_html,
         # )
+        # context = {
+        #     "invoice_id": invoice_id,
+        #     "status": Payment.PAYMENT_DONE,
+        #     "detail": "Payment success",
+        # }
         context = {
             "invoice_id": invoice_id,
-            "status": Payment.PAYMENT_DONE,
-            "detail": "Payment success",
+            "status": "Payment success",
+            'by':data["user_details"]["first_name"],
+            'time':payment.updated_at
         }
-        return Response(context)
+        # return Response(context)
+        return render(request, 'accounts/payment_success.html',context)
 
 from accounts.razorpayment import *
 class PaymentView(views.APIView):
@@ -103,7 +120,11 @@ class PaymentView(views.APIView):
         print(schema, type(schema))
         url = "{schema}://{absolute_url}/accounts/api/payment/success".format(schema = schema, absolute_url =absolute_url)
         data = {
-            # "customer": user_details["first_name"],
+            # "prefill":{
+            #     "name": user_details["first_name"],
+            #     "email":user_details["email"],
+            #     "contact":user_details["phone_number"],
+            # },
             "type": "link",
             "amount": amount*100,
             "currency": "INR",

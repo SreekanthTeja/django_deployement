@@ -1,5 +1,6 @@
 from accounts.models import *
 from buildcorn.models import License
+from django.shortcuts import render
 import json
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -31,11 +32,9 @@ def company_create(payment,user, company, plan):
     payment.status = Payment.PAYMENT_DONE
     payment.payment_mode = 'IBNK'
     payment.updated_at = timezone.now()
-    # payment.save()
     print(user["email"],user["phone_number"])
-    if User.objects.filter(Q(email__iexact=user["email"]) | Q(phone_number__iexact=user["phone_number"])):
-    
-        raise serializers.ValidationError("Sorry given email or phone number already used ")
+    if User.objects.filter(Q(email__iexact=user["email"]) | Q(phone_number__iexact=user["phone_number"])).exists():
+        return True
     user = User.objects.create_user(**user)
     user.user_type = User.TENENT
     user.save()

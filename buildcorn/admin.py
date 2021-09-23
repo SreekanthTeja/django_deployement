@@ -4,12 +4,16 @@ from .models import *
 
 class CheckListAdmin(admin.ModelAdmin):
     list_display=['id','name','typee']
-
+admin.site.register(CheckList, CheckListAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display=['id','name',]
-admin.site.register(CheckList, CheckListAdmin)
-admin.site.register(Question)
 admin.site.register(Project, ProjectAdmin)
+
+
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display=['user','company']  
+admin.site.register(Employee, EmployeeAdmin)
+
+admin.site.register(Question)
 admin.site.register(License)
-admin.site.register(Employee)

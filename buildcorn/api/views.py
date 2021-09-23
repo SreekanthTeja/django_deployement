@@ -33,8 +33,9 @@ class EmployeeAPIView(generics.ListCreateAPIView):
             return self.queryset.filter(company__user=self.request.user)
     def perform_create(self, serializer):
         comp = Company.objects.get(user__email=self.request.user)
-        comp.license_purchased =- 1
         serializer.save(company=comp)
+        comp.license_purchased -= 1
+        comp.save()
 
     
 class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):
@@ -158,6 +159,7 @@ class QualityAssignChecklistAPIView(views.APIView):
         project.checklists.set([i.id for i in checklists])
         date = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         print(date)
+        project.save()
         return Response({'status':"Assignment successfully done",'date':date})
 
 class SafetyAssignChecklistAPIView(views.APIView):
@@ -171,7 +173,7 @@ class SafetyAssignChecklistAPIView(views.APIView):
         except Exception as e:
             raise serializers.ValidationError({'status':e})
         project.checklists.set([i.id for i in checklists])
-        # project.save()
+        project.save()
         return Response({'status':"Assignment successfully done"})
 
 
