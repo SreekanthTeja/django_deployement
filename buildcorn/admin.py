@@ -17,3 +17,7 @@ admin.site.register(Employee, EmployeeAdmin)
 
 admin.site.register(Question)
 admin.site.register(License)
+
+admin.site.register(Vendor)
+admin.site.register(Material)
+

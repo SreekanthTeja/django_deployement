@@ -61,9 +61,9 @@ class Plan(models.Model):
 
 class Company(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="company_user")
-    name = models.CharField(max_length=50, unique = True)
+    name = models.CharField(max_length=50,)
     company_id = models.CharField(default=uniqueid, max_length=50)
-    gstin = models.CharField(max_length=50, blank=True, null=True)
+    gstin = models.CharField(unique = True, max_length=50, blank=True, null=True)
     status = models.BooleanField(default=True, blank=True, null=True)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)

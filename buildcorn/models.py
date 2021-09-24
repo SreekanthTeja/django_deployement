@@ -65,6 +65,7 @@ class Question(models.Model):
     admin_status=models.CharField(choices=ADMIN_STATUS, max_length=10, blank=True, null=True)
     status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
     reason = models.TextField(blank=True, null=True)
+    pic = models.ImageField(upload_to="images/page/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
     def __str__(self):
         return self.question
 
@@ -80,6 +81,35 @@ class CheckList(models.Model):
     def __str__(self):
         return self.name
 
+
+class Material(models.Model):
+    name = models.CharField(max_length=50)
+    maker = models.CharField(max_length=20)
+    boq_ref = models.CharField(max_length=50, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    b_uom = models.CharField(max_length=10, blank=True, null=True)
+    b_qty = models.PositiveIntegerField(default=0,blank=True, null=True)
+    total_uom = models.CharField(max_length=10)
+    total_qty = models.PositiveIntegerField(default=0)
+    created_at = models.DateField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    class Meta:
+        ordering = ('-id',)
+    def __str__(self):
+        return f"{self.name} from {self.maker}"
+
+class Vendor(models.Model):
+    name = models.CharField(max_length=15)
+    email = models.EmailField(max_length=20)
+    contact = PhoneNumberField(unique=True)
+    address = models.TextField()
+    supervisor_name = models.CharField(max_length=15)
+    supervisor_contact = PhoneNumberField(unique=True)
+    class Meta:
+        ordering = ('-id',)
+    def __str__(self):
+        return f"{self.name} supervisor is  {self.supervisor_name}"
+
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     INSPECTION_DONE='D'
@@ -93,6 +123,8 @@ class Project(models.Model):
     employee = models.ManyToManyField(Employee, related_name="project_employees", blank=True)
     inspection = models.CharField(choices=INSPECTION_TYPES, max_length=1, blank=True, null=True, default=INSPECTION_PENDING)
     checklists = models.ManyToManyField(CheckList, blank=True, related_name='project_checklists')
+    material = models.ManyToManyField(Material, blank=True)
+    vendors = models.ManyToManyField(Vendor, blank=True)
     class Meta:
         ordering = ("-id",)
         
@@ -119,3 +151,4 @@ class FAQ(models.Model):
         ordering = ("id",)
     def __str__(self):
         return self.question
+

@@ -137,11 +137,16 @@ class FaqSerializer(serializers.ModelSerializer):
         model = FAQ
         fields = '__all__'
 
-# class SafetyCreateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SafetyLibrary
-#         fields = "__all__" 
-#         read_only_fields = ('safety_id',"id",)
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = "__all__" 
+        
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = '__all__'
+
 # class SafetyListSerializer(serializers.ModelSerializer):
 #     # checklist = SafetyCreateCheckListSerializer(many=True)
 #     class Meta:
@@ -162,11 +167,6 @@ class FaqSerializer(serializers.ModelSerializer):
 #         safety.save()
 #         return checklist
 
-# class RUDSafetySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SafetyLibrary
-#         fields = ("id","name")
-#         read_only_fields = ("id",)
 
 # class SafetyCheckListSerializer(serializers.ModelSerializer):
 #     checklist = SafetyCreateCheckListSerializer(many=True)
