@@ -12,22 +12,22 @@ User = get_user_model()
 
 
 
-class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Question
-        fields = ["id","question",]
+# class QuestionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=Question
+#         fields = ["id","question",]
 
-class CheckListSerailizer(serializers.ModelSerializer):
-    question = QuestionSerializer(many=True)
-    class Meta:
-        model=CheckList
-        fields = ['id','name','typee','question']
-#================================================
+# class CheckListSerailizer(serializers.ModelSerializer):
+#     question = QuestionSerializer(many=True)
+#     class Meta:
+#         model=CheckList
+#         fields = ['id','name','typee','question']
+# #================================================
 
-class ProjectListSerializer(serializers.ModelSerializer):
-    checklists = CheckListSerailizer(many=True)
-    class Meta:
-        model = Project
-        fields = ["id","name","location","checklists"]
+# class ProjectListSerializer(serializers.ModelSerializer):
+#     checklists = CheckListSerailizer(many=True)
+#     class Meta:
+#         model = Project
+#         fields = ["id","name","location","checklists"]
 
 

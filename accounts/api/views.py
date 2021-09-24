@@ -42,7 +42,10 @@ class PlanListView(generics.ListAPIView):
     queryset = Plan.objects.all()
     serializer_class = PlanSerializer
     
-    
+
+class PlanReadView(generics.RetrieveAPIView):
+    queryset = Plan.objects.all()
+    serializer_class = PlanSerializer
 """Company apis end"""
 
 class PaymentResponseView(views.APIView):

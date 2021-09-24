@@ -66,42 +66,42 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         model = Project
         fields = "__all__"
 
-class CheckListAssignSerailizer(serializers.ModelSerializer):
-    # created_at = serializers.DateField(format="%d-%m-%Y",)
-    class Meta:
-        model=CheckList
-        fields = ['id','name','typee','checklist_id','created_at']
-class ProjectAssignSerializer(serializers.ModelSerializer):
-    checklists = CheckListAssignSerailizer(many=True)
+# class CheckListAssignSerailizer(serializers.ModelSerializer):
+#     # created_at = serializers.DateField(format="%d-%m-%Y",)
+#     class Meta:
+#         model=CheckList
+#         fields = ['id','name','typee','checklist_id','created_at']
+# class ProjectAssignSerializer(serializers.ModelSerializer):
+#     checklists = CheckListAssignSerailizer(many=True)
 
-    class Meta:
-        model = Project
-        fields = ['id','name','checklists']
+#     class Meta:
+#         model = Project
+#         fields = ['id','name','checklists']
         
 """Project serializer ends"""
 
 
-class CheckQuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Question
-        fields = ["id","question","admin_status","question_id"]
-class CheckListSerializer(serializers.ModelSerializer):
-    question = CheckQuestionSerializer(many=True,)
-    class Meta:
-        model = CheckList
-        fields = ["id","checklist_id","typee","name","question",] 
-        read_only_fields = ( "id","checklist_id",)
-class CheckListCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CheckList
-        fields = ["id","checklist_id","typee","name","question",] 
-        read_only_fields = ( "id","checklist_id",) 
+# class CheckQuestionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=Question
+#         fields = ["id","question","admin_status","question_id"]
+# class CheckListSerializer(serializers.ModelSerializer):
+#     question = CheckQuestionSerializer(many=True,)
+#     class Meta:
+#         model = CheckList
+#         fields = ["id","checklist_id","typee","name","question",] 
+#         read_only_fields = ( "id","checklist_id",)
+# class CheckListCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CheckList
+#         fields = ["id","checklist_id","typee","name","question",] 
+#         read_only_fields = ( "id","checklist_id",) 
 
-class CheckListUpdateSerializer(WritableNestedModelSerializer):
-    class Meta:
-        model = CheckList
-        fields = ["id","checklist_id","typee","name","question",] 
-        read_only_fields = ( "id","checklist_id",)
+# class CheckListUpdateSerializer(WritableNestedModelSerializer):
+#     class Meta:
+#         model = CheckList
+#         fields = ["id","checklist_id","typee","name","question",] 
+#         read_only_fields = ( "id","checklist_id",)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -128,10 +128,6 @@ class QuestionSerializer(serializers.ModelSerializer):
         checklist.question.add(question)
         checklist.save()
         return question
-        # # print(checklist)
-        # question = Question.objects.get_or_create(question=)
-        # checklist.question.
-
 class FaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ
@@ -141,7 +137,7 @@ class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Material
         fields = "__all__" 
-        
+
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor

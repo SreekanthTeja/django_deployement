@@ -11,6 +11,8 @@ urlpatterns = [
     path('company/rud/<int:pk>',CompanyRUDView.as_view(), name='company-update'),
 
     path('plans',PlanListView.as_view()),
+    path('plans/read/<int:pk>',PlanReadView.as_view()),
+
     path('payment/request', PaymentView.as_view()),
     path('payment/success', PaymentResponseView.as_view()),
 

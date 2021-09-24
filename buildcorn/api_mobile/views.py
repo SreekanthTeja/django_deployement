@@ -12,12 +12,12 @@ from bigspace.permissions import *
 User = get_user_model()
 
 
-class ProjectListAPIView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,IsTenentOrUser)
-    queryset = Project.objects.all()
-    serializer_class = ProjectListSerializer
-    def get_queryset(self):
-        print(self.request.user)
-        q = self.queryset.filter(employee__user=self.request.user)
-        print('>>>>>',q)
-        return q
+# class ProjectListAPIView(generics.ListAPIView):
+#     permission_classes = (IsAuthenticated,IsTenentOrUser)
+#     queryset = Project.objects.all()
+#     serializer_class = ProjectListSerializer
+#     def get_queryset(self):
+#         print(self.request.user)
+#         q = self.queryset.filter(employee__user=self.request.user)
+#         print('>>>>>',q)
+#         return q

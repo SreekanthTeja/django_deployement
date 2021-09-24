@@ -2,9 +2,13 @@ from django.contrib import admin
 from .models import *
 # Register your models here.
 
-class CheckListAdmin(admin.ModelAdmin):
-    list_display=['id','name','typee']
-admin.site.register(CheckList, CheckListAdmin)
+class QualityCheckListAdmin(admin.ModelAdmin):
+    list_display=['id','name',]
+admin.site.register(QualityCheckList, QualityCheckListAdmin)
+
+class SafetyCheckListAdmin(admin.ModelAdmin):
+    list_display=['id','name',]
+admin.site.register(SafetyCheckList, SafetyCheckListAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display=['id','name',]
@@ -15,7 +19,12 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display=['user','company']  
 admin.site.register(Employee, EmployeeAdmin)
 
-admin.site.register(Question)
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display=['question','typee']  
+admin.site.register(Question, QuestionAdmin)
+
+
 admin.site.register(License)
 
 admin.site.register(Vendor)
