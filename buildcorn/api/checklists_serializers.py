@@ -54,7 +54,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QueSafetyQualitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ["id","typee","question"]
+        fields = ["id","typee","question","question_id"]
 """ Safety"""
 class SafetySerializer(serializers.ModelSerializer):
     class Meta:
