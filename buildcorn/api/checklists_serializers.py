@@ -11,7 +11,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         # fields = "__all__"
-        exclude = ["pic",'admin_status','reason','status']
+        exclude = ["pic",'reason','status']
     def create(self, validated_data):
         data = self.initial_data
         print(data)
@@ -54,7 +54,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class QueSafetyQualitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = ["id","typee","question","question_id"]
+        fields = ["id","typee","question","admin_status","question_id"]
 """ Safety"""
 class SafetySerializer(serializers.ModelSerializer):
     class Meta:

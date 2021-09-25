@@ -92,6 +92,7 @@ class QualityCheckList(models.Model):
         return self.name
 
 class Vendor(models.Model):
+    ven_id = models.CharField(default=licenseid,max_length=30,blank=True, null=True)
     company = models.ForeignKey(Company, on_delete = models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=15)
     email = models.EmailField(max_length=20)
