@@ -28,6 +28,6 @@ User = get_user_model()
 #     checklists = CheckListSerailizer(many=True)
 #     class Meta:
 #         model = Project
-#         fields = ["id","name","location","checklists"]
+#         fields = ["id","name","location","quality_checklist","safety_checklist"]
 
 

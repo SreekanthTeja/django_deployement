@@ -26,24 +26,26 @@ def licensee_create(company, plan):
     # end_at = datetime.datetime.strftime(result, "%Y-%m-%d")
     # licens = License.objects.create(user=user, created_at=created_at,end_at=end_at )
     # licens.save()
-    if plan["name"] == 'Annual Plan':
-        annual = today +  relativedelta(months=12)
-        end_at = datetime.datetime.strftime(annual, "%Y-%m-%d")
-        licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=12)
-        licens.save()
-    elif plan["name"] == 'Quaterly Plan':
-        quaterly = today +  relativedelta(months=3)
-        end_at = datetime.datetime.strftime(quaterly, "%Y-%m-%d")
-        licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=3)
-        licens.save()
-    else:
-        month = today +  relativedelta(months=1)
-        end_at = datetime.datetime.strftime(month, "%Y-%m-%d")
-        licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=1)
-        licens.save()
+    try:
+        if plan["name"] == 'Annual Plan':
+            annual = today +  relativedelta(months=12)
+            end_at = datetime.datetime.strftime(annual, "%Y-%m-%d")
+            licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=12)
+            licens.save()
+        elif plan["name"] == 'Quaterly Plan':
+            quaterly = today +  relativedelta(months=3)
+            end_at = datetime.datetime.strftime(quaterly, "%Y-%m-%d")
+            licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=3)
+            licens.save()
+        else:
+            month = today +  relativedelta(months=1)
+            end_at = datetime.datetime.strftime(month, "%Y-%m-%d")
+            licens = License.objects.create(company=company, created_at=today, end_at=end_at, tenure=1)
+            licens.save()
+    except Exception as e:
+        raise serializers.ValidationError({'error':e})
 
 def company_create(payment,user, company, plan):
-    # print(plan)
     payment.status = Payment.PAYMENT_DONE
     payment.payment_mode = 'IBNK'
     payment.updated_at = timezone.now()

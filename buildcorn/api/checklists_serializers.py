@@ -12,6 +12,43 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         # fields = "__all__"
         exclude = ["pic",'admin_status','reason','status']
+    def create(self, validated_data):
+        data = self.initial_data
+        print(data)
+        if not data.get('type_id') and data.get('typee'):
+            raise serializers.ValidationError({'error':'Type id or Type is missing'})
+        type_id, typee = data.pop('type_id'), data.pop('typee')
+        try:
+            if typee == Question.Quality:
+                quality_checklist = QualityCheckList.objects.get(id=type_id,)
+                question = Question.objects.create(**data)
+                question.save()
+                quality_checklist.question.add(question)
+                quality_checklist.save()
+                return question
+            else:
+                safety_checklist = SafetyCheckList.objects.get(id=type_id,)
+                question = Question.objects.create(**data)
+                question.save()
+                safety_checklist.question.add(question)
+                safety_checklist.save()
+                return question
+        except Exception as e:
+            raise serializers.ValidationError({'status':e})
+
+        # try:
+        #     checklist = CheckList.objects.get(id=type_id, typee=typee)
+        #     print(checklist)
+        #     question = Question.objects.create(**data)
+        #     # if created:
+        #     question.save()
+        #     print(question)
+
+        # except Exception as e:
+        #     raise serializers.ValidationError({'status':e})
+        # checklist.question.add(question)
+        # checklist.save()
+        # return question
 
 
 class QueSafetyQualitySerializer(serializers.ModelSerializer):
