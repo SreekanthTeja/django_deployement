@@ -9,13 +9,25 @@ import uuid
 User = get_user_model()
 
 """License """
-class LicenseUserSerializer(serializers.ModelSerializer):
+class LicenseCompanySerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ("id","first_name","email")
+        model = Company
+        fields = ("name","gstin","license_purchased")
+    def to_representation(self, instance):
+        print(instance)
+        context = super(LicenseCompanySerializer, self).to_representation(instance)
+        license_used_count = Employee.objects.filter(company=instance).values('user').count()
+        # if context['license_purchased'] == license_used_count:
+        #     raise serializers.ValidationError({'status':'Your quota is completed'})
+        return {
+            'name':context["name"],
+            'gstin':context['gstin'],
+            'total_licenses':context['license_purchased'],
+            'license_used_count':license_used_count
+        }
 
 class LicenseSerializer(serializers.ModelSerializer):
-    user = LicenseUserSerializer()
+    company = LicenseCompanySerializer()
     class Meta:
         model = License
         fields = "__all__"

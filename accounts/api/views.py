@@ -75,7 +75,7 @@ class PaymentResponseView(views.APIView):
         data = json.loads(holder_data)
         comp = company_create(payment,data["user_details"],data["company_details"], data["plan_details"])
         if comp:
-            return render(request, "accounts/payment_user.html",{"status":"Sorry given email or phone number already used "})
+            return render(request, "accounts/payment_user.html",{"status":"given email,phone number, gstin one of its already in use "})
         # print(comp) 
         # if comp["status"] == "exists":
         #     return Response({'status':"Sorry the given  Email or Phone number already used"})

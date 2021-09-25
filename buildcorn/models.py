@@ -14,19 +14,19 @@ def licenseid():
 User = get_user_model()
 
 class License(models.Model):
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
-    license_id = models.CharField(default=licenseid, max_length=20)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
     status = models.BooleanField(default=True)
+    tenure = models.FloatField(blank=True, null=True, default=0)
+    
     # designation = models.CharField(max_length=50, null=True, blank=True)
-    # tenure = models.FloatField(blank=True, null=True, default=0)
     # device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
     class Meta:
         ordering = ("-id",)
 
     def __str__(self):
-        return f"{self.user.first_name}"
+        return f"{self.company}"
 
 
 # def calculate_tenure(sender,instance,**kwargs):

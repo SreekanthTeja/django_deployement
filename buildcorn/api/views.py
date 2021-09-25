@@ -41,7 +41,7 @@ class EmployeeAPIView(generics.ListCreateAPIView):
         if comp.license_purchased == 0:
             raise serializers.ValidationError(
                 {'status': 'Sorry  License wallet 0'})
-        comp.license_purchased -= 1
+        # comp.license_purchased -= 1
         comp.save()
         serializer.save(company=comp)
 
@@ -290,6 +290,9 @@ class VendorLCView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
+    def get_queryset(self):
+        
+        return self.queryset.filter(company__user=self.request.user)
     
     def perform_create(self, serializer):
         company = Company.objects.get(user__email=self.request.user)
