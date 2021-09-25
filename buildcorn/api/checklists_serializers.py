@@ -10,7 +10,9 @@ User = get_user_model()
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ["pic",'admin_status','reason','status']
+
 
 class QueSafetyQualitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,16 +20,25 @@ class QueSafetyQualitySerializer(serializers.ModelSerializer):
         fields = ["id","typee","question"]
 """ Safety"""
 class SafetySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SafetyCheckList
+        fields = "__all__"
+class RDSafetySerializer(serializers.ModelSerializer):
     question = QueSafetyQualitySerializer(many=True, required=False)
     class Meta:
         model = SafetyCheckList
         fields = "__all__"
 """ Safety ends """
 class QualitySerializer(serializers.ModelSerializer):
-    question = QueSafetyQualitySerializer(many=True, required=False)
+    # question = QueSafetyQualitySerializer(many=True, required=False)
     class Meta:
         model = QualityCheckList
         fields = "__all__"
 
+class RDQualitySerializer(serializers.ModelSerializer):
+    question = QueSafetyQualitySerializer(many=True, required=False)
+    class Meta:
+        model = QualityCheckList
+        fields = "__all__"
 
 

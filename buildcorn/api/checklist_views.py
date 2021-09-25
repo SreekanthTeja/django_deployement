@@ -13,9 +13,9 @@ import datetime
 
 User = get_user_model()
 
-
-class SafetyListView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,IsSuperUser, IsTenentUser)
+"""Safety Admin side"""
+class AdminSafetyListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = SafetyCheckList.objects.all()
     serializer_class = SafetySerializer
     # def get_queryset(self):
@@ -26,35 +26,45 @@ class SafetyCreateView(generics.CreateAPIView):
     queryset = SafetyCheckList.objects.all()
     serializer_class = SafetySerializer
 
-class RUDSafetyView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+class UpdateSafetyView(generics.UpdateAPIView):
+
+    permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = SafetyCheckList.objects.all()
     serializer_class = SafetySerializer
+class RDSafetyView(generics.RetrieveDestroyAPIView):
+    
+    permission_classes = (IsAuthenticated,)
+    queryset = SafetyCheckList.objects.all()
+    serializer_class = RDSafetySerializer
 
 
-class QualityListView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,IsSuperUser, IsTenentUser)
+"""Quality Admin side"""
+class AdminQualityListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = QualityCheckList.objects.all()
     serializer_class = QualitySerializer
     # def get_queryset(self):
     #     return self.queryset.filter(question__typee=Question.Quality)
-
-
 
 class QualityCreateiew(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,IsSuperUser)
     queryset = QualityCheckList.objects.all()
     serializer_class = QualitySerializer
 
-
-class RUDQualitylView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+class UpdateQualitylView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser,)
     queryset = QualityCheckList.objects.all()
     serializer_class = QualitySerializer
 
+class RDQualitylView(generics.RetrieveDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = QualityCheckList.objects.all()
+    serializer_class = RDQualitySerializer
+
+"""Questions"""
 
 class QuestionListView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,IsSuperUser, IsTenentUser)
+    permission_classes = (IsAuthenticated,)
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 

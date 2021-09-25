@@ -91,11 +91,23 @@ class QualityCheckList(models.Model):
     def __str__(self):
         return self.name
 
-
+class Vendor(models.Model):
+    company = models.ForeignKey(Company, on_delete = models.CASCADE, blank=True, null=True)
+    name = models.CharField(max_length=15)
+    email = models.EmailField(max_length=20)
+    contact = PhoneNumberField(unique=True)
+    address = models.TextField()
+    supervisor_name = models.CharField(max_length=15)
+    supervisor_contact = PhoneNumberField(unique=True)
+    class Meta:
+        ordering = ('-id',)
+    def __str__(self):
+        return f"{self.name} supervisor is  {self.supervisor_name}"
 
 class Material(models.Model):
+    company = models.ForeignKey(Company, on_delete = models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=50)
-    maker = models.CharField(max_length=20)
+    maker = models.ForeignKey(Vendor, on_delete=models.CASCADE, blank=True, null=True)
     boq_ref = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     b_uom = models.CharField(max_length=10, blank=True, null=True)
@@ -107,19 +119,9 @@ class Material(models.Model):
     class Meta:
         ordering = ('-id',)
     def __str__(self):
-        return f"{self.name} from {self.maker}"
+        return f"{self.name} "
 
-class Vendor(models.Model):
-    name = models.CharField(max_length=15)
-    email = models.EmailField(max_length=20)
-    contact = PhoneNumberField(unique=True)
-    address = models.TextField()
-    supervisor_name = models.CharField(max_length=15)
-    supervisor_contact = PhoneNumberField(unique=True)
-    class Meta:
-        ordering = ('-id',)
-    def __str__(self):
-        return f"{self.name} supervisor is  {self.supervisor_name}"
+
 
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)

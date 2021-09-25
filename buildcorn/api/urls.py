@@ -27,31 +27,35 @@ urlpatterns = [
     # path('safety/rud/<int:pk>',RUDSafetyView.as_view()),
     # path('safety/checklist/<int:pk>',SafetyCheckListView.as_view()),
 
-    ###########  check-list url's ##################
+    ###########  admin safety url's ##################
 
-    path('safety/check/list',SafetyListView.as_view()),
+    path('safety/check/list',AdminSafetyListView.as_view()),
     path('safety/check/create',SafetyCreateView.as_view()),
-    path('safety/check/rud/<int:pk>',RUDSafetyView.as_view()),
+    path('safety/check/rd/<int:pk>',RDSafetyView.as_view()),
+    path('safety/check/update/<int:pk>',UpdateSafetyView.as_view()),
+    ###########  admin quality url's ##################
 
-    path('quality/check/list',QualityListView.as_view()),
+    path('quality/check/list',AdminQualityListView.as_view()),
     path('quality/check/create',QualityCreateiew.as_view()),
-    path('quality/check/rud/<int:pk>',RUDQualitylView.as_view()),
-
+    path('quality/check/rd/<int:pk>',RDQualitylView.as_view()),
+    path('quality/check/update/<int:pk>',UpdateQualitylView.as_view()),
     # path('safety/check/list',SafetyCheckListAPIView.as_view()),
     # path('check/create',CheckListCreateAPIView.as_view()),
     # path('check/rd/<int:pk>',RDCheckView.as_view()),
     # path('check/update/<int:pk>',UpdateCheckView.as_view()),
 
-    # ########### banner  url's ##################
-    path('quality/check/list',QuestionListView.as_view()),
+    # ########### admin questions  url's ##################
+    path('question/list',QuestionListView.as_view()),
     path('question/create',QuestionCreateView.as_view()),
     path('question/rud/<int:pk>',RUDQuestionlView.as_view()),
 
     # ########### quality  url's ##################
-    # path('quality/checklist/assign/project',QualityAssignChecklistAPIView.as_view()),
-    # path('safety/checklist/assign/project',SafetyAssignChecklistAPIView.as_view()),
-    # path('quality/project',QualityShowProjectAssign.as_view()),
-    # path('safety/project',SafetyShowProjectAssign.as_view()),
+
+
+    path('quality/checklist/assign/project',QualityAssignProjectAPIView.as_view()),
+    path('safety/checklist/assign/project',SafetyAssignProjectAPIView.as_view()),
+    path('quality/project',ShowQualityProjectView.as_view()),
+    path('safety/project',ShowSafetyProjectView.as_view()),
 
     path('faq/list_or_create',FaqLCView.as_view()),
     path('faq/rud/<int:pk>',RUDFaqView.as_view()),

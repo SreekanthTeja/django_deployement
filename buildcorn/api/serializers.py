@@ -65,69 +65,42 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
-
-# class CheckListAssignSerailizer(serializers.ModelSerializer):
-#     # created_at = serializers.DateField(format="%d-%m-%Y",)
-#     class Meta:
-#         model=CheckList
-#         fields = ['id','name','typee','checklist_id','created_at']
-# class ProjectAssignSerializer(serializers.ModelSerializer):
-#     checklists = CheckListAssignSerailizer(many=True)
-
-#     class Meta:
-#         model = Project
-#         fields = ['id','name','checklists']
-        
 """Project serializer ends"""
 
-
-# class CheckQuestionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model=Question
-#         fields = ["id","question","admin_status","question_id"]
-# class CheckListSerializer(serializers.ModelSerializer):
-#     question = CheckQuestionSerializer(many=True,)
-#     class Meta:
-#         model = CheckList
-#         fields = ["id","checklist_id","typee","name","question",] 
-#         read_only_fields = ( "id","checklist_id",)
-# class CheckListCreateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = CheckList
-#         fields = ["id","checklist_id","typee","name","question",] 
-#         read_only_fields = ( "id","checklist_id",) 
-
-# class CheckListUpdateSerializer(WritableNestedModelSerializer):
-#     class Meta:
-#         model = CheckList
-#         fields = ["id","checklist_id","typee","name","question",] 
-#         read_only_fields = ( "id","checklist_id",)
-
-
-class QuestionSerializer(serializers.ModelSerializer):
+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+class QuestionDataSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Question
-        fields = '__all__'
+        model=Question
+        fields = ['id',"question"]
 
-    def create(self, validated_data):
-        data = self.initial_data
-        type_id, typee = data.pop('type_id'), data.pop('typee')
-        if not type_id and typee:
-            raise serializers.ValidationError({'error':'Type id or Type is missing'})
+class QualityDataSerializer(serializers.ModelSerializer):
+    question = QuestionDataSerializer(many=True)
+    class Meta:
+        model=QualityCheckList
+        fields = ['id','name',"question"]
 
-        try:
-            checklist = CheckList.objects.get(id=type_id, typee=typee)
-            print(checklist)
-            question = Question.objects.create(**data)
-            # if created:
-            question.save()
-            print(question)
+class SafetyDataSerializer(serializers.ModelSerializer):
+    question = QuestionDataSerializer(many=True)
+    class Meta:
+        model=SafetyCheckList
+        fields = ['id','name',"question"]
+class ShowQualityProjectSerializer(serializers.ModelSerializer):
+    quality_checklist = SafetyDataSerializer(many=True)
 
-        except Exception as e:
-            raise serializers.ValidationError({'status':e})
-        checklist.question.add(question)
-        checklist.save()
-        return question
+    class Meta:
+        model = Project
+        fields = ['id','name','quality_checklist']
+        
+class ShowSafetyProjectSerializer(serializers.ModelSerializer):
+    safety_checklist = QualityDataSerializer(many=True)
+
+    class Meta:
+        model = Project
+        fields = ['id','name','safety_checklist']
+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+
+
+
 class FaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ
@@ -136,112 +109,38 @@ class FaqSerializer(serializers.ModelSerializer):
 class MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Material
-        fields = "__all__" 
+        # fields = "__all__" 
+        exclude = ['maker']
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = '__all__'
 
-# class SafetyListSerializer(serializers.ModelSerializer):
-#     # checklist = SafetyCreateCheckListSerializer(many=True)
-#     class Meta:
-#         model = SafetyLibrary
-#         fields = ('safety_id',"id","name","checklist",) 
-#         read_only_fields = ('safety_id',"id","checklist")
 
-# class SafetyCreateCheckListSerializer(serializers.ModelSerializer):
+# class QuestionSerializer(serializers.ModelSerializer):
 #     class Meta:
-#         model = CheckList
-#         fields = ["id","checklist_id","question","answer","status"] 
-#         read_only_fields = ( "id","checklist_id",)
+#         model = Question
+#         fields = '__all__'
+
 #     def create(self, validated_data):
-#         safety = SafetyLibrary.objects.get(id=self.initial_data["pid"])
-#         checklist = CheckList.objects.create(**validated_data)
+#         data = self.initial_data
+#         type_id, typee = data.pop('type_id'), data.pop('typee')
+#         if not type_id and typee:
+#             raise serializers.ValidationError({'error':'Type id or Type is missing'})
+
+#         try:
+#             checklist = CheckList.objects.get(id=type_id, typee=typee)
+#             print(checklist)
+#             question = Question.objects.create(**data)
+#             # if created:
+#             question.save()
+#             print(question)
+
+#         except Exception as e:
+#             raise serializers.ValidationError({'status':e})
+#         checklist.question.add(question)
 #         checklist.save()
-#         safety.checklist.add(checklist)
-#         safety.save()
-#         return checklist
-
-
-# class SafetyCheckListSerializer(serializers.ModelSerializer):
-#     checklist = SafetyCreateCheckListSerializer(many=True)
-#     class Meta:
-#         model = SafetyLibrary
-#         fields = ("id","checklist",) 
-#         read_only_fields = ("id","checklist")
-
-
-
-# class EmployeeUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ("email","first_name","phone_number","id","is_active")
-#     def create(self, validated_data):
-#         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
-#         user.save()
-#         return user
-
-# class EmployeeProjectSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Project
-#         fields = ("name","id",)
-#         # read_only_fields = ("name",)
-      
-
-# class EmployeeCompanySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Company
-#         fields = ("name","id",)
-#         read_only_fields = ("name",)
-#     def create(self, validated_data):
-#         company = Company.license_purchased =- 1
-#         company.save()
-#         return company
-
-# class EmployeeProjectSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Project
-#         fields = ["id","name"]
-        
-# class EmployeeSerializer(WritableNestedModelSerializer):
-#     user = EmployeeUserSerializer()
-#     company = EmployeeCompanySerializer()
-#     projects = EmployeeProjectSerializer(required=False,many=True)
-#     class Meta:
-#         model = Employee
-#         fields = ["id","eid","user","company","designation","created_at","projects"]
-#         depth = 3
-#         read_only_fields = ["id","eid","created_at","projects"]
-# class EmployeeCreateSerializer(WritableNestedModelSerializer):
-#     user = EmployeeUserSerializer()
-#     # company = EmployeeCompanySerializer()
-#     class Meta:
-#         model = Employee
-#         fields = ["id","eid","user","company","designation","created_at",]
-#         read_only_fields = ["id","eid","created_at","company"]
-
-# class EmployeeRDUserSerializer(serializers.ModelSerializer):
-#     user = EmployeeUserSerializer(required=False)
-#     projects = EmployeeProjectSerializer( many=True)
-#     class Meta:
-#         model = Employee
-#         fields = ("id","user","projects")
-#         read_only_fields = ["id","user"]
-
-# class EmployeeUpdateUserSerializer(serializers.ModelSerializer):
-#     # user = EmployeeUserSerializer(required=False)
-#     class Meta:
-#         model = User
-#         fields = ("id","user","projects")
-#         read_only_fields = ["id","user"]
-
-
-
-
-
-
-
- 
+#         return question
 
 

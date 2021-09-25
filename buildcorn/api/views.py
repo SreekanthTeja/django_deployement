@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse
 from rest_framework import generics
 from rest_framework import views
 from .serializers import *
+from .checklists_serializers import *
 from buildcorn.models import *
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
@@ -173,69 +174,84 @@ class ProjectUpdateView(generics.UpdateAPIView):
 """Questions views"""
 
 
-class QuestionView(generics.CreateAPIView):
-    permission_classes = (IsAuthenticated, IsSuperUser,)
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+# class QuestionView(generics.CreateAPIView):
+#     permission_classes = (IsAuthenticated, IsSuperUser,)
+#     queryset = Question.objects.all()
+#     serializer_class = QuestionSerializer
 
 
-class RUDQuestionView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+# class RUDQuestionView(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     queryset = Question.objects.all()
+#     serializer_class = QuestionSerializer
 
 
-# class QualityAssignChecklistAPIView(views.APIView):
-#     permission_classes = (IsAuthenticated, IsTenentUser,)
+class QualityAssignProjectAPIView(views.APIView):
+    permission_classes = (IsAuthenticated, IsTenentUser,)
 
-#     def post(self, request):
-#         data = request.data
-#         check = data.get('checklists')
-#         try:
-#             project = Project.objects.get(id=data.get('project'))
-#             checklists = CheckList.objects.filter(id__in=check)
-#         except Exception as e:
-#             raise serializers.ValidationError({'status': e})
-#         project.checklists.set([i.id for i in checklists])
-#         date = datetime.datetime.strftime(
-#             datetime.datetime.today(), '%Y-%m-%d')
-#         print(date)
-#         project.save()
-#         return Response({'status': "Assignment successfully done", 'date': date})
-
-
-# class SafetyAssignChecklistAPIView(views.APIView):
-#     permission_classes = (IsAuthenticated, IsTenentUser,)
-
-#     def post(self, request):
-#         data = request.data
-#         check = data.get('checklists')
-#         try:
-#             project = Project.objects.get(id=data.get('project'))
-#             checklists = CheckList.objects.filter(id__in=check)
-#         except Exception as e:
-#             raise serializers.ValidationError({'status': e})
-#         project.checklists.set([i.id for i in checklists])
-#         project.save()
-#         return Response({'status': "Assignment successfully done"})
+    def post(self, request):
+        data = request.data
+        check = data.get('quality')
+        try:
+            project = Project.objects.get(id=data.get('project'))
+            checklists = QualityCheckList.objects.filter(id__in=check)
+            print(checklists)
+        except Exception as e:
+            raise serializers.ValidationError({'status': e})
+        project.quality_checklist.set([i.id for i in checklists])
+        date = datetime.datetime.strftime(
+            datetime.datetime.today(), '%Y-%m-%d')
+        print(date)
+        project.save()
+        return Response({'status': "Assignment successfully done", 'date': date})
 
 
-# class QualityShowProjectAssign(generics.ListAPIView):
-#     permission_classes = (IsAuthenticated, IsTenentUser,)
-#     queryset = Project.objects.all()
-#     serializer_class = ProjectAssignSerializer
+class SafetyAssignProjectAPIView(views.APIView):
+    permission_classes = (IsAuthenticated, IsTenentUser,)
 
-#     def get_queryset(self):
-#         return self.queryset.filter(checklists__typee=CheckList.Quality).distinct()
+    def post(self, request):
+        data = request.data
+        check = data.get('quality')
+        try:
+            project = Project.objects.get(id=data.get('project'))
+            checklists = SafetyCheckList.objects.filter(id__in=check)
+            print(checklists)
+        except Exception as e:
+            raise serializers.ValidationError({'status': e})
+        project.safety_checklist.set([i.id for i in checklists])
+        date = datetime.datetime.strftime(
+            datetime.datetime.today(), '%Y-%m-%d')
+        print(date)
+        # project.save()
+        return Response({'status': "Assignment successfully done", 'date': date})
 
 
-# class SafetyShowProjectAssign(generics.ListAPIView):
-#     permission_classes = (IsAuthenticated, IsTenentUser,)
-#     queryset = Project.objects.all()
-#     serializer_class = ProjectAssignSerializer
+class ShowQualityProjectView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, IsTenentUser,)
+    queryset = Project.objects.all()
+    serializer_class = ShowQualityProjectSerializer
 
-#     def get_queryset(self):
-#         return self.queryset.filter(checklists__typee=CheckList.Safety).distinct()
+    def get_queryset(self):
+        return self.queryset.filter(quality_checklist__question__typee=Question.Quality).distinct()
+
+
+class ShowSafetyProjectView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, IsTenentUser,)
+    queryset = Project.objects.all()
+    serializer_class = ShowSafetyProjectSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(safety_checklist__question__typee=Question.Safety).distinct()
+
+
+
+
+
+
+
+
+
+
 
 
 class FaqLCView(generics.ListCreateAPIView):
@@ -254,18 +270,30 @@ class MaterialLCView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
-
+    def perform_create(self, serializer, **kwargs):
+        print(self.request.data).get('maker')
+        try:
+            company = Company.objects.get(user__email=self.request.user)
+            maker = Vendor.objects.get(id=self.request.data.get('maker'))
+        except Exception as e:
+            raise serializers.ValidationError({'error':e})
+        serializer.save(company=company, maker=maker)
 
 class RUDMaterialView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
+    
 
 
 class VendorLCView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
+    
+    def perform_create(self, serializer):
+        company = Company.objects.get(user__email=self.request.user)
+        serializer.save(company=company)
 
 
 class RUDVendorlView(generics.RetrieveUpdateDestroyAPIView):
