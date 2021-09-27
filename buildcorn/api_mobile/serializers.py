@@ -12,22 +12,34 @@ User = get_user_model()
 
 
 
-# class QuestionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model=Question
-#         fields = ["id","question",]
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Question
+        fields = ["id","question",]
 
-# class CheckListSerailizer(serializers.ModelSerializer):
-#     question = QuestionSerializer(many=True)
-#     class Meta:
-#         model=CheckList
-#         fields = ['id','name','typee','question']
+class SafetyCheckListSerailizer(serializers.ModelSerializer):
+    question = QuestionSerializer(many=True)
+    class Meta:
+        model=SafetyCheckList
+        fields = ['id','name','question']
+class QualityCheckListSerailizer(serializers.ModelSerializer):
+    question = QuestionSerializer(many=True)
+    class Meta:
+        model=QualityCheckList
+        fields = ['id','name','question']
 # #================================================
 
-# class ProjectListSerializer(serializers.ModelSerializer):
-#     checklists = CheckListSerailizer(many=True)
-#     class Meta:
-#         model = Project
-#         fields = ["id","name","location","quality_checklist","safety_checklist"]
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Material
+        fields = ['id','name',"total_qty","total_uom"]
+
+class ProjectListSerializer(serializers.ModelSerializer):
+    safety_checklist = SafetyCheckListSerailizer(many=True)
+    quality_checklist = QualityCheckListSerailizer(many=True)
+    material = MaterialSerializer(many=True) 
+    class Meta:
+        model = Project
+        fields = ["id","name","location","quality_checklist","safety_checklist","material"]
 
 
