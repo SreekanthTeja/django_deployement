@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.response import Response
 from rest_framework import status
 from bigspace.permissions import *
-
+import json
+# import pandas as pd
 User = get_user_model()
 
 
@@ -17,7 +18,19 @@ class ProjectListAPIView(generics.ListAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectListSerializer
     def get_queryset(self):
-        print(self.request.user)
-        q = self.queryset.filter(employee__user=self.request.user)
-        print('>>>>>',q)
-        return q
+        return self.queryset.filter(employee__user=self.request.user)
+
+class DownloadProjectListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = Project.objects.all()
+    serializer_class = ProjectListSerializer
+    def get_queryset(self):
+        return self.queryset.filter(employee__user=self.request.user)
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        serializer = ProjectListSerializer(queryset, many=True)
+        j_data = json.dumps(serializer.data)
+        j_data = json.loads(j_data)
+        print(j_data[0])
+        return Response(serializer.data)

@@ -29,10 +29,16 @@ class QualityCheckListSerailizer(serializers.ModelSerializer):
         fields = ['id','name','question']
 # #================================================
 
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = ("name", )
+
 class MaterialSerializer(serializers.ModelSerializer):
+    maker = VendorSerializer()
     class Meta:
         model=Material
-        fields = ['id','name',"total_qty","total_uom"]
+        fields = ['id','name',"total_qty","total_uom","maker"]
 
 class ProjectListSerializer(serializers.ModelSerializer):
     safety_checklist = SafetyCheckListSerailizer(many=True)

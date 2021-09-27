@@ -271,7 +271,7 @@ class MaterialLCView(generics.ListCreateAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     def perform_create(self, serializer, **kwargs):
-        print(self.request.data).get('maker')
+        
         try:
             company = Company.objects.get(user__email=self.request.user)
             maker = Vendor.objects.get(id=self.request.data.get('maker'))
