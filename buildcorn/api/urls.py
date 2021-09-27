@@ -60,7 +60,8 @@ urlpatterns = [
     path('faq/list_or_create',FaqLCView.as_view()),
     path('faq/rud/<int:pk>',RUDFaqView.as_view()),
 
-    path('material/list_or_create',MaterialLCView.as_view()),
+    path('material/list',MaterialListView.as_view()),
+    path('material/create',MaterialCreateView.as_view()),
     path('material/rud/<int:pk>',RUDMaterialView.as_view()),
 
     path('vendor/list_or_create',VendorLCView.as_view()),

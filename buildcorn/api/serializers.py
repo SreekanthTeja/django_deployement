@@ -118,18 +118,35 @@ class FaqSerializer(serializers.ModelSerializer):
         model = FAQ
         fields = '__all__'
 
-class MaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Material
-        # fields = "__all__" 
-        exclude = ['maker']
+
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = '__all__'
 
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = ("id","name", )
+        read_only_fields=("name",)
 
+class MaterialCreateSerializer(WritableNestedModelSerializer):
+    class Meta:
+        model = Material
+        fields = "__all__"
+
+class MaterialRUDSerializer(WritableNestedModelSerializer):
+    maker = VendorSerializer(required=False,)
+    class Meta:
+        model = Material
+        fields = "__all__"
+
+
+    # def update(self, instance, validated_data):
+    #     print(validated_data)
+        
+        # exclude = ['maker']
 # class QuestionSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Question

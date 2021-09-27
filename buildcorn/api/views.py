@@ -266,10 +266,10 @@ class RUDFaqView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FaqSerializer
 
 
-class MaterialLCView(generics.ListCreateAPIView):
+class MaterialCreateView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
-    serializer_class = MaterialSerializer
+    serializer_class = MaterialCreateSerializer
     def perform_create(self, serializer, **kwargs):
         
         try:
@@ -279,10 +279,16 @@ class MaterialLCView(generics.ListCreateAPIView):
             raise serializers.ValidationError({'error':e})
         serializer.save(company=company, maker=maker)
 
+
+class MaterialListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, IsTenentUser)
+    queryset = Material.objects.all()
+    serializer_class = MaterialRUDSerializer
+
 class RUDMaterialView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
-    serializer_class = MaterialSerializer
+    serializer_class = MaterialRUDSerializer
     
 
 

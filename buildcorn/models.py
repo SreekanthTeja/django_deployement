@@ -106,6 +106,7 @@ class Vendor(models.Model):
         return f"{self.name} supervisor is  {self.supervisor_name}"
 
 class Material(models.Model):
+    mid =  models.CharField(default=licenseid,max_length=30,blank=True, null=True)
     company = models.ForeignKey(Company, on_delete = models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=50)
     maker = models.ForeignKey(Vendor, on_delete=models.CASCADE, blank=True, null=True)
