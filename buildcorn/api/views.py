@@ -211,7 +211,7 @@ class SafetyAssignProjectAPIView(views.APIView):
 
     def post(self, request):
         data = request.data
-        check = data.get('quality')
+        check = data.get('safety')
         try:
             project = Project.objects.get(id=data.get('project'))
             checklists = SafetyCheckList.objects.filter(id__in=check)
