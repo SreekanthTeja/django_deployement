@@ -8,14 +8,10 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 import uuid
 User = get_user_model()
 
-
-
-
-
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Question
-        fields = ["id","question",]
+        fields = ["id","question","status","reason","pic"]
 
 class SafetyCheckListSerailizer(serializers.ModelSerializer):
     question = QuestionSerializer(many=True)
@@ -47,5 +43,6 @@ class ProjectListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ["id","name","location","quality_checklist","safety_checklist","material"]
+        
 
 

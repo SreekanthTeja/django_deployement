@@ -33,6 +33,9 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+FCM_DJANGO_SETTINGS = {
+    'FCM_SERVER_KEY':'AIzaSyD3JrrgmoLEaPjEL80E2nS6Jbtpvn_tePc'
+}
 
 INSTALLED_APPS = [
     
@@ -48,6 +51,7 @@ INSTALLED_APPS = [
     'buildcorn',
     'rest_framework',
     'rest_framework_swagger',
+    'fcm_django',
 ]
 
 MIDDLEWARE = [

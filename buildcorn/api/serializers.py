@@ -55,29 +55,6 @@ class EmployeeSerializer(WritableNestedModelSerializer):
 """Normal user ends"""
 
 
-"""Project serializer starts"""
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("id",'first_name','email',)
-class ApproverSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    class Meta:
-        model= Employee
-        fields = ("id","user")
-
-
-class ProjectListSerializer(serializers.ModelSerializer):
-    approver = ApproverSerializer()
-    employee = ApproverSerializer(many=True)
-    class Meta:
-        model = Project
-        fields = "__all__"
-class ProjectCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        fields = "__all__"
-"""Project serializer ends"""
 
 "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 class QuestionDataSerializer(serializers.ModelSerializer):
@@ -89,22 +66,22 @@ class QualityDataSerializer(serializers.ModelSerializer):
     question = QuestionDataSerializer(many=True)
     class Meta:
         model=QualityCheckList
-        fields = ['id','name',"question"]
+        fields = ['id','name',"question","checklist_id"]
 
 class SafetyDataSerializer(serializers.ModelSerializer):
     question = QuestionDataSerializer(many=True)
     class Meta:
         model=SafetyCheckList
-        fields = ['id','name',"question"]
+        fields = ['id','name',"checklist_id","question"]
 class ShowQualityProjectSerializer(serializers.ModelSerializer):
-    quality_checklist = SafetyDataSerializer(many=True)
+    quality_checklist = QualityDataSerializer(many=True)
 
     class Meta:
         model = Project
         fields = ['id','name','quality_checklist']
         
 class ShowSafetyProjectSerializer(serializers.ModelSerializer):
-    safety_checklist = QualityDataSerializer(many=True)
+    safety_checklist = SafetyDataSerializer(many=True)
 
     class Meta:
         model = Project
@@ -142,6 +119,43 @@ class MaterialRUDSerializer(WritableNestedModelSerializer):
         model = Material
         fields = "__all__"
 
+
+
+"""Project serializer starts"""
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id",'first_name','email',)
+class ApproverSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model= Employee
+        fields = ("id","user")
+
+
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = ("name", )
+
+class MaterialSerializer(serializers.ModelSerializer):
+    # maker = VendorSerializer()
+    class Meta:
+        model=Material
+        fields = ['id','name',]
+class ProjectListSerializer(serializers.ModelSerializer):
+    approver = ApproverSerializer()
+    employee = ApproverSerializer(many=True)
+    material = MaterialSerializer(many=True)
+    class Meta:
+        model = Project
+        fields = "__all__"
+class ProjectCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+"""Project serializer ends"""
 
     # def update(self, instance, validated_data):
     #     print(validated_data)

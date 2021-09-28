@@ -175,28 +175,7 @@ class RestPasswordAPIView(generics.UpdateAPIView):
         return Response({"status":'Password reset done successfully'})
 
 
-class ForgotPasswordAPIView(generics.UpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = ForgotPasswordSerializer
-    lookup_field = 'email'
-    def update(self, request,*args, **kwargs):
-        instance = self.get_object()
-        print(instance)
-        # if not User.objects.filter(email=request.user).exists():
-        #     raise serializers.ValidationError({"error":"We couldnt find this email in our database"})
-        # password = request.data.get('old_password',None)
-        # if password and not instance.check_password(password):
-        #     raise serializers.ValidationError({'status':'Old password is wrong'})
 
-        # if len(request.data["new_password"]) < 8:
-        #     raise serializers.ValidationError({"error":"Password must be min 8 characters"})
-        # if request.data["new_password"] != request.data["confirm_new_password"]:
-        #     raise serializers.ValidationError({"error":"Two password didn't match"})
-        # password = request.data.get('confirm_new_password') 
-
-        # instance.set_password(password)
-        # instance.save()
-        # return Response({"status":'Password reset done successfully'})
 
 
 
@@ -225,7 +204,8 @@ class OTPRequestAPIView(views.APIView):
 from rest_framework_simplejwt.tokens import RefreshToken
 class OTPVerifyAPIView(TokenObtainPairView):
     def post(self, request):
-        if OTP.objects.filter(otp=request.data["otp"]).exists():
+        if OTP.objects.filter(otp=request.data["otp"],validated=False ).exists():
+            otp = OTP.objects.get(otp=request.data["otp"]).delete()
             user = User.objects.get(phone_number=request.data["phone_number"])
             refresh = RefreshToken.for_user(user)
             return Response({ 
