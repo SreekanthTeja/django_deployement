@@ -102,7 +102,7 @@ class VendorSerializer(serializers.ModelSerializer):
         model = Vendor
         fields = '__all__'
 
-class VendorSerializer(serializers.ModelSerializer):
+class VendorMaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = ("id","name", )
@@ -114,7 +114,7 @@ class MaterialCreateSerializer(WritableNestedModelSerializer):
         fields = "__all__"
 
 class MaterialRUDSerializer(WritableNestedModelSerializer):
-    maker = VendorSerializer(required=False,)
+    maker = VendorMaterialSerializer(required=False,)
     class Meta:
         model = Material
         fields = "__all__"
@@ -134,7 +134,7 @@ class ApproverSerializer(serializers.ModelSerializer):
 
 
 
-class VendorSerializer(serializers.ModelSerializer):
+class VendorProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = ("name", )
