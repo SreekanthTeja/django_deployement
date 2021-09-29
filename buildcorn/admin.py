@@ -28,5 +28,6 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(License)
 
 admin.site.register(Vendor)
+admin.site.register(Banner)
 admin.site.register(Material)
 

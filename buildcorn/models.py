@@ -1,4 +1,5 @@
 from django.db import models
+from django_mysql.models import ListCharField
 from django.contrib.auth import get_user_model
 import uuid
 from django.db.models.signals import post_save, pre_save
@@ -150,8 +151,12 @@ class Project(models.Model):
 
 
 class Banner(models.Model):
+    buildcron_user = models.ForeignKey(User, related_name="banner_buildcron_user", on_delete = models.CASCADE, blank=True, null=True)
+    tenent_user = models.ForeignKey(User, related_name="banner_tenent_user", on_delete = models.CASCADE,blank=True, null=True)
     name = models.CharField(max_length=30)
-    image = models.ImageField(upload_to="images/%Y/%m/%d")
+    # image = models.ImageField(upload_to="images/%Y/%m/%d")
+    # multi_images = ListCharField(max_length=300,base_field=models.CharField(max_length=(6* 11)), size=4, blank=True, null=True)
+    multi_images = models.TextField(blank=True, null=True)
     class Meta:
         ordering = ("id",)
     def __str__(self):

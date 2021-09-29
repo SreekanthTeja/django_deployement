@@ -192,18 +192,16 @@ class QualityAssignProjectAPIView(views.APIView):
     def post(self, request):
         data = request.data
         check = data.get('quality')
-        try:
+        if Project.objects.filter(id=data.get('project')).exists() and QualityCheckList.objects.filter(id__in=check).exists():
+
             project = Project.objects.get(id=data.get('project'))
             checklists = QualityCheckList.objects.filter(id__in=check)
-            print(checklists)
-        except Exception as e:
-            raise serializers.ValidationError({'status': e})
-        project.quality_checklist.set([i.id for i in checklists])
-        date = datetime.datetime.strftime(
-            datetime.datetime.today(), '%Y-%m-%d')
-        print(date)
-        project.save()
-        return Response({'status': "Assignment successfully done", 'date': date})
+            project.quality_checklist.set([i.id for i in checklists])
+            date = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+            project.save()
+            return Response({'status': "Assignment successfully done", 'date': date})
+        
+        raise serializers.ValidationError({'error': 'Unsupported checklists'})
 
 
 class SafetyAssignProjectAPIView(views.APIView):
@@ -212,18 +210,14 @@ class SafetyAssignProjectAPIView(views.APIView):
     def post(self, request):
         data = request.data
         check = data.get('safety')
-        try:
+        if Project.objects.filter(id=data.get('project')).exists() and SafetyCheckList.objects.filter(id__in=check).exists():
             project = Project.objects.get(id=data.get('project'))
             checklists = SafetyCheckList.objects.filter(id__in=check)
-            print(checklists)
-        except Exception as e:
-            raise serializers.ValidationError({'status': e})
-        project.safety_checklist.set([i.id for i in checklists])
-        date = datetime.datetime.strftime(
-            datetime.datetime.today(), '%Y-%m-%d')
-        print(date)
-        # project.save()
-        return Response({'status': "Assignment successfully done", 'date': date})
+            project.safety_checklist.set([i.id for i in checklists])
+            date = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+            project.save()
+            return Response({'status': "Assignment successfully done", 'date': date})
+        raise serializers.ValidationError({'error': 'Unsupported checklists'})
 
 
 class ShowQualityProjectView(generics.ListAPIView):
@@ -245,25 +239,6 @@ class ShowSafetyProjectView(generics.ListAPIView):
 
 
 
-
-
-
-
-
-
-
-
-
-class FaqLCView(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = FAQ.objects.all()
-    serializer_class = FaqSerializer
-
-
-class RUDFaqView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
-    queryset = FAQ.objects.all()
-    serializer_class = FaqSerializer
 
 
 class MaterialCreateView(generics.ListCreateAPIView):
@@ -309,3 +284,33 @@ class RUDVendorlView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
+
+
+
+
+
+
+
+
+class FaqLCView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = FAQ.objects.all()
+    serializer_class = FaqSerializer
+
+
+class RUDFaqView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = FAQ.objects.all()
+    serializer_class = FaqSerializer
+
+class BannerLCView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrSuperUser)
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+
+    
+class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+
