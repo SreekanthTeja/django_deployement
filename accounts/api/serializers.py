@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
-from rest_framework import serializers
+from rest_framework import serializers, status
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework.response import Response
 from rest_framework.parsers import ParseError
@@ -70,13 +70,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             }
             username = attrs.get("email")
             password = attrs.get("password")
-            if username is None:
-                raise serializers.ValidationError('Username must required to login')
-            if password is None:
-                raise serializers.ValidationError('Password must required to login')
             user = authenticate(username=username, password= password)
             if not user:
-                raise serializers.ValidationError('In-valid username or password')
+                raise ParseError({'error':'In-valid username or password'})
             credentials['email'] = user.email
             data = super().validate(credentials)
             try:
@@ -104,6 +100,12 @@ class ForgotPasswordSerializer(serializers.Serializer):
     email=serializers.EmailField(required=True)
     new_password = serializers.CharField(required=True)
     confirm_new_password = serializers.CharField(required=True)
+
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs
+        fields = "__all__"
 
 
 

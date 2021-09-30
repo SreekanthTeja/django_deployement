@@ -21,4 +21,7 @@ urlpatterns = [
     path('password/<str:email>/forgot',RestPasswordAPIView.as_view()),
     path('request/otp',OTPRequestAPIView.as_view()),
     path('verify/otp',OTPVerifyAPIView.as_view()),
+
+    path('contact',ContactUsAPIView.as_view()),
+    path('contact/create',ContactUsCreateAPIView.as_view()),
 ]

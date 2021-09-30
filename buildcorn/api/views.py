@@ -287,11 +287,6 @@ class RUDVendorlView(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-
-
-
-
-
 class FaqLCView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = FAQ.objects.all()
@@ -320,7 +315,6 @@ class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
         multi_images  = json.loads(instance.multi_images)
         if len(multi_images) > 0:
             for pic in multi_images:
-                print(pic)
                 filename = pic.strip("media/banner/")
                 path = os.remove("%s/%s"%(location,filename))
         self.perform_destroy(instance)

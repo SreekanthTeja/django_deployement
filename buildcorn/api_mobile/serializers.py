@@ -4,6 +4,7 @@ from buildcorn.models import *
 from accounts.models import *
 from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
+from rest_framework import status
 # from accounts.api.serializers import UserSerializer
 import uuid
 User = get_user_model()
@@ -44,5 +45,28 @@ class ProjectListSerializer(serializers.ModelSerializer):
         model = Project
         fields = ["id","name","location","quality_checklist","safety_checklist","material"]
         
+"""Project Inspection starts"""
 
 
+
+# class InspectionQualitySerailizer(serializers.ModelSerializer):
+#     question = QuestionSerializer(many=True)
+#     class Meta:
+#         model=QualityCheckList
+#         fields = ['id','name','question']
+#         read_only_fields = ["name"]
+
+class InspectionQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Question
+        fields = ["id","question","status","reason","pic"]
+class InspectionQualitySerializer(serializers.ModelSerializer):
+    question = QuestionSerializer(many=True)
+    class Meta:
+        model=QualityCheckList
+        fields = ["id","name","question"]
+        read_only_fields = ["id","name",]
+
+    def update(self, instance, validated_data):
+        print(validated_data, instance)
+        # return Response(status=status.HTTP_204_NO_CONTENT)

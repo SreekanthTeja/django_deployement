@@ -114,3 +114,15 @@ class OTP(models.Model):
     def __str__(self):
         return self.user.email
 
+class ContactUs(models.Model):
+    name = models.CharField(max_length=50,)
+    email = models.EmailField(max_length=30)
+    address = models.TextField(blank=True, null=True)
+    phone = PhoneNumberField()
+
+    def __str__(self):
+        return "Contacted by %s"%(self.name)
+
+    class Meta:
+        verbose_name_plural = "ContactUs"
+        ordering = ("-id",)

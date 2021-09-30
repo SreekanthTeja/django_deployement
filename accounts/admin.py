@@ -17,3 +17,5 @@ class PaymentAdmin(admin.ModelAdmin):
 
 admin.site.register(Payment, PaymentAdmin)
 admin.site.register(OTP)
+
+admin.site.register(ContactUs)

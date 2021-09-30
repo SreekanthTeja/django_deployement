@@ -110,7 +110,7 @@ class PaymentView(views.APIView):
         plan_details = indata.get("plan_details", None)
         
         if user_details == None or company_details==None or plan_details==None:
-            raise serializers.ValidationError("some details are missing")
+            raise serializers.ValidationError({"error":"some details are missing"})
         amount = float(plan_details["ammount"])
         # cgst = float(indata('cgst'))
         # sgst = float(indata('sgst'))
@@ -194,7 +194,7 @@ class OTPRequestAPIView(views.APIView):
                 try:
                     emp = Employee.objects.get(user=user)
                 except Exception as e:
-                    raise serializers.ValidationError("Sorry user is  not a employee")
+                    raise serializers.ValidationError({"error":"Sorry user is  not a employee"})
                 otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
                 if created:
                     otp_obj.save()
@@ -216,4 +216,11 @@ class OTPVerifyAPIView(TokenObtainPairView):
             })
         raise serializers.ValidationError({'status':"incorrect otp"})
 
+class ContactUsCreateAPIView(generics.CreateAPIView):
+    serializer_class = ContactUsSerializer
+    queryset = ContactUs.objects.all()
 
+class ContactUsAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+    serializer_class = ContactUsSerializer
+    queryset = ContactUs.objects.all()
