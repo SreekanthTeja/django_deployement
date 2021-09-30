@@ -226,7 +226,8 @@ class ShowQualityProjectView(generics.ListAPIView):
     serializer_class = ShowQualityProjectSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(quality_checklist__question__typee=Question.Quality).distinct()
+        
+        return self.queryset.filter(company__user=self.request.user,quality_checklist__question__typee=Question.Quality).distinct()
 
 
 class ShowSafetyProjectView(generics.ListAPIView):
@@ -235,13 +236,13 @@ class ShowSafetyProjectView(generics.ListAPIView):
     serializer_class = ShowSafetyProjectSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(safety_checklist__question__typee=Question.Safety).distinct()
+        return self.queryset.filter(company__user=self.request.user,safety_checklist__question__typee=Question.Safety).distinct()
 
 
 
 
 
-class MaterialCreateView(generics.ListCreateAPIView):
+class MaterialCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
     serializer_class = MaterialCreateSerializer
@@ -259,6 +260,10 @@ class MaterialListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
     queryset = Material.objects.all()
     serializer_class = MaterialRUDSerializer
+    def get_queryset(self):
+        if self.request.user.user_type == User.TENENT:
+            return self.queryset.filter(company__user=self.request.user)
+
 
 class RUDMaterialView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)

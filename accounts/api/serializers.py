@@ -82,6 +82,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                     data["first_name"] = user.first_name
                     data['role'] = user.user_type
                     data["company_id"] = company_id.id
+                    data["company_name"] = company_id.name
                     return data
             except Exception as e:
                 data['email'] = user.email
