@@ -13,10 +13,8 @@ class IsTenentUser(BasePermission):
 
 class IsTenentOrUser(BasePermission):
     def has_permission(self, request, view):
-        print("......",request.user)
         return  request.user.user_type=='TN' or request.user.user_type=='NU'
 
 class IsTenentOrSuperUser(BasePermission):
     def has_permission(self, request, view):
-        print("......",request.user)
         return  request.user.user_type=='TN' or request.user.user_type=='SA'

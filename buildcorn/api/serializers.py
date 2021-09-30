@@ -100,50 +100,7 @@ class FaqSerializer(serializers.ModelSerializer):
         model = FAQ
         fields = '__all__'
 
-"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-class BannerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Banner
-        fields = '__all__'
 
-    def validate(self, data):
-        images = self.context['request'].FILES
-        # print(len(images.getlist('image')))
-        if len(images.getlist('image')) > 2:
-            raise serializers.ValidationError({'error':"Select minimum 2 images"})
-        return data
-
-    def create(self, validated_data):
-        # images = self.context['request'].FILES
-        picture = self.context['request'].FILES.getlist('image')
-        all_pictures = []
-        for pic in picture:
-            location = '%s/banner'%(settings.MEDIA_ROOT)
-            fs = FileSystemStorage(location=location)
-            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-            f_save = fs.save(picname, pic)
-            filepath = "%s/%s"%(location,picname)
-            all_pictures.append(filepath)
-        all_pictures = json.dumps(all_pictures)
-        if self.context['request'].user.user_type == User.SUPER_ADMIN:
-            user = User.objects.get(email=self.context['request'].user.email)
-            banner = Banner.objects.create(name=validated_data.get('name',None),buildcron_user=user, multi_images=all_pictures)
-            return banner
-        else:
-            user = User.objects.get(email=self.context['request'].user.email)
-            banner = Banner.objects.create(name=validated_data.get('name',None),tenent_user=user, multi_images=all_pictures)
-            banner.save()
-            return banner
-    def to_representation(self, instance):
-        context = super(BannerSerializer, self).to_representation(instance)
-        multi_images = json.loads(context['multi_images'])
-        return {
-            "id":context["id"],
-            'images':multi_images,
-            'name':context['name']
-        }
-        
-        
 
 
 class VendorSerializer(serializers.ModelSerializer):
@@ -180,8 +137,6 @@ class ApproverSerializer(serializers.ModelSerializer):
     class Meta:
         model= Employee
         fields = ("id","user")
-
-
 
 class VendorProjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -236,3 +191,96 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
 #         return question
 
 
+"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = '__all__'
+
+    def validate(self, data):
+        images = self.context['request'].FILES
+        # print(len(images.getlist('image')))
+        if len(images.getlist('image')) > 2:
+            raise serializers.ValidationError({'error':"Select minimum 2 images"})
+        return data
+
+    def create(self, validated_data):
+        # images = self.context['request'].FILES
+        picture = self.context['request'].FILES.getlist('image')
+        all_pictures = []
+        for pic in picture:
+            location = '%s/banner'%(settings.MEDIA_ROOT)
+            fs = FileSystemStorage(location=location)
+            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+            f_save = fs.save(picname, pic)
+            filepath = "%s/%s"%(location,picname)
+            all_pictures.append(filepath)
+        all_pictures = json.dumps(all_pictures)
+        if self.context['request'].user.user_type == User.SUPER_ADMIN:
+            user = User.objects.get(email=self.context['request'].user.email)
+            banner = Banner.objects.create(name=validated_data.get('name',None),buildcron_user=user, multi_images=all_pictures)
+            return banner
+        else:
+            user = User.objects.get(email=self.context['request'].user.email)
+            banner = Banner.objects.create(name=validated_data.get('name',None),tenent_user=user, multi_images=all_pictures)
+            banner.save()
+            return banner
+    def to_representation(self, instance):
+        context = super(BannerSerializer, self).to_representation(instance)
+        multi_images = json.loads(context['multi_images'])
+        return {
+            "id":context["id"],
+            'images':multi_images,
+            'name':context['name']
+        }
+        
+class BannerRUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner      
+        exclude = ("buildcron_user","tenent_user")
+    
+    def validate(self, data):
+        images = self.context['request'].FILES
+        # print(len(images.getlist('image')))
+        if len(images.getlist('image')) > 2:
+            raise serializers.ValidationError({'error':"Select minimum 2 images"})
+        return data
+    def update(self, instance, validated_data):
+        location = '%s/banner'%(settings.MEDIA_ROOT)
+        pictures = self.context['request'].FILES.getlist('image')
+        for pic in json.loads(instance.multi_images):
+            filename = pic.strip("media/banner/")
+            path = os.remove("%s/%s"%(location,filename))
+            # print(path)
+        all_pictures = []
+        for pic in pictures:
+            fs = FileSystemStorage(location=location)
+            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+            f_save = fs.save(picname, pic)
+            filepath = "%s/%s"%(location,picname)
+            all_pictures.append(filepath)
+        all_pictures = json.dumps(all_pictures)
+        
+
+        if self.context['request'].user.user_type == User.SUPER_ADMIN:
+            user = User.objects.get(email=self.context['request'].user.email)
+            instance.buildcron_user = user
+            instance.name = self.initial_data.get('name')
+            instance.multi_images =all_pictures
+            return instance
+        else:
+            user = User.objects.get(email=self.context['request'].user.email)
+            instance.buildcron_user = user
+            instance.name = self.initial_data.get('name')
+            instance.multi_images =all_pictures
+            return instance
+    def to_representation(self, instance):
+        context = super(BannerRUDSerializer, self).to_representation(instance)
+        multi_images = json.loads(context['multi_images'])
+        return {
+            "id":context["id"],
+            'images':multi_images,
+            'name':context['name']
+        }
+
+    
