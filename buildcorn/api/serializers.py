@@ -19,7 +19,7 @@ class LicenseCompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ("name","company_id","gstin","license_purchased")
     def to_representation(self, instance):
-        print(instance)
+        # print(instance)
         context = super(LicenseCompanySerializer, self).to_representation(instance)
         license_used_count = Employee.objects.filter(company=instance).values('user').count()
         # if context['license_purchased'] == license_used_count:
@@ -252,17 +252,19 @@ class BannerRUDSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         images = self.context['request'].FILES
-        # print(len(images.getlist('image')))
         if len(images.getlist('image')) > 2:
             raise serializers.ValidationError({'error':"Select minimum 2 images"})
         return data
     def update(self, instance, validated_data):
+        print(self.initial_data)
         location = '%s/banner'%(settings.MEDIA_ROOT)
         pictures = self.context['request'].FILES.getlist('image')
-        for pic in json.loads(instance.multi_images):
-            filename = pic.strip("media/banner/")
-            path = os.remove("%s/%s"%(location,filename))
-            # print(path)
+        try:
+            for pic in json.loads(instance.multi_images):
+                filename = pic.strip("media/banner/")
+                path = os.remove("%s/%s"%(location,filename))
+        except Exception as e:
+            pass
         all_pictures = []
         for pic in pictures:
             fs = FileSystemStorage(location=location)
@@ -271,19 +273,20 @@ class BannerRUDSerializer(serializers.ModelSerializer):
             filepath = "%s/%s"%(location,picname)
             all_pictures.append(filepath)
         all_pictures = json.dumps(all_pictures)
-        
-
         if self.context['request'].user.user_type == User.SUPER_ADMIN:
             user = User.objects.get(email=self.context['request'].user.email)
             instance.buildcron_user = user
             instance.name = self.initial_data.get('name')
-            instance.multi_images =all_pictures
+            print(all_pictures)
+            instance.multi_images = all_pictures
+            instance.save()
             return instance
         else:
             user = User.objects.get(email=self.context['request'].user.email)
             instance.buildcron_user = user
             instance.name = self.initial_data.get('name')
             instance.multi_images =all_pictures
+            instance.save()
             return instance
     def to_representation(self, instance):
         context = super(BannerRUDSerializer, self).to_representation(instance)
@@ -293,5 +296,3 @@ class BannerRUDSerializer(serializers.ModelSerializer):
             'images':multi_images,
             'name':context['name']
         }
-
-    

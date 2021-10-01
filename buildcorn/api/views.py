@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from bigspace.permissions import *
 import datetime
-
+from django.db.models import Q
 User = get_user_model()
 
 
@@ -26,11 +26,8 @@ class LicenseEmployeeAPIView(generics.ListAPIView):
     permission_classes = (IsSuperUser,)
     queryset = License.objects.all()
     serializer_class = LicenseEmployeeSerializer
-    # lookup_field = "company"
     def get_queryset(self):
-        # print(self.kwargs)
-        return self.queryset.filter(company__name=self.kwargs['company'])
-
+        return self.queryset.filter(Q(company__name=self.kwargs['company']) | Q(company__company_id=self.kwargs['company']))
 
 """Normal user view start"""
 
@@ -325,12 +322,15 @@ class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        # print(instance)
         location = '%s/banner'%(settings.MEDIA_ROOT)
         multi_images  = json.loads(instance.multi_images)
         if len(multi_images) > 0:
             for pic in multi_images:
+                # print(pic)
                 filename = pic.strip("media/banner/")
                 path = os.remove("%s/%s"%(location,filename))
+                print(path)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
