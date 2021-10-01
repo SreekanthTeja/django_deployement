@@ -17,7 +17,7 @@ User = get_user_model()
 class LicenseCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ("name","gstin","license_purchased")
+        fields = ("name","company_id","gstin","license_purchased")
     def to_representation(self, instance):
         print(instance)
         context = super(LicenseCompanySerializer, self).to_representation(instance)
@@ -26,6 +26,7 @@ class LicenseCompanySerializer(serializers.ModelSerializer):
         #     raise serializers.ValidationError({'status':'Your quota is completed'})
         return {
             'name':context["name"],
+            "license_id":context["company_id"],
             'gstin':context['gstin'],
             'total_licenses':context['license_purchased'],
             'license_used_count':license_used_count
@@ -36,6 +37,16 @@ class LicenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
         fields = "__all__"
+
+class LicenseEmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = License
+        fields = ("created_at","end_at","tenure", "company")
+    def to_representation(self, instance):
+        context = super(LicenseEmployeeSerializer, self).to_representation(instance)
+        employee = Employee.objects.filter(company__id=context["company"]).values('eid')
+        context["employee"] = employee
+        return context
 """License ends """
 
 """Normal user"""

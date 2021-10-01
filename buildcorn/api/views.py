@@ -22,6 +22,15 @@ class LicenseAPIView(generics.ListAPIView):
     queryset = License.objects.all()
     serializer_class = LicenseSerializer
 
+class LicenseEmployeeAPIView(generics.ListAPIView):
+    permission_classes = (IsSuperUser,)
+    queryset = License.objects.all()
+    serializer_class = LicenseEmployeeSerializer
+    # lookup_field = "company"
+    def get_queryset(self):
+        # print(self.kwargs)
+        return self.queryset.filter(company__name=self.kwargs['company'])
+
 
 """Normal user view start"""
 

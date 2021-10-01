@@ -4,6 +4,7 @@ from .checklist_views import *
 urlpatterns = [
     ###########  license url's ##################
     path('license', LicenseAPIView.as_view()),
+    path('license/employee/<str:company>', LicenseEmployeeAPIView.as_view()),
 
     ########### project  url's ##################
     path('project/create',ProjectCreateAPIView.as_view()),
