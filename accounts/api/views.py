@@ -224,3 +224,8 @@ class ContactUsAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, IsSuperUser)
     serializer_class = ContactUsSerializer
     queryset = ContactUs.objects.all()
+
+class ContactUsDeleteAPIView(generics.DestroyAPIView):
+    permission_classes = (IsAuthenticated, IsSuperUser)
+    serializer_class = ContactUsSerializer
+    queryset = ContactUs.objects.all()

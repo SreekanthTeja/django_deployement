@@ -24,4 +24,6 @@ urlpatterns = [
 
     path('contact',ContactUsAPIView.as_view()),
     path('contact/create',ContactUsCreateAPIView.as_view()),
+    path('contact/delete/<int:pk>',ContactUsDeleteAPIView.as_view()),
 ]
+
