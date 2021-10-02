@@ -68,5 +68,7 @@ class InspectionQualitySerializer(serializers.ModelSerializer):
         read_only_fields = ["id","name",]
 
     def update(self, instance, validated_data):
-        print(validated_data, instance)
+
+        print(self.initial_data)
         # return Response(status=status.HTTP_204_NO_CONTENT)
+        return instance
