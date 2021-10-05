@@ -303,3 +303,9 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = "__all__"
+
+    # def to_representation(self, instance):
+    #     print(instance)
+    #     context = super(ReportSerializer, self).to_representation(instance)
+    #     question = AnswerChecklist.objects.filter(question=)
+    #     pass

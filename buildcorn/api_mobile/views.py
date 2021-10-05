@@ -29,12 +29,14 @@ class InspectionAPIView(views.APIView):
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
         input_data = request.data
+        print(input_data)
         if input_data["type"] == 'Quality':
+            project = Project.objects.get(name=input_data["project"])
             quality_checklist_name = QualityCheckList.objects.get(name__exact=kwargs['name'])
             try:
                 for que in input_data.get('question'):
                     question = Question.objects.get(id=que["id"])
-                    query, created = self.queryset.get_or_create(question=question, quality_checklist=quality_checklist_name)
+                    query, created = self.queryset.get_or_create(project=project,question=question, quality_checklist=quality_checklist_name)
                     if created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
@@ -50,10 +52,11 @@ class InspectionAPIView(views.APIView):
             return Response({'status':'Success'},status=status.HTTP_200_OK)
         else:
             safety_checklist_name = SafetyCheckList.objects.get(name__exact=kwargs['name'])
+            project = Project.objects.get(name=input_data["project"])
             try:
                 for que in input_data.get('question'):
                     question = Question.objects.get(id=que["id"])
-                    query, created = self.queryset.get_or_create(question=question, safety_checklist=safety_checklist_name)
+                    query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name)
                     if created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None),

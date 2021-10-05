@@ -38,13 +38,40 @@ class MaterialSerializer(serializers.ModelSerializer):
         model=Material
         fields = ['id','name',"total_qty","total_uom","maker"]
 
+class InspectionQualitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model=AnswerChecklist
+        fields = ["id","quality_checklist","status","question","reason"]
+        read_only_fields = ["id","question"]
 class ProjectListSerializer(serializers.ModelSerializer):
     safety_checklist = SafetyCheckListSerailizer(many=True)
     quality_checklist = QualityCheckListSerailizer(many=True)
-    material = MaterialSerializer(many=True) 
+    material = MaterialSerializer(many=True)
     class Meta:
         model = Project
-        fields = ["id","name","location","quality_checklist","safety_checklist","material"]
+        fields = ["id","name","location","quality_checklist","safety_checklist","material",]
+    def to_representation(self, instance):
+        context = super(ProjectListSerializer, self).to_representation(instance)
+
+        # if context['quality_checklist']:
+        """Logic to get queryset"""
+        checklist_ids = [checklist['id'] for checklist in context['quality_checklist']]
+        question_ids = [question['id'] for checklists in context['quality_checklist'] for question in checklists["question"]]
+        # print(checklist_ids)
+        answer_obj = AnswerChecklist.objects.filter(project__id=context["id"],quality_checklist__in=checklist_ids,question__in=question_ids,).values()
+        # print(answer_obj)
+        """Logic for formating with answers"""
+        status, reason = None,None
+        for checklist in context['quality_checklist']:
+            for que in checklist["question"]:
+                que["status"] = status
+                que["reason"] = reason
+
+        for checklist in context['safety_checklist']:
+            for que in checklist["question"]:
+                que["status"] = status
+                que["reason"] = reason
+        return context
         
 """Project Inspection starts"""
 
@@ -57,17 +84,18 @@ class ProjectListSerializer(serializers.ModelSerializer):
 #         fields = ['id','name','question']
 #         read_only_fields = ["name"]
 
-class InspectionQuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Question
-        fields = ["id","question","status","reason","pic"]
+# class InspectionQuestionSerializer(serializers.ModelSerializer):
+#     quality_checklist = 
+#     class Meta:
+#         model=AnswerChecklist
+#         fields = ["id","quality_checklist","status","question","reason"]
 
-   
-class InspectionQualitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model=AnswerChecklist
-        fields = ["id","quality_checklist","status","question","reason"]
-        read_only_fields = ["id","question"]
+"""Inspection posting"""
+# class InspectionQualitySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=AnswerChecklist
+#         fields = ["id","quality_checklist","status","question","reason"]
+#         read_only_fields = ["id","question"]
     # def update(self, instance, validated_data):
     #     data = self.initial_data
     #     print(data)

@@ -98,6 +98,7 @@ class AnswerChecklist(models.Model):
     STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
     status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
 
+    project = models.ForeignKey("Project", on_delete = models.CASCADE, blank=True, null=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     quality_checklist = models.ForeignKey(QualityCheckList, on_delete=models.CASCADE, blank=True, null=True)
     safety_checklist = models.ForeignKey(SafetyCheckList, on_delete=models.CASCADE, blank=True, null=True)
@@ -198,6 +199,7 @@ class Report(models.Model):
     rid =  models.CharField(default=licenseid,max_length=30,blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     typee = models.CharField(max_length=10)
+    # project = models.ForeignKey(Project, on_delete =models.CASCADE, blank=True, null=True)
     project = models.CharField(max_length=50)
     submitted_by = models.CharField(max_length=50)
     status = models.CharField(max_length=10, choices=REPORT_STATUS, default= PENDING)
@@ -206,4 +208,4 @@ class Report(models.Model):
     class Meta:
         ordering = ("-id",)
     def __str__(self):
-        return self.project
+        return self.name

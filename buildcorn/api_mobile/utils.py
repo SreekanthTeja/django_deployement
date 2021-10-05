@@ -34,30 +34,15 @@ def generate_report(**kwargs):
             if created and  (total_ans_obj_count == ans_obj_status_count):
                 rep.status = Report.DONE
                 rep.save()
+                project.inspection = Project.INSPECTION_DONE
+                project.save()
             elif ans_obj_status_count < total_ans_obj_count:
                 rep.status = Report.PENDING
                 rep.save()
             else:
                 rep.status = Report.DONE
                 rep.save()
+                project.inspection = Project.INSPECTION_DONE
+                project.save()
         except Exception as e:
             raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
-
-# def generate_report(**kwargs):
-#     if kwargs['status'] == 'Done':
-#         rep, created = Report.objects.get_or_create( typee='Quality',project=kwargs['project'],name=kwargs['checklist'], submitted_by=kwargs['user'],)
-#         print(rep, created)
-#         if created:
-#             rep.status = Report.DONE
-#             rep.save()
-#         else:
-#             rep.status = Report.DONE
-#             rep.save()
-#     else:
-#         print('enterd')
-#         rep, updated= Report.objects.update_or_create( typee='Quality',project=kwargs['project'],name=kwargs['checklist'], submitted_by=kwargs['submitted_by'],)
-#         if  updated:
-#             rep.save()
-#         else:
-#             rep.status=Report.PENDING
-#             rep.save()
