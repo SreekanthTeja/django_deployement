@@ -70,6 +70,9 @@ urlpatterns = [
 
     path('vendor/list_or_create',VendorLCView.as_view()),
     path('vendor/rud/<int:pk>',RUDVendorlView.as_view()),
+
+    path('report',ReportListAPIView.as_view()),
+    path('report/delete/<int:pk>',ReportDeleteAPIView.as_view())
 ]
 
 

@@ -296,3 +296,10 @@ class BannerRUDSerializer(serializers.ModelSerializer):
             'images':multi_images,
             'name':context['name']
         }
+
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = "__all__"

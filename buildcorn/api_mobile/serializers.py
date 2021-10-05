@@ -5,6 +5,7 @@ from accounts.models import *
 from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import status
+from .utils import *
 # from accounts.api.serializers import UserSerializer
 import uuid
 User = get_user_model()
@@ -12,7 +13,7 @@ User = get_user_model()
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Question
-        fields = ["id","question","status","reason","pic"]
+        fields = ["id","question",]
 
 class SafetyCheckListSerailizer(serializers.ModelSerializer):
     question = QuestionSerializer(many=True)
@@ -60,15 +61,47 @@ class InspectionQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Question
         fields = ["id","question","status","reason","pic"]
+
+   
 class InspectionQualitySerializer(serializers.ModelSerializer):
-    question = QuestionSerializer(many=True)
     class Meta:
-        model=QualityCheckList
-        fields = ["id","name","question"]
-        read_only_fields = ["id","name",]
+        model=AnswerChecklist
+        fields = ["id","quality_checklist","status","question","reason"]
+        read_only_fields = ["id","question"]
+    # def update(self, instance, validated_data):
+    #     data = self.initial_data
+    #     print(data)
+    #     return instance
 
-    def update(self, instance, validated_data):
 
-        print(self.initial_data)
-        # return Response(status=status.HTTP_204_NO_CONTENT)
-        return instance
+# class InspectionQualitySerializer(serializers.ModelSerializer):
+#     question = QuestionSerializer(many=True)
+#     class Meta:
+#         model=QualityCheckList
+#         fields = ["id","name","question"]
+#         read_only_fields = ["id","name",]
+
+#     def update(self, instance, validated_data):
+#         data = self.initial_data
+#         project = data.get('project',None)
+#         checklist  = data.get('checklist',None)
+#         user = self.context['request'].user.first_name
+#         # project_obj = Project.objects.get(name__exact=data.get('project'))
+#         filtering_questions = [que['question'] for que in data.get('question')]
+#         que_objs = Question.objects.filter(typee=data.get('type'), question__in=filtering_questions)
+#         print(que_objs)
+#         # l1 = []
+#         # for que in data.get('question'):
+#         #     obj = que_objs.get(id=que['id'])
+#         #     obj.status = que['status']
+#         #     obj.reason = que.get('reason',None)
+#         #     l1.append(obj)
+#         # que_objs.bulk_update(l1,[ 'status', 'reason'])
+#         # compiled_questions_count = que_objs.filter(status=Question.COMPILED).count()
+        
+#         # if len(que_objs) == compiled_questions_count:
+#         #     report = generate_report(status='Done',project=project,checklist=checklist, submitted_by=user,)
+#         # else:
+#         #     report = generate_report(status='Pending',project=project,checklist=checklist, submitted_by=user,)
+#         return instance
+        

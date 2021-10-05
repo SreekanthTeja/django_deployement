@@ -56,25 +56,25 @@ class Employee(models.Model):
     def __str__(self):
         return self.user.email
 
+
+
 class Question(models.Model):
     Quality = 'Quality'
     Safety = 'Safety' 
     TYPES = ((Quality, 'Quality'),(Safety,'Safety'))
     typee = models.CharField(choices=TYPES, max_length=10)
-
-    COMPILED = 'Compiled'
-    UNCOMPLETED = 'Not Compiled'
-    STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
-
     ADMIN_STATUS = (('Valid','Valid'),('InValid','InValid'))
     question_id =  models.CharField(default=licenseid, max_length=30)
     question = models.TextField()
     admin_status=models.CharField(choices=ADMIN_STATUS, max_length=10, blank=True, null=True)
-    status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
-    reason = models.TextField(blank=True, null=True)
-    pic = models.ImageField(upload_to="images/page/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
+    # COMPILED = 'Compiled'
+    # UNCOMPLETED = 'Not Compiled'
+    # STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
+    # status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
+    # reason = models.TextField(blank=True, null=True)
+    # pic = models.ImageField(upload_to="images/page/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
     def __str__(self):
-        return self.typee
+        return f"{self.typee}=>{self.question}"
 
 class SafetyCheckList(models.Model):
     checklist_id = models.CharField(default=licenseid, max_length=30)
@@ -91,6 +91,24 @@ class QualityCheckList(models.Model):
     question = models.ManyToManyField(Question, blank=True)
     def __str__(self):
         return self.name
+
+class AnswerChecklist(models.Model):
+    COMPILED = 'Compiled'
+    UNCOMPLETED = 'Not Compiled'
+    STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
+    status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    quality_checklist = models.ForeignKey(QualityCheckList, on_delete=models.CASCADE, blank=True, null=True)
+    safety_checklist = models.ForeignKey(SafetyCheckList, on_delete=models.CASCADE, blank=True, null=True)
+    reason = models.TextField(blank=True, null=True)
+    pic = models.ImageField(upload_to="images/answer/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
+    class Meta:
+        ordering = ('-id',)
+        unique_together = ["question","quality_checklist","safety_checklist"]
+    def __str__(self):
+        return f"{self.quality_checklist}=>{self.question.question} "
+# Answer.Meta
 
 class Vendor(models.Model):
     ven_id = models.CharField(default=licenseid,max_length=30,blank=True, null=True)
@@ -171,3 +189,21 @@ class FAQ(models.Model):
     def __str__(self):
         return self.question
 
+
+class Report(models.Model):
+    DONE = 'Done'
+    PENDING = 'Pending'
+    REPORT_STATUS = ((DONE,'Done'),(PENDING,'Pending'))
+    name = models.CharField(max_length=50)
+    rid =  models.CharField(default=licenseid,max_length=30,blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    typee = models.CharField(max_length=10)
+    project = models.CharField(max_length=50)
+    submitted_by = models.CharField(max_length=50)
+    status = models.CharField(max_length=10, choices=REPORT_STATUS, default= PENDING)
+    download = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ("-id",)
+    def __str__(self):
+        return self.project

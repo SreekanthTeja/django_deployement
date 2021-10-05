@@ -335,3 +335,13 @@ class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+class ReportListAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
+
+class ReportDeleteAPIView(generics.DestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
