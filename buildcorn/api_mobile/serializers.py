@@ -52,25 +52,46 @@ class ProjectListSerializer(serializers.ModelSerializer):
         fields = ["id","name","location","quality_checklist","safety_checklist","material",]
     def to_representation(self, instance):
         context = super(ProjectListSerializer, self).to_representation(instance)
-
-        # if context['quality_checklist']:
         """Logic to get queryset"""
         checklist_ids = [checklist['id'] for checklist in context['quality_checklist']]
         question_ids = [question['id'] for checklists in context['quality_checklist'] for question in checklists["question"]]
-        # print(checklist_ids)
         answer_obj = AnswerChecklist.objects.filter(project__id=context["id"],quality_checklist__in=checklist_ids,question__in=question_ids,).values()
-        # print(answer_obj)
-        """Logic for formating with answers"""
+        print(answer_obj)
+
         status, reason = None,None
+        """Logic for formating with answers for quality"""
         for checklist in context['quality_checklist']:
             for que in checklist["question"]:
                 que["status"] = status
-                que["reason"] = reason
-
+                que["reason"] = reason 
+                try:
+                    for ans in answer_obj:
+                        if checklist["id"] == ans["quality_checklist_id"] and ans["question_id"] == que["id"]:
+                            
+                            print(f'{que["id"] }==>{ans["question_id"]}')
+                            que["status"] = ans["status"]
+                            que["reason"] = ans["reason"]
+                except Exception as e:
+                    raise serializers.ValidationError({'error',e})
+                
+        """Logic for formating with answers for safety"""
+        s_checklist_ids = [checklist['id'] for checklist in context['safety_checklist']]
+        s_question_ids = [question['id'] for checklists in context['safety_checklist'] for question in checklists["question"]]
+        s_answer_obj = AnswerChecklist.objects.filter(project__id=context["id"],safety_checklist__in=s_checklist_ids,question__in=s_question_ids,).values()
+        print(s_answer_obj)
         for checklist in context['safety_checklist']:
             for que in checklist["question"]:
                 que["status"] = status
                 que["reason"] = reason
+                try:
+                    for ans in s_answer_obj:
+                        if checklist["id"] == ans["safety_checklist_id"] and ans["question_id"] == que["id"]:
+                            
+                            print(f'{que["id"] }==>{ans["question_id"]}')
+                            que["status"] = ans["status"]
+                            que["reason"] = ans["reason"]
+                except Exception as e:
+                    raise serializers.ValidationError({'error',e})
         return context
         
 """Project Inspection starts"""
