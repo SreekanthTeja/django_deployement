@@ -9,6 +9,17 @@ from .utils import *
 import uuid
 User = get_user_model()
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id",'first_name','email',)
+class EmployeeSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model= Employee
+        fields = ("id","user")
+
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model=Question
@@ -43,12 +54,14 @@ class InspectionQualitySerializer(serializers.ModelSerializer):
         fields = ["id","quality_checklist","status","question","reason"]
         read_only_fields = ["id","question"]
 class ProjectListSerializer(serializers.ModelSerializer):
+    approver = EmployeeSerializer()
+    employee = EmployeeSerializer(many=True)
     safety_checklist = SafetyCheckListSerailizer(many=True)
     quality_checklist = QualityCheckListSerailizer(many=True)
     material = MaterialSerializer(many=True)
     class Meta:
         model = Project
-        fields = ["id","name","location","quality_checklist","safety_checklist","material",]
+        fields = ["id","name","location","approver","employee","quality_checklist","safety_checklist","material",]
     def to_representation(self, instance):
         context = super(ProjectListSerializer, self).to_representation(instance)
         """Logic to get queryset"""
