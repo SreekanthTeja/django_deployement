@@ -192,6 +192,8 @@ class FAQ(models.Model):
 
 
 class Report(models.Model):
+    company = models.ForeignKey(Company, on_delete = models.CASCADE, blank=True, null=True)
+    project = models.ForeignKey(Project, on_delete =models.CASCADE, blank=True, null=True)
     DONE = 'Done'
     PENDING = 'Pending'
     REPORT_STATUS = ((DONE,'Done'),(PENDING,'Pending'))
@@ -199,8 +201,7 @@ class Report(models.Model):
     rid =  models.CharField(default=licenseid,max_length=30,blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     typee = models.CharField(max_length=10)
-    # project = models.ForeignKey(Project, on_delete =models.CASCADE, blank=True, null=True)
-    project = models.CharField(max_length=50)
+    # project = models.CharField(max_length=50)
     submitted_by = models.CharField(max_length=50)
     status = models.CharField(max_length=10, choices=REPORT_STATUS, default= PENDING)
     download = models.TextField(blank=True, null=True)

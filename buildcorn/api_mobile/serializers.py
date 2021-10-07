@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from buildcorn.models import *
 from accounts.models import *
-from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import status
 from .utils import *

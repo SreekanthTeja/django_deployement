@@ -13,6 +13,7 @@ urlpatterns = [
     path('',TemplateView.as_view(template_name = 'base.html'), name = 'base-page'),
     path('accounts/', include('accounts.urls')),
     path('buildcron/', include('buildcorn.urls')),
+    path('dashboard/api/', include('dashboard.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
