@@ -217,18 +217,47 @@ class SiteObservation(models.Model):
     COMPLIED = 'Complied'
     NOT_COMPLIED = 'Not Complied'
     SITE_OBSERVATION_STATUS = ((COMPLIED,'Complied'),(NOT_COMPLIED,'Not Complied'))
+    status = models.CharField(max_length=15, choices=SITE_OBSERVATION_STATUS, blank=True, null=True)
+    reason_to_uncomplied = models.TextField(blank=True, null=True)
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     contractor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     area = models.TextField()
     category = models.CharField(max_length=20,)
     severity = models.CharField(max_length=20,)
     statement = models.TextField()
-    status = models.CharField(max_length=15, choices=SITE_OBSERVATION_STATUS, blank=True, null=True)
     is_cleared = models.BooleanField(default=False, blank=True, null=True)
     report = models.FileField(upload_to="siteobservation/", blank=True, null=True)
 
     class Meta:
         ordering = ("-id",)
     # def __str__(self):
-    #     return f"{self.user} from {self.user.company}"
+    #     return f"{self.user.company.name}"
+        # return self.project.company.name
+
+class NCR(models.Model):
+    COMPLIED = 'Complied'
+    NOT_COMPLIED = 'Not Complied'
+    NCR_STATUS = ((COMPLIED,'Complied'),(NOT_COMPLIED,'Not Complied'))
+    status = models.CharField(max_length=15, choices=NCR_STATUS, blank=True, null=True)
+    reason_to_uncomplied = models.TextField(blank=True, null=True,)
+
+    user  = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    contractor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    area = models.TextField()
+    category = models.CharField(max_length=20,)
+    severity = models.CharField(max_length=20,)
+    root_cause = models.TextField()
+    root_cause_number = models.CharField(max_length=50,blank=True, null=True)
+    recomended_action = models.TextField()
+    is_cleared = models.BooleanField(default=False, blank=True, null=True)
+
+    report = models.FileField(upload_to="NCR/", blank=True, null=True)
+
+    class Meta:
+        ordering = ("-id",)
+
+    def __str__(self):
+        return self.project.company.name
 

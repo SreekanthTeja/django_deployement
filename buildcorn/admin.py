@@ -34,6 +34,15 @@ admin.site.register(Material)
 admin.site.register(Report)
 
 class SiteObservationAdmin(admin.ModelAdmin):
-    list_display=['user','project',]
+    list_display=['user','project','get_project',]
+    @admin.display(description='Company')
+    def get_project(self, obj):
+        return obj.project.company.name
 admin.site.register(SiteObservation, SiteObservationAdmin)
 
+class NCRAdmin(admin.ModelAdmin):
+    list_display=['user','project','get_project',]
+    @admin.display(description='Company')
+    def get_project(self, obj):
+        return obj.project.company.name
+admin.site.register(NCR, NCRAdmin)

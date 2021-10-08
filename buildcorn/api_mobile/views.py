@@ -79,3 +79,14 @@ class SiteObservationAPIView(generics.ListCreateAPIView):
             raise serializers.ValidationError({'error':e})
 
 
+class NCRAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = NCR.objects.all()
+    serializer_class = NCRSerailizer
+    def perform_create(self, serializer):
+        try:
+            user = Employee.objects.get(user__email=self.request.user)
+            serializer.save(user=user)
+        except Exception as e:
+            raise serializers.ValidationError({'error':e})
+
