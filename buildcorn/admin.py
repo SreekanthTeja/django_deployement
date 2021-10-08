@@ -33,3 +33,7 @@ admin.site.register(Material)
 
 admin.site.register(Report)
 
+class SiteObservationAdmin(admin.ModelAdmin):
+    list_display=['user','project',]
+admin.site.register(SiteObservation, SiteObservationAdmin)
+

@@ -8,9 +8,6 @@ User = get_user_model()
 
 """Web level dashboard"""
 class ProjectAnalyticSerializer(serializers.ModelSerializer):
-    # safety_checklist = SafetyCheckListSerailizer(many=True)
-    # quality_checklist = QualityCheckListSerailizer(many=True)
-    # material = MaterialSerializer(many=True)
     class Meta:
         model = Project
         fields = ["id","name","location","quality_checklist","safety_checklist","material",]
@@ -24,9 +21,13 @@ class ProjectAnalyticSerializer(serializers.ModelSerializer):
             quality_success_percent = quality_success_count/total_qulaity_inspections*100  if quality_success_count !=0 else 0
             safety_success_percent = safety_success_count/total_safety_inspections*100  if safety_success_count !=0 else 0
             
+            """Checklist analysis by project wise"""
+            print(instance.quality_checklist.values("id"))
+            """End"""
             return {
                 "project_id":instance.id,
                 "project_name":instance.name,
+                # "checklists_quality": instance.quality_checklist.values("name"),
                 "quality":{
                     "type":"Quality",
                     "total_inspections":total_qulaity_inspections,

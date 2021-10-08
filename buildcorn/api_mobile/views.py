@@ -20,10 +20,7 @@ class ProjectListAPIView(generics.ListAPIView):
         return self.queryset.filter(employee__user=self.request.user)
 
 
-# class InspectionSafetyAPIView(generics.UpdateAPIView):
-    # permission_classes = (IsAuthenticated,IsTenentOrUser)
-    # serializer_class = InspectionQualitySerializer
-    # lookup_field = "quality_checklist__name"
+
 class InspectionAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = AnswerChecklist.objects.all()
@@ -70,7 +67,15 @@ class InspectionAPIView(views.APIView):
             report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name)
             return Response({'status':"Success"},status=status.HTTP_200_OK)
 
-
-    
+class SiteObservationAPIView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = SiteObservation.objects.all()
+    serializer_class = SiteObservationSerailizer
+    def perform_create(self, serializer):
+        try:
+            user = Employee.objects.get(user__email=self.request.user)
+            serializer.save(user=user)
+        except Exception as e:
+            raise serializers.ValidationError({'error':e})
 
 

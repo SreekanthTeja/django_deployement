@@ -48,11 +48,7 @@ class MaterialSerializer(serializers.ModelSerializer):
         model=Material
         fields = ['id','name',"total_qty","total_uom","maker"]
 
-class InspectionQualitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model=AnswerChecklist
-        fields = ["id","quality_checklist","status","question","reason"]
-        read_only_fields = ["id","question"]
+
 class ProjectListSerializer(serializers.ModelSerializer):
     approver = EmployeeSerializer()
     employee = EmployeeSerializer(many=True)
@@ -68,7 +64,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
         checklist_ids = [checklist['id'] for checklist in context['quality_checklist']]
         question_ids = [question['id'] for checklists in context['quality_checklist'] for question in checklists["question"]]
         answer_obj = AnswerChecklist.objects.filter(project__id=context["id"],quality_checklist__in=checklist_ids,question__in=question_ids,).values()
-        print(answer_obj)
+        # print(answer_obj)
 
         status, reason = None,None
         """Logic for formating with answers for quality"""
@@ -90,7 +86,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
         s_checklist_ids = [checklist['id'] for checklist in context['safety_checklist']]
         s_question_ids = [question['id'] for checklists in context['safety_checklist'] for question in checklists["question"]]
         s_answer_obj = AnswerChecklist.objects.filter(project__id=context["id"],safety_checklist__in=s_checklist_ids,question__in=s_question_ids,).values()
-        print(s_answer_obj)
+        # print(s_answer_obj)
         for checklist in context['safety_checklist']:
             for que in checklist["question"]:
                 que["status"] = status
@@ -106,16 +102,14 @@ class ProjectListSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError({'error',e})
         return context
         
-"""Project Inspection starts"""
 
 
 
-# class InspectionQualitySerailizer(serializers.ModelSerializer):
-#     question = QuestionSerializer(many=True)
-#     class Meta:
-#         model=QualityCheckList
-#         fields = ['id','name','question']
-#         read_only_fields = ["name"]
+
+class SiteObservationSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model=SiteObservation
+        exclude = ['user','is_cleared',]
 
 # class InspectionQuestionSerializer(serializers.ModelSerializer):
 #     quality_checklist = 

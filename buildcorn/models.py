@@ -93,9 +93,9 @@ class QualityCheckList(models.Model):
         return self.name
 
 class AnswerChecklist(models.Model):
-    COMPILED = 'Compiled'
-    UNCOMPLETED = 'Not Compiled'
-    STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
+    COMPILED = 'Complied'
+    UNCOMPLETED = 'Not Complied'
+    STATUS = ((COMPILED,'Complied'),(UNCOMPLETED, 'Not Complied'))
     status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
 
     project = models.ForeignKey("Project", on_delete = models.CASCADE, blank=True, null=True)
@@ -210,3 +210,24 @@ class Report(models.Model):
         ordering = ("-id",)
     def __str__(self):
         return self.name
+
+# For Mobile purpose
+class SiteObservation(models.Model):
+    user  = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    COMPLIED = 'Complied'
+    NOT_COMPLIED = 'Not Complied'
+    SITE_OBSERVATION_STATUS = ((COMPLIED,'Complied'),(NOT_COMPLIED,'Not Complied'))
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    contractor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    area = models.TextField()
+    category = models.CharField(max_length=20,)
+    severity = models.CharField(max_length=20,)
+    statement = models.TextField()
+    status = models.CharField(max_length=15, choices=SITE_OBSERVATION_STATUS, blank=True, null=True)
+    is_cleared = models.BooleanField(default=False, blank=True, null=True)
+
+    class Meta:
+        ordering = ("-id",)
+    # def __str__(self):
+    #     return f"{self.user} from {self.user.company}"
+
