@@ -225,6 +225,7 @@ class SiteObservation(models.Model):
     statement = models.TextField()
     status = models.CharField(max_length=15, choices=SITE_OBSERVATION_STATUS, blank=True, null=True)
     is_cleared = models.BooleanField(default=False, blank=True, null=True)
+    report = models.FileField(upload_to="siteobservation/", blank=True, null=True)
 
     class Meta:
         ordering = ("-id",)
