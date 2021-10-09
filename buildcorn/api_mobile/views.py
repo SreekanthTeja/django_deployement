@@ -25,15 +25,32 @@ class InspectionAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
+        # input_data = {
+        #     "project":"Logos",
+        #     "type":"Safety",
+        #     "question": [
+        #         {
+        #             "id": 20,
+        #             "question": "Why safety",
+        #             "status": "Compiled",
+        #             "reason": None
+
+        #         }
+        #     ]
+        # }
+        filee = request.FILES.get('report', None)
         input_data = request.data
+        
+        pdf = pdf_file(filee) if filee != None else "empty"
         # validation
         if not  input_data.get("project") :
             raise serializers.ValidationError({'error':"project is missing"})
-        elif not  input_data.get("type") :
+        if  not  input_data.get("type") :
             raise serializers.ValidationError({'error':"type is missing"})
-        else :
+        if not  input_data.get("question"):
             raise serializers.ValidationError({'error':"question is missing"})
         if input_data["type"] == 'Quality':
+
             project = Project.objects.get(name=input_data["project"])
             quality_checklist_name = QualityCheckList.objects.get(name__exact=kwargs['name'])
             try:
@@ -51,8 +68,8 @@ class InspectionAPIView(views.APIView):
             except Exception as e:
                 raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
             
-            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name)
-            return Response({'status':'Success'},status=status.HTTP_200_OK)
+            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf =pdf)
+            return Response({'status':'Inspection submission done'},status=status.HTTP_200_OK)
         else:
             try:
                 safety_checklist_name = SafetyCheckList.objects.get(name__exact=kwargs['name'])
@@ -70,8 +87,8 @@ class InspectionAPIView(views.APIView):
                         query.save()
             except Exception as e:
                 raise serializers.ValidationError({'error':e})
-            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name)
-            return Response({'status':"Success"},status=status.HTTP_200_OK)
+            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf=pdf)
+            return Response({'status':"Inspection submission done"},status=status.HTTP_200_OK)
 
 class SiteObservationAPIView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)

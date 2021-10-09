@@ -158,21 +158,20 @@ class RestPasswordAPIView(generics.UpdateAPIView):
     lookup_field = 'email'
     def update(self, request,*args, **kwargs):
         instance = self.get_object()
-        if not User.objects.filter(email=request.user).exists():
-            raise serializers.ValidationError({"error":"We couldnt find this email in our database"})
-        password = request.data.get('old_password',None)
-        if password and not instance.check_password(password):
-            raise serializers.ValidationError({'status':'Old password is wrong'})
-
-        if len(request.data["new_password"]) < 8:
-            raise serializers.ValidationError({"error":"Password must be min 8 characters"})
-        if request.data["new_password"] != request.data["confirm_new_password"]:
-            raise serializers.ValidationError({"error":"Two password didn't match"})
+        if not request.data.get("old_password") or request.data.get("old_password") == "":
+            raise serializers.ValidationError({'error':'Provide old_password and cannot be empty'})
+        if not request.data.get('new_password') or request.data.get('new_password') == "" or len(request.data["new_password"]) < 8:
+            raise serializers.ValidationError({'error':'Provide new_password with minimum 8 letters'})
+        if not request.data.get('confirm_new_password') or request.data["new_password"] != request.data["confirm_new_password"]:
+            raise serializers.ValidationError({'error':'Provide confirm_new_password and should matched'})
+        password = request.data.get('old_password')
+        if not instance.check_password(password):
+            raise serializers.ValidationError({'error':'Old password is wrong'})
         password = request.data.get('confirm_new_password') 
-
         instance.set_password(password)
         instance.save()
-        return Response({"status":'Password reset done successfully'})
+        return Response({"status":'Password reset done successfully'}, status=status.HTTP_200_OK)
+        
 
 
 

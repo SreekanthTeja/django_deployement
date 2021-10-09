@@ -97,6 +97,7 @@ class ResetPasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=False)
     new_password = serializers.CharField(required=True)
     confirm_new_password = serializers.CharField(required=True)
+    
 
 class ForgotPasswordSerializer(serializers.Serializer):
     email=serializers.EmailField(required=True)

@@ -18,7 +18,7 @@ urlpatterns = [
 
     # path('emp/rud/<int:pk>', UserUpdateView.as_view()),
     path('password/<str:email>/reset',RestPasswordAPIView.as_view()),
-    path('password/<str:email>/forgot',RestPasswordAPIView.as_view()),
+    # path('password/<str:email>/forgot',RestPasswordAPIView.as_view()),
     path('request/otp',OTPRequestAPIView.as_view()),
     path('verify/otp',OTPVerifyAPIView.as_view()),
 

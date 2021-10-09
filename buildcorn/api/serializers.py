@@ -14,19 +14,21 @@ import json
 User = get_user_model()
 
 """License """
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("client_id",)
 class LicenseCompanySerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Company
-        fields = ("name","company_id","gstin","license_purchased")
+        fields = ("name","company_id","gstin","license_purchased","user")
     def to_representation(self, instance):
-        # print(instance)
         context = super(LicenseCompanySerializer, self).to_representation(instance)
         license_used_count = Employee.objects.filter(company=instance).values('user').count()
-        # if context['license_purchased'] == license_used_count:
-        #     raise serializers.ValidationError({'status':'Your quota is completed'})
         return {
             'name':context["name"],
-            "license_id":context["company_id"],
+            "client_id":context["user"]["client_id"],
             'gstin':context['gstin'],
             'total_licenses':context['license_purchased'],
             'license_used_count':license_used_count
@@ -303,9 +305,3 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = "__all__"
-
-    # def to_representation(self, instance):
-    #     print(instance)
-    #     context = super(ReportSerializer, self).to_representation(instance)
-    #     question = AnswerChecklist.objects.filter(question=)
-    #     pass
