@@ -26,7 +26,13 @@ class InspectionAPIView(views.APIView):
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
         input_data = request.data
-        # print(input_data)
+        # validation
+        if not  input_data.get("project") :
+            raise serializers.ValidationError({'error':"project is missing"})
+        elif not  input_data.get("type") :
+            raise serializers.ValidationError({'error':"type is missing"})
+        else :
+            raise serializers.ValidationError({'error':"question is missing"})
         if input_data["type"] == 'Quality':
             project = Project.objects.get(name=input_data["project"])
             quality_checklist_name = QualityCheckList.objects.get(name__exact=kwargs['name'])
@@ -63,7 +69,7 @@ class InspectionAPIView(views.APIView):
                         query.reason =  que.get('reason',None)
                         query.save()
             except Exception as e:
-                raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
+                raise serializers.ValidationError({'error':e})
             report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name)
             return Response({'status':"Success"},status=status.HTTP_200_OK)
 
