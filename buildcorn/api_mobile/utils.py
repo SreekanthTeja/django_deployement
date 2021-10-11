@@ -6,14 +6,33 @@ from django.core.files.storage import FileSystemStorage
 import datetime
 from django.conf import settings
 import os
+from base64 import b64decode
+
+# def pdf_file(pdf):
+#     print(">>>>>>>>>",)
+
+
+#     location = '%s/report'%(settings.MEDIA_ROOT)
+#     try:
+#         fs = FileSystemStorage(location=location)
+#         picname = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+#         f_save = fs.save(picname, pdf)
+#         filepath = "%s/%s"%(location,picname)
+#     except Exception as e:
+#         raise serializers.ValidationError({"error":e})
+#     return json.dumps(filepath)
 
 def pdf_file(pdf):
+    bytess = b64decode(pdf, validate=True)
+    if bytess[0:4] != b'%PDF':
+        raise serializers.ValidationError({'error':'Missing the PDF file signature'})
     location = '%s/report'%(settings.MEDIA_ROOT)
     try:
-        fs = FileSystemStorage(location=location)
-        picname = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-        f_save = fs.save(picname, pdf)
-        filepath = "%s/%s"%(location,picname)
+        filename = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+        filepath = "%s/%s"%(location,filename)
+        f = open(filepath, 'wb')
+        f.write(bytess)
+        f.close()
     except Exception as e:
         raise serializers.ValidationError({"error":e})
     return json.dumps(filepath)

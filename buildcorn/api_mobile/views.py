@@ -49,10 +49,17 @@ class InspectionAPIView(views.APIView):
             raise serializers.ValidationError({'error':"type is missing"})
         if not  input_data.get("question"):
             raise serializers.ValidationError({'error':"question is missing"})
-        if not request.FILES.get('report', None):
+        if not request.data.get('report', None):
             raise serializers.ValidationError({'error':"report is missing"})
-        pdf = pdf_file(request.FILES.get('report'))
+        """Previous working logic"""
+        # if not request.FILES.get('report', None):
+        #     raise serializers.ValidationError({'error':"report is missing"})
+        # pdf = pdf_file(request.FILES.get('report'))
         # print(">>>>>>>>",pdf)
+        """"""
+        # report = json.dumps(request.data.get('report'))
+        
+        pdf = pdf_file(input_data.get('report'))
         if input_data["type"] == 'Quality':
 
             project = Project.objects.get(name=input_data["project"])
