@@ -6,9 +6,12 @@ from rest_framework.response import Response
 from rest_framework.parsers import ParseError
 from accounts.models import *
 from django.db.models import Q
+from rest_framework.pagination import PageNumberPagination as PageSize
 User = get_user_model()
 
 
+class CustomPageSize(PageSize):
+    page_size_query_param = '10'
 """ Users  Serializer """
 
 class UserSerializer(serializers.ModelSerializer):
@@ -28,6 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
 """ Company register Serializer """
 class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     user = UserSerializer()
+    pagination_class = CustomPageSize
     class Meta:
         model = Company
         fields = ("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
@@ -42,6 +46,7 @@ class CompanyUpdateSerializer(WritableNestedModelSerializer):
         read_only_fields = ("id",'user','company_id',"status")
 
 class PlanSerializer(serializers.ModelSerializer):
+    pagination_class = CustomPageSize
     class Meta:
         model = Plan
         fields = "__all__"

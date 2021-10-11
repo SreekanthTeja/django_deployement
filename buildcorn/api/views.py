@@ -282,3 +282,15 @@ class ReportDeleteAPIView(generics.DestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            path = '%s/report/'%(settings.MEDIA_ROOT)
+            filename = instance.download.strip(path)
+            os.remove("%s/%s"%(path,filename))
+        except Exception as e:
+            pass
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+

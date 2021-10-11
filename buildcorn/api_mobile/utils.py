@@ -8,19 +8,14 @@ from django.conf import settings
 import os
 
 def pdf_file(pdf):
-    if pdf == None:
-        return False
     location = '%s/report'%(settings.MEDIA_ROOT)
     try:
-        delete_file = [os.remove("%s/%s"%(location,f)) for f in os.listdir(location)]
-        
         fs = FileSystemStorage(location=location)
         picname = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
         f_save = fs.save(picname, pdf)
         filepath = "%s/%s"%(location,picname)
     except Exception as e:
         raise serializers.ValidationError({"error":e})
-    # finally:
     return json.dumps(filepath)
 
 def generate_report(**kwargs):
@@ -35,18 +30,18 @@ def generate_report(**kwargs):
             print("?????",total_ans_obj_count,ans_obj_status_count )
             if created and  (total_ans_obj_count == ans_obj_status_count):
                 rep.status = Report.DONE
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 rep.save()
                 project.inspection = Project.INSPECTION_DONE
                 project.save()
             elif ans_obj_status_count < total_ans_obj_count:
                 rep.status = Report.PENDING
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 rep.save()
             else:
                 rep.status = Report.DONE
                 rep.save()
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 project.inspection = Project.INSPECTION_DONE
                 project.save()
         except Exception as e:
@@ -57,20 +52,20 @@ def generate_report(**kwargs):
 
             total_ans_obj_count = AnswerChecklist.objects.filter(safety_checklist__name=kwargs.get('checklist',None),question__typee=kwargs['typee']).count()
             ans_obj_status_count = AnswerChecklist.objects.filter(safety_checklist__name=kwargs.get('checklist',None),question__typee=kwargs['typee'],status=AnswerChecklist.COMPILED).count()
-            print("safety....",total_ans_obj_count,ans_obj_status_count, str(kwargs["pdf"]))
+            print("safety....",total_ans_obj_count,ans_obj_status_count, kwargs["pdf"])
             if created and  (total_ans_obj_count == ans_obj_status_count):
                 rep.status = Report.DONE
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 rep.save()
                 project.inspection = Project.INSPECTION_DONE
                 project.save()
             elif ans_obj_status_count < total_ans_obj_count:
                 rep.status = Report.PENDING
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 rep.save()
             else:
                 rep.status = Report.DONE
-                rep.download = kwargs["pdf"]
+                rep.download = json.loads(kwargs["pdf"])
                 rep.save()
                 project.inspection = Project.INSPECTION_DONE
                 project.save()
