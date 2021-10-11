@@ -24,8 +24,8 @@ from base64 import b64decode
 
 def pdf_file(pdf):
     bytess = b64decode(pdf, validate=True)
-    if bytess[0:4] != b'%PDF':
-        raise serializers.ValidationError({'error':'Missing the PDF file signature'})
+    # if bytess[0:4] != b'%PDF':
+    #     raise serializers.ValidationError({'error':'Missing the PDF file signature'})
     location = '%s/report'%(settings.MEDIA_ROOT)
     try:
         filename = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
