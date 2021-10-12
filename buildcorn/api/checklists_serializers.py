@@ -10,7 +10,7 @@ User = get_user_model()
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = ["id","typee","question","admin_status","question_id"]
         # exclude = ['reason','status']
     def create(self, validated_data):
         data = self.initial_data
@@ -22,6 +22,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             if typee == Question.Quality:
                 quality_checklist = QualityCheckList.objects.get(id=type_id,)
                 question = Question.objects.create(**data)
+                question.typee=typee
                 question.save()
                 quality_checklist.question.add(question)
                 quality_checklist.save()
@@ -29,6 +30,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             else:
                 safety_checklist = SafetyCheckList.objects.get(id=type_id,)
                 question = Question.objects.create(**data)
+                question.typee=typee
                 question.save()
                 safety_checklist.question.add(question)
                 safety_checklist.save()

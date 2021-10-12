@@ -28,6 +28,7 @@ admin.site.register(AnswerChecklist)
 admin.site.register(License)
 
 admin.site.register(Vendor)
+admin.site.register(TenentBanner)
 admin.site.register(Banner)
 admin.site.register(Material)
 

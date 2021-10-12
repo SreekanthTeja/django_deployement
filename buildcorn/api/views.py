@@ -273,7 +273,6 @@ class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # print(instance)
         location = '%s/banner'%(settings.MEDIA_ROOT)
         multi_images  = json.loads(instance.multi_images)
         if len(multi_images) > 0:

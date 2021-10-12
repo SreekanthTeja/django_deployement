@@ -168,14 +168,22 @@ class Project(models.Model):
         return self.name
 
 
-
-class Banner(models.Model):
-    buildcron_user = models.ForeignKey(User, related_name="banner_buildcron_user", on_delete = models.CASCADE, blank=True, null=True)
-    tenent_user = models.ForeignKey(User, related_name="banner_tenent_user", on_delete = models.CASCADE,blank=True, null=True)
-    name = models.CharField(max_length=30)
-    multi_images = models.TextField(blank=True, null=True)
+class TenentBanner(models.Model):
+    name = models.CharField(max_length=30, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete = models.CASCADE, blank=True, null=True)
+    tenent_images = models.TextField(blank=True, null=True)
     class Meta:
         ordering = ("id",)
+    def __str__(self):
+        return self.user
+class Banner(models.Model):
+    buildcron_user = models.ForeignKey(User, related_name="banner_buildcron_user", on_delete = models.CASCADE, blank=True, null=True)
+    # tenent_user = models.ForeignKey(User, related_name="banner_tenent_user", on_delete = models.CASCADE,blank=True, null=True)
+    name = models.CharField(max_length=30)
+    multi_images = models.TextField(blank=True, null=True)
+    # tenent_banner = models.ManyToManyField(TenentBanner, blank=True)
+    class Meta:
+        ordering = ("-id",)
     def __str__(self):
         return self.name
     
