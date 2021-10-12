@@ -65,7 +65,8 @@ class RDSafetySerializer(serializers.ModelSerializer):
     class Meta:
         model = SafetyCheckList
         fields = "__all__"
-""" Safety ends """
+
+""" Quality"""
 class QualitySerializer(serializers.ModelSerializer):
     # question = QueSafetyQualitySerializer(many=True, required=False)
     class Meta:

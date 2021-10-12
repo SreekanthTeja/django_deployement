@@ -125,9 +125,18 @@ class ProjectUpdateView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-
 """Projects Ends """
+
+
+"""Client admin assign checklists to certain projects quality/safety"""
+class QualityChecklistsQuestions(generics.ListAPIView):
+    """return checklists with questions"""
+    permission_classes = (IsAuthenticated, IsTenentUser,)
+    queryset = QualityCheckList.objects.all()
+    serializer_class = QualitySerializer
+    def get_queryset(self):
+        return self.queryset.filter(question__typee=Question.Quality)
+    
 
 class QualityAssignProjectAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
@@ -147,6 +156,13 @@ class QualityAssignProjectAPIView(views.APIView):
         raise serializers.ValidationError({'error': 'Unsupported checklists'})
 
 
+class SafetyChecklistsQuestions(generics.ListAPIView):
+    """return checklists with questions"""
+    permission_classes = (IsAuthenticated, IsTenentUser,)
+    queryset = SafetyCheckList.objects.all()
+    serializer_class = SafetySerializer
+    def get_queryset(self):
+        return self.queryset.filter(question__typee=Question.Safety)
 class SafetyAssignProjectAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
 
@@ -169,7 +185,6 @@ class ShowQualityProjectView(generics.ListAPIView):
     serializer_class = ShowQualityProjectSerializer
 
     def get_queryset(self):
-        
         return self.queryset.filter(company__user=self.request.user,quality_checklist__question__typee=Question.Quality).distinct()
 
 
@@ -177,7 +192,6 @@ class ShowSafetyProjectView(generics.ListAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
     queryset = Project.objects.all()
     serializer_class = ShowSafetyProjectSerializer
-
     def get_queryset(self):
         return self.queryset.filter(company__user=self.request.user,safety_checklist__question__typee=Question.Safety).distinct()
 
