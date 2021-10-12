@@ -135,7 +135,7 @@ class QualityChecklistsQuestions(generics.ListAPIView):
     queryset = QualityCheckList.objects.all()
     serializer_class = QualitySerializer
     def get_queryset(self):
-        return self.queryset.filter(question__typee=Question.Quality)
+        return self.queryset.filter(question__typee=Question.Quality).distinct()
     
 
 class QualityAssignProjectAPIView(views.APIView):
@@ -162,7 +162,7 @@ class SafetyChecklistsQuestions(generics.ListAPIView):
     queryset = SafetyCheckList.objects.all()
     serializer_class = SafetySerializer
     def get_queryset(self):
-        return self.queryset.filter(question__typee=Question.Safety)
+        return self.queryset.filter(question__typee=Question.Safety).distinct()
 class SafetyAssignProjectAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
 

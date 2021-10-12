@@ -37,9 +37,6 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
             
             site_observation = SiteObservation.objects.filter(project=instance,)
             ncr = NCR.objects.filter(project=instance)
-            #################
-            
-            # checklist_by_quality = [inst for inst in instance]
             return {
                 "project_id":instance.id,
                 "project_name":instance.name,
@@ -48,14 +45,14 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
                     "success_percent":quality_success_percent,
                     "site_observation": site_observation.filter(category=Question.Quality).count(),
                     "ncr":ncr.filter(category=Question.Quality).count(),
-                    "checklists_by_quality":instance.quality_checklist.values("name"),
+                    # "checklists_by_quality":instance.quality_checklist.values("name"),
                 },
                 "safety":{
                     "total_inspections":total_safety_inspections,
                     "success_percent":safety_success_percent,
                     "site_observation": site_observation.filter(category=Question.Safety).count(),
                     "ncr":ncr.filter(category=Question.Safety).count(),
-                    "checklists_by_safety":instance.safety_checklist.values("name"),
+                    # "checklists_by_safety":instance.safety_checklist.values("name"),
                 }
             }
         except Exception as e:
@@ -64,12 +61,20 @@ class ChecklistsAnalyticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ["id","name","quality_checklist","safety_checklist"]
-        def to_representation(self, instance):
-            try:
-                context = super(ProjectAnalyticDetailSerializer, self).to_representation(instance)
-                checklist_by_quality = context.quality_checklist.values("name")
-                return {
-                    "checklist_by_quality": checklist_by_quality
-                }
-            except Exception as e:
-                raise serializers.ValidationError({'error':e})
+    # def to_representation(self, instance):
+    #     try:
+    #         context = super(ChecklistsAnalyticsSerializer, self).to_representation(instance)
+    #         all_checklist = list(instance.quality_checklist.values("name")) + list(instance.safety_checklist.values("name")) 
+    #         result = {}
+    #         for i in all_checklist:
+    #             if i["name"] not in result:
+    #                 result[i.get("name")] =0
+    #             result[i["name"]] +=1
+    #         print(result)
+
+    #         return {
+    #             "checklist_by_quality": all_checklist
+    #         }
+    #         # return context
+    #     except Exception as e:
+    #         raise serializers.ValidationError({'error':e})

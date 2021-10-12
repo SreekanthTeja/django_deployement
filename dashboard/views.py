@@ -26,10 +26,19 @@ class ProjectDetailedAnalyticsAPIView(generics.RetrieveAPIView):
         return self.queryset.filter(company__user=self.request.user)
 
 
-class ChecklistAnalyticsAPIView(generics.RetrieveAPIView):
+class ChecklistAnalyticsAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = Project.objects.all()
-    serializer_class = ChecklistsAnalyticsSerializer
-    # lookup_field = ""
+    # serializer_class = ChecklistsAnalyticsSerializer
     def get_queryset(self):
         return self.queryset.filter(company__user=self.request.user)
+
+    def list(self, request):
+        all_checklist = [list(project.quality_checklist.values("name")) + list(project.safety_checklist.values("name")) for project in self.queryset.all()]
+        flat_list = [item for sublist in all_checklist for item in sublist]
+        result = {}
+        for checklist in flat_list:
+            if checklist["name"] not in result:
+                result[checklist.get("name")] =0
+            result[checklist["name"]] +=1 
+        return Response(result, status=status.HTTP_200_OK)
