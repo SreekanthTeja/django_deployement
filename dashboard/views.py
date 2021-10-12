@@ -16,3 +16,20 @@ class ProjectAnalyticsAPIView(generics.ListAPIView):
     serializer_class = ProjectAnalyticSerializer
     def get_queryset(self):
         return self.queryset.filter(company__user=self.request.user)
+
+class ProjectDetailedAnalyticsAPIView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Project.objects.all()
+    serializer_class = ProjectAnalyticDetailSerializer
+    # lookup_field = ""
+    def get_queryset(self):
+        return self.queryset.filter(company__user=self.request.user)
+
+
+class ChecklistAnalyticsAPIView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = Project.objects.all()
+    serializer_class = ChecklistsAnalyticsSerializer
+    # lookup_field = ""
+    def get_queryset(self):
+        return self.queryset.filter(company__user=self.request.user)

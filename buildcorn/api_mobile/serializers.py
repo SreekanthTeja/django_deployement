@@ -105,15 +105,47 @@ class ProjectListSerializer(serializers.ModelSerializer):
 
 
 
+"""Site observation"""
 
-class SiteObservationSerailizer(serializers.ModelSerializer):
+class ProjectForSiteObservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Project
+        fields = ['id','name',]
+        read_only_fields = ['name']
+class VendorForSiteObservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Vendor
+        fields = ['id','name',]
+        read_only_fields = ['name']
+class SiteObservationSerailizer(WritableNestedModelSerializer):
+    project = ProjectForSiteObservationSerializer()
+    contractor = VendorForSiteObservationSerializer()
     class Meta:
         model=SiteObservation
-        exclude = ['user','is_cleared',]
+        fields = ("id",'area','project', 'contractor',"status","category","severity","statement", "report",)
+        read_only_fields = ("id",'project',)
+class SiteObservationUpdateSerailizer(WritableNestedModelSerializer):
+    project = ProjectForSiteObservationSerializer(required=False)
+    contractor = VendorForSiteObservationSerializer(required=False)
+    class Meta:
+        model=SiteObservation
+        fields = ("id",'area','project', 'contractor',"status","category","severity","statement", "report",)
+        read_only_fields = ("id",'project',)
 
-class NCRSerailizer(serializers.ModelSerializer):
+"""NCR observation"""
+class NCRSerailizer(WritableNestedModelSerializer):
+    project = ProjectForSiteObservationSerializer()
+    contractor = VendorForSiteObservationSerializer()
     class Meta:
         model=NCR
-        exclude = ['user','is_cleared',]
-        
+        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause", "report",)
+        read_only_fields = ("id",'project',)
+
+class NCRUpdateSerailizer(WritableNestedModelSerializer):
+    project = ProjectForSiteObservationSerializer(required=False)
+    contractor = VendorForSiteObservationSerializer(required=False)
+    class Meta:
+        model=NCR
+        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause", "report",)
+        read_only_fields = ("id",'project',)
         

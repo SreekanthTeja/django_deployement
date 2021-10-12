@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}
+    Employee Login
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <form method="post"  >
+                {% csrf_token %}
+                {{ form.as_p }}
+                <span>
+                    <a href="{% url 'signup' %}" class="btn btn-warning bg-white ">New to account? Create here</a>
+                    
+                </span>
+                <button class="btn btn-primary ms-3" type='submit' >
+                    Login
+                </button>
+            </form>
+        </div>
+        
+
+    </div>
+</div>
+
+{% endblock %}

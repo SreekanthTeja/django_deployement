@@ -10,8 +10,8 @@ User = get_user_model()
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        # fields = "__all__"
-        exclude = ["pic",'reason','status']
+        fields = "__all__"
+        # exclude = ['reason','status']
     def create(self, validated_data):
         data = self.initial_data
         print(data)
