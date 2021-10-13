@@ -169,13 +169,14 @@ class Project(models.Model):
 
 
 class TenentBanner(models.Model):
+    company = models.ForeignKey(Company, on_delete= models.CASCADE)
     name = models.CharField(max_length=30, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete = models.CASCADE, blank=True, null=True)
+    # user = models.ForeignKey(User, on_delete = models.CASCADE, blank=True, null=True)
     tenent_images = models.TextField(blank=True, null=True)
     class Meta:
         ordering = ("id",)
     def __str__(self):
-        return self.user
+        return self.company.name
 class Banner(models.Model):
     buildcron_user = models.ForeignKey(User, related_name="banner_buildcron_user", on_delete = models.CASCADE, blank=True, null=True)
     # tenent_user = models.ForeignKey(User, related_name="banner_tenent_user", on_delete = models.CASCADE,blank=True, null=True)

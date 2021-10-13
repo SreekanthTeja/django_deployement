@@ -62,8 +62,17 @@ urlpatterns = [
     path('faq/list_or_create',FaqLCView.as_view()),
     path('faq/rud/<int:pk>',RUDFaqView.as_view()),
 
-    path('banner/list_or_create',BannerLCView.as_view()),
-    path('banner/rud/<int:pk>',RUDBannerView.as_view()),
+    path('banner/create',BannerCreateView.as_view()),
+    path('banner/list',BannerListView.as_view()),
+    path('banner/read/<int:pk>',BannerReadView.as_view()),
+    path('banner/update/<int:pk>',BannerUpdateView.as_view()),
+    path('banner/delete/<int:pk>',BannerDestroyView.as_view()),
+
+    path('tenent/banner/create',TenentBannerCreateView.as_view()),
+    path('tenent/banner/list',TenentBannerListView.as_view()),
+    path('tenent/banner/read/<int:pk>',TenentBannerReadView.as_view()),
+    path('tenent/banner/update/<int:pk>',TenentBannerUpdateView.as_view()),
+    path('tenent/banner/delete/<int:pk>',TenentBannerDestroyView.as_view()),
 
     path('material/list',MaterialListView.as_view()),
     path('material/create',MaterialCreateView.as_view()),

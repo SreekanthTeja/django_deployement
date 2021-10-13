@@ -260,17 +260,28 @@ class RUDFaqView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FAQ.objects.all()
     serializer_class = FaqSerializer
 
-class BannerLCView(generics.ListCreateAPIView):
-    permission_classes = (IsAuthenticated,IsTenentOrSuperUser)
-    queryset = Banner.objects.all()
-    serializer_class = BannerSerializer
 
 import os
-class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,IsTenentOrSuperUser)
+class BannerListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+class BannerCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser)
+    queryset = Banner.objects.all()
+    serializer_class = BannerSerializer
+class BannerReadView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
     queryset = Banner.objects.all()
     serializer_class = BannerRUDSerializer
-
+class BannerUpdateView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser)
+    queryset = Banner.objects.all()
+    serializer_class = BannerRUDSerializer
+class BannerDestroyView(generics.DestroyAPIView):
+    permission_classes = (IsAuthenticated,IsSuperUser)
+    queryset = Banner.objects.all()
+    serializer_class = BannerRUDSerializer
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         location = '%s/banner'%(settings.MEDIA_ROOT)
@@ -285,6 +296,42 @@ class RUDBannerView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class TenentBannerListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TenentBanner.objects.all()
+    serializer_class = TenentBannerSerializer
+    def get_queryset(self):
+        return self.queryset.filter(company__user=self.request.user)
+    
+
+class TenentBannerCreateView(generics.CreateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = TenentBanner.objects.all()
+    serializer_class = TenentBannerSerializer
+class TenentBannerReadView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = TenentBanner.objects.all()
+    serializer_class = TenentBannerRUDSerializer
+class TenentBannerUpdateView(generics.UpdateAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = TenentBanner.objects.all()
+    serializer_class = TenentBannerRUDSerializer
+class TenentBannerDestroyView(generics.DestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentUser)
+    queryset = TenentBanner.objects.all()
+    serializer_class = TenentBannerRUDSerializer
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        location = '%s/tenentbanner'%(settings.MEDIA_ROOT)
+        multi_images  = json.loads(instance.tenent_images)
+        if len(multi_images) > 0:
+            for pic in multi_images:
+                # print(pic)
+                filename = pic.strip("media/tenentbanner/")
+                path = os.remove("%s/%s"%(location,filename))
+                print(path)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReportListAPIView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)

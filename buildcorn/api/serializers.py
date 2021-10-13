@@ -325,17 +325,17 @@ class BannerSerializer(serializers.ModelSerializer):
 class BannerRUDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner      
-        exclude = ("buildcron_user","tenent_user")
+        exclude = ("buildcron_user",)
     
     def validate(self, data):
         images = self.context['request'].FILES
-        if len(images.getlist('image')) > 2:
+        if len(images.getlist('images')) > 2:
             raise serializers.ValidationError({'error':"Select minimum 2 images"})
         return data
     def update(self, instance, validated_data):
         print(self.initial_data)
         location = '%s/banner'%(settings.MEDIA_ROOT)
-        pictures = self.context['request'].FILES.getlist('image')
+        pictures = self.context['request'].FILES.getlist('images')
         try:
             for pic in json.loads(instance.multi_images):
                 filename = pic.strip("media/banner/")
@@ -350,24 +350,103 @@ class BannerRUDSerializer(serializers.ModelSerializer):
             filepath = "%s/%s"%(location,picname)
             all_pictures.append(filepath)
         all_pictures = json.dumps(all_pictures)
-        if self.context['request'].user.user_type == User.SUPER_ADMIN:
-            user = User.objects.get(email=self.context['request'].user.email)
-            instance.buildcron_user = user
-            instance.name = self.initial_data.get('name')
-            print(all_pictures)
-            instance.multi_images = all_pictures
-            instance.save()
-            return instance
-        else:
-            user = User.objects.get(email=self.context['request'].user.email)
-            instance.buildcron_user = user
-            instance.name = self.initial_data.get('name')
-            instance.multi_images =all_pictures
-            instance.save()
-            return instance
+        # if self.context['request'].user.user_type == User.SUPER_ADMIN:
+        user = User.objects.get(email=self.context['request'].user.email)
+        instance.buildcron_user = user
+        instance.name = self.initial_data.get('name')
+        instance.multi_images = all_pictures
+        instance.save()
+        return instance
+        
     def to_representation(self, instance):
         context = super(BannerRUDSerializer, self).to_representation(instance)
         multi_images = json.loads(context['multi_images'])
+        return {
+            "id":context["id"],
+            'images':multi_images,
+            'name':context['name']
+        }
+
+class TenentBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TenentBanner
+        fields = ["id","name","tenent_images",]
+        # read_only_fields = ["company"]
+
+
+    def validate(self, data):
+        images = self.context['request'].FILES
+        if len(images.getlist('images')) > 2:
+            raise serializers.ValidationError({'error':"Select minimum 2 images"})
+        return data
+
+    def create(self, validated_data):
+        company = Company.objects.get(user__email=self.context["request"].user.email)
+        print(company)
+        picture = self.context['request'].FILES.getlist('images')
+        all_pictures = []
+        for pic in picture:
+            location = '%s/tenentbanner'%(settings.MEDIA_ROOT)
+            fs = FileSystemStorage(location=location)
+            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+            f_save = fs.save(picname, pic)
+            filepath = "%s/%s"%(location,picname)
+            all_pictures.append(filepath)
+        all_pictures = json.dumps(all_pictures)
+        # user = User.objects.get(email=self.context['request'].user.email)
+        print("fghjkl")
+        banner, created = TenentBanner.objects.get_or_create(company=company,name=validated_data.get('name',None),tenent_images=all_pictures)
+        if created:
+            banner.save()
+        return banner
+    def to_representation(self, instance):
+        context = super(TenentBannerSerializer, self).to_representation(instance)
+        multi_images = json.loads(context['tenent_images'])
+        return {
+            "id":context["id"],
+            'images':multi_images,
+            'name':context['name']
+        }
+        
+class TenentBannerRUDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TenentBanner
+        fields = ["id","name","tenent_images",]
+    
+    def validate(self, data):
+        images = self.context['request'].FILES
+        if len(images.getlist('images')) > 2:
+            raise serializers.ValidationError({'error':"Select minimum 2 images"})
+        return data
+    def update(self, instance, validated_data):
+        print(self.initial_data)
+        location = '%s/tenentbanner'%(settings.MEDIA_ROOT)
+        pictures = self.context['request'].FILES.getlist('images')
+        try:
+            for pic in json.loads(instance.tenent_images):
+                filename = pic.strip("media/tenentbanner/")
+                path = os.remove("%s/%s"%(location,filename))
+        except Exception as e:
+            pass
+        all_pictures = []
+        for pic in pictures:
+            fs = FileSystemStorage(location=location)
+            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+            f_save = fs.save(picname, pic)
+            filepath = "%s/%s"%(location,picname)
+            all_pictures.append(filepath)
+        all_pictures = json.dumps(all_pictures)
+        # if self.context['request'].user.user_type == User.SUPER_ADMIN:
+        # user = User.objects.get(email=self.context['request'].user.email)
+        # instance.buildcron_user = user
+        instance.name = self.initial_data.get('name')
+        instance.tenent_images = all_pictures
+        instance.save()
+        return instance
+        
+    def to_representation(self, instance):
+        context = super(TenentBannerRUDSerializer, self).to_representation(instance)
+        multi_images = json.loads(context['tenent_images'])
         return {
             "id":context["id"],
             'images':multi_images,
