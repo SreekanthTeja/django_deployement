@@ -31,7 +31,7 @@ admin.site.register(Vendor)
 admin.site.register(TenentBanner)
 admin.site.register(Banner)
 admin.site.register(Material)
-
+admin.site.register(Approver)
 admin.site.register(Report)
 
 class SiteObservationAdmin(admin.ModelAdmin):

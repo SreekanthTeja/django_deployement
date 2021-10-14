@@ -1,5 +1,5 @@
 from rest_framework import serializers, status
-from buildcorn.models import Report, AnswerChecklist, Project, Employee
+from buildcorn.models import Report, AnswerChecklist, Project, Employee, Approver
 from accounts.models import Company
 import json
 from django.core.files.storage import FileSystemStorage
@@ -7,20 +7,41 @@ import datetime
 from django.conf import settings
 import os
 from base64 import b64decode
+from django.contrib.auth import get_user_model
+User = get_user_model()
+def pdf_file(pdf):
+    print(pdf)
+    location = '%s/report'%(settings.MEDIA_ROOT)
+    try:
+        fs = FileSystemStorage(location=location)
+        picname = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
+        f_save = fs.save(picname, pdf)
+        filepath = "%s/%s"%(location,picname)
+    except Exception as e:
+        raise serializers.ValidationError({"error":e})
+    # return json.dumps(filepath)
+    return filepath
 
-# def pdf_file(pdf):
-#     print(">>>>>>>>>",)
-
-
-#     location = '%s/report'%(settings.MEDIA_ROOT)
-#     try:
-#         fs = FileSystemStorage(location=location)
-#         picname = "REPORT_%s.pdf"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-#         f_save = fs.save(picname, pdf)
-#         filepath = "%s/%s"%(location,picname)
-#     except Exception as e:
-#         raise serializers.ValidationError({"error":e})
-#     return json.dumps(filepath)
+def approver_action(data,employee,):
+    print("data is==> {}".format(data,))
+    report = data.pop("report",None)
+    complied = [True for question in data["question"]  if (question["reason"] == None) or (question["reason"] == "")]
+    if complied:
+        project = Project.objects.get(name=data["project"],employee__user__email=employee)
+        approver = User.objects.get(email=project.approver)
+        employee = Employee.objects.get(user__email=employee)
+        approver_obj, created = Approver.objects.get_or_create(user=approver, project=project,submitted_employee= employee)
+        report = pdf_file(report)
+        data["report"]= report
+        if created:
+            
+            approver_obj.data =json.dumps(data)
+            approver_obj.save()
+        else:
+            approver_obj.data =json.dumps(data)
+            approver_obj.save()
+        
+        
 
 def pdf_file(pdf):
     bytess = b64decode(pdf, validate=True)

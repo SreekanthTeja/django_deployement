@@ -25,6 +25,8 @@ class InspectionAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
+        print("report:",request.data.get('report'), type(request.data.get('report')))
+        # f = request.data.get('report')
         # input_data = {
         #     "project":"Logos",
         #     "type":"Safety",
@@ -39,18 +41,20 @@ class InspectionAPIView(views.APIView):
         #     ]
         # }
         # filee = request.FILES.get('report', None)
+        # input_data["report"] = filee
         
         # pdf = pdf_file(filee) if filee != None else "empty"
         # validation
         input_data = request.data
+        user = self.request.user
         if not  input_data.get("project") :
             raise serializers.ValidationError({'error':"project is missing"})
         if  not  input_data.get("type") :
             raise serializers.ValidationError({'error':"type is missing"})
         if not  input_data.get("question"):
             raise serializers.ValidationError({'error':"question is missing"})
-        if not request.data.get('report', None):
-            raise serializers.ValidationError({'error':"report is missing"})
+        # if not request.data.get('report', None):
+        #     raise serializers.ValidationError({'error':"report is missing"})
         """Previous working logic"""
         # if not request.FILES.get('report', None):
         #     raise serializers.ValidationError({'error':"report is missing"})
@@ -59,7 +63,7 @@ class InspectionAPIView(views.APIView):
         """"""
         # report = json.dumps(request.data.get('report'))
         
-        pdf = pdf_file(input_data.get('report'))
+        # pdf = pdf_file(input_data.get('report'))
         if input_data["type"] == 'Quality':
 
             project = Project.objects.get(name=input_data["project"])
@@ -72,14 +76,16 @@ class InspectionAPIView(views.APIView):
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
+                        approver_action(input_data, user,)
                     elif  not created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
+                        approver_action(input_data, user,)
             except Exception as e:
                 raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
-            
-            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf =pdf)
+            """Report generating logic"""
+            # report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf =pdf)
             return Response({'status':'Inspection submission done'},status=status.HTTP_200_OK)
         else:
             try:
@@ -92,13 +98,18 @@ class InspectionAPIView(views.APIView):
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
+                        # print(input_data)
+                        approver_action(input_data, user,)
                     elif not created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
+                        # print(input_data)
+                        approver_action(input_data,user)
             except Exception as e:
                 raise serializers.ValidationError({'error':e})
-            report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf=pdf)
+            """Report generating logic"""
+            # report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf=pdf)
             return Response({'status':"Inspection submission done"},status=status.HTTP_200_OK)
 
 class SiteObservationAPIView(generics.ListCreateAPIView):
@@ -139,3 +150,22 @@ class NCR_RUDAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = NCR.objects.all()
     serializer_class = NCRUpdateSerailizer
+
+
+class ApproverAPIView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = Approver.objects.all()
+    serializer_class = ApproverSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(project__approver__user__email= self.request.user)
+
+class ApproverRUDAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,IsTenentOrUser)
+    queryset = Approver.objects.all()
+    serializer_class = ApproverSerializer
+    # def update(self, request, pk):
+    #     return Response({"Approved successfully"}, status=status.HTTP_200_OK)
+
+
+    

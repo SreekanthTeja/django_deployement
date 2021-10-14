@@ -149,3 +149,14 @@ class NCRUpdateSerailizer(WritableNestedModelSerializer):
         fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause", "report",)
         read_only_fields = ("id",'project',)
         
+
+class ApproverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Approver
+        fields = ["id","is_approved","submitted_employee","data",]
+        read_only_fields = ["id","submitted_employee","data",]
+    def to_representation(self, instance):
+        context = super(ApproverSerializer, self).to_representation(instance)
+        data = json.loads(instance.data)
+        context["data"] = data  
+        return context

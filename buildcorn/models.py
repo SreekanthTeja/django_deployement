@@ -7,12 +7,14 @@ from django.dispatch import receiver
 from dateutil.relativedelta import relativedelta
 from accounts.models import Company
 from phonenumber_field.modelfields import PhoneNumberField
+from buildcorn.signals import generate_report
 
 
 def licenseid():
     return uuid.uuid4().node
 
 User = get_user_model()
+
 
 class License(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -60,19 +62,13 @@ class Employee(models.Model):
 
 class Question(models.Model):
     Quality = 'Quality'
-    Safety = 'Safety' 
+    Safety = 'Safety'
     TYPES = ((Quality, 'Quality'),(Safety,'Safety'))
     typee = models.CharField(choices=TYPES, max_length=10)
     ADMIN_STATUS = (('Valid','Valid'),('InValid','InValid'))
     question_id =  models.CharField(default=licenseid, max_length=30)
     question = models.TextField()
     admin_status=models.CharField(choices=ADMIN_STATUS, max_length=10, blank=True, null=True)
-    # COMPILED = 'Compiled'
-    # UNCOMPLETED = 'Not Compiled'
-    # STATUS = ((COMPILED,'Compiled'),(UNCOMPLETED, 'Not Compiled'))
-    # status = models.CharField(choices=STATUS, max_length=20, blank=True, null=True)
-    # reason = models.TextField(blank=True, null=True)
-    # pic = models.ImageField(upload_to="images/page/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
     def __str__(self):
         return f"{self.typee}=>{self.question}"
 
@@ -80,6 +76,7 @@ class SafetyCheckList(models.Model):
     checklist_id = models.CharField(default=licenseid, max_length=30)
     created_at = models.DateField(auto_now_add=True,blank=True, null=True)
     name = models.CharField(max_length=120)
+    # is_approved = models.BooleanField(default=False, blank=True, null=True)
     question = models.ManyToManyField(Question, blank=True)
     def __str__(self):
         return self.name
@@ -88,6 +85,7 @@ class QualityCheckList(models.Model):
     checklist_id = models.CharField(default=licenseid, max_length=30)
     created_at = models.DateField(auto_now_add=True,blank=True, null=True)
     name = models.CharField(max_length=120)
+    # is_approved = models.BooleanField(default=False, blank=True, null=True)
     question = models.ManyToManyField(Question, blank=True)
     def __str__(self):
         return self.name
@@ -109,7 +107,7 @@ class AnswerChecklist(models.Model):
         unique_together = ["question","quality_checklist","safety_checklist"]
     def __str__(self):
         return f"{self.quality_checklist}=>{self.question.question} "
-# Answer.Meta
+
 
 class Vendor(models.Model):
     ven_id = models.CharField(default=licenseid,max_length=30,blank=True, null=True)
@@ -145,6 +143,7 @@ class Material(models.Model):
 
 
 
+
 class Project(models.Model):
     company= models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="Company", blank=True, null=True)
     INSPECTION_DONE='D'
@@ -168,10 +167,24 @@ class Project(models.Model):
         return self.name
 
 
+"""Mobile purpose"""
+class Approver(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name="Approver")
+    project = models.ForeignKey(Project, related_name="mobile_approver", on_delete = models.CASCADE)
+    submitted_employee = models.ForeignKey(Employee, on_delete = models.CASCADE, blank=True, null=True)
+    data = models.TextField(blank=True, null=True)
+    is_approved = models.BooleanField(default=False)
+    # created_at = models.DateField(auto_now_add=True, blank=True, null=True)
+    # updated_at = models.DateField(auto_now=True)
+    class Meta:
+        ordering = ('-id',)
+    def __str__(self):
+        return f"{self.user.first_name}"
+post_save.connect(generate_report, sender=Approver)
+
 class TenentBanner(models.Model):
     company = models.ForeignKey(Company, on_delete= models.CASCADE)
     name = models.CharField(max_length=30, blank=True, null=True)
-    # user = models.ForeignKey(User, on_delete = models.CASCADE, blank=True, null=True)
     tenent_images = models.TextField(blank=True, null=True)
     class Meta:
         ordering = ("id",)
@@ -179,10 +192,8 @@ class TenentBanner(models.Model):
         return self.company.name
 class Banner(models.Model):
     buildcron_user = models.ForeignKey(User, related_name="banner_buildcron_user", on_delete = models.CASCADE, blank=True, null=True)
-    # tenent_user = models.ForeignKey(User, related_name="banner_tenent_user", on_delete = models.CASCADE,blank=True, null=True)
     name = models.CharField(max_length=30)
     multi_images = models.TextField(blank=True, null=True)
-    # tenent_banner = models.ManyToManyField(TenentBanner, blank=True)
     class Meta:
         ordering = ("-id",)
     def __str__(self):
@@ -269,4 +280,5 @@ class NCR(models.Model):
 
     def __str__(self):
         return self.project.company.name
+
 

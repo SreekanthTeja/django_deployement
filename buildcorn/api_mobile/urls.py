@@ -9,4 +9,7 @@ urlpatterns = [
     path('site/observation/rud/<int:pk>',SiteObservationUpdateAPIView.as_view()),
     path('ncr/list_or_create',NCRAPIView.as_view()),
     path('ncr/rud/<int:pk>',NCR_RUDAPIView.as_view()),
+
+    path('approver',ApproverAPIView.as_view()),
+    path('approver/rud/<int:pk>',ApproverRUDAPIView.as_view()),
 ]
