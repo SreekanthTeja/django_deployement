@@ -8,9 +8,7 @@ client = boto3.client(
 
 def send_otp(phone_number, otp):
     try:
-        print("helooo")
         otp_request = client.publish(PhoneNumber=phone_number,Message="Your OTP to login %s"%(otp), MessageAttributes={'AWS.SNS.SMS.SMSType': {'DataType': 'String','StringValue': 'Transactional'}})
-        print("otp", otp_request)
         return True
     except Exception as e:
         pass
