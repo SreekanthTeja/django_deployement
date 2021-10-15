@@ -80,5 +80,6 @@
 
 def generate_report(sender, instance, **kwargs):
     if (kwargs["created"] == False ) and (instance.is_approved == True):
-        print("generate report",)
+        # print("generate report",) 
+        pass
     pass

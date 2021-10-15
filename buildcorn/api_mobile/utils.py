@@ -8,6 +8,7 @@ from django.conf import settings
 import os
 from base64 import b64decode
 from django.contrib.auth import get_user_model
+from dashboard.models import ChecklistsUsage
 User = get_user_model()
 def pdf_file(pdf):
     print(pdf)
@@ -22,24 +23,32 @@ def pdf_file(pdf):
     # return json.dumps(filepath)
     return filepath
 
-def approver_action(data,employee,):
-    print("data is==> {}".format(data,))
-    report = data.pop("report",None)
-    complied = [True for question in data["question"]  if (question["reason"] == None) or (question["reason"] == "")]
-    if complied:
+def approver_action(data,employee,checklist_name):
+    try:
         project = Project.objects.get(name=data["project"],employee__user__email=employee)
-        approver = User.objects.get(email=project.approver)
-        employee = Employee.objects.get(user__email=employee)
-        approver_obj, created = Approver.objects.get_or_create(user=approver, project=project,submitted_employee= employee)
-        report = pdf_file(report)
-        data["report"]= report
+        checklist_usage_obj, created = ChecklistsUsage.objects.get_or_create(project=project,company=project.company,name=checklist_name,typee=data["type"])
         if created:
-            
-            approver_obj.data =json.dumps(data)
-            approver_obj.save()
-        else:
-            approver_obj.data =json.dumps(data)
-            approver_obj.save()
+            checklist_usage_obj.count +=1
+            checklist_usage_obj.save()
+        if not created:
+            checklist_usage_obj.count +=1
+            checklist_usage_obj.save()
+        complied = [True for question in data["question"]  if (question["reason"] == None) or (question["reason"] == "")]
+        if complied:
+            approver = User.objects.get(email=project.approver)
+            employee = Employee.objects.get(user__email=employee)
+            approver_obj, created = Approver.objects.get_or_create(user=approver, project=project,submitted_employee= employee)
+            # report = pdf_file(report)
+            # data["report"]= report
+            if created:
+                
+                approver_obj.data =json.dumps(data)
+                approver_obj.save()
+            else:
+                approver_obj.data =json.dumps(data)
+                approver_obj.save()
+    except Exception as e:
+        raise serializers.ValidationError({"error":e})
         
         
 

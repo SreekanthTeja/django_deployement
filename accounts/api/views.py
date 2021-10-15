@@ -179,40 +179,63 @@ class RestPasswordAPIView(generics.UpdateAPIView):
 
 
 
+# class OTPRequestAPIView(views.APIView):
+#     def post(self,request, **kwargs ):
+#         otp = random.randint(99999, 999999)
+#         phone_number = request.data.get("phone_number",None)
+#         user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
+#         if user_object:
+#             send_request = send_otp(phone_number,str(otp))
+#             if send_request:
+#                 user = User.objects.get(phone_number=phone_number)
+#                 try:
+#                     emp = Employee.objects.get(user=user)
+#                 except Exception as e:
+#                     raise serializers.ValidationError({"error":"Sorry user is  not a employee"})
+#                 otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
+#                 if created:
+#                     otp_obj.save()
+#             return Response({"otp":otp,"status":"OTP sent successfully",'company':emp.company.name,'user_type':user.user_type})
+#         return Response({'error':'Your credentials not found'})
 class OTPRequestAPIView(views.APIView):
     def post(self,request, **kwargs ):
-        otp = random.randint(99999, 999999)
+        # OTP.objects.filter(validated=True).delete()
         phone_number = request.data.get("phone_number",None)
-        user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
-        if user_object:
+        # emp = Employee.objects.filter(user__phone_number=phone_number, user__is_active=True).exists()
+        # user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
+        if Employee.objects.filter(user__phone_number=phone_number, user__is_active=True).exists():
+            otp = random.randint(99999, 999999)
             send_request = send_otp(phone_number,str(otp))
-            # print(".............",send_request)
             if send_request:
                 user = User.objects.get(phone_number=phone_number)
-                try:
-                    emp = Employee.objects.get(user=user)
-                except Exception as e:
-                    raise serializers.ValidationError({"error":"Sorry user is  not a employee"})
                 otp_obj, created = OTP.objects.get_or_create(otp=otp,user=user)
                 if created:
                     otp_obj.save()
-            return Response({"otp":otp,'company':emp.company.name,'user_type':user.user_type})
-        return Response({'error':'Your credentials not found'})
+                return Response({"otp":otp,"status":"OTP sent successfully"})
+        return Response({'error':'Your credentials not found'}, status=status.HTTP_400_BAD_REQUEST)
 
 from rest_framework_simplejwt.tokens import RefreshToken
 class OTPVerifyAPIView(TokenObtainPairView):
     def post(self, request):
-        if OTP.objects.filter(otp=request.data["otp"],validated=False ).exists():
-            otp = OTP.objects.get(otp=request.data["otp"]).delete()
+        try:
             user = User.objects.get(phone_number=request.data["phone_number"])
-            refresh = RefreshToken.for_user(user)
-            return Response({ 
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'username':user.first_name,
-                'role':user.user_type
-            })
-        raise serializers.ValidationError({'status':"incorrect otp"})
+            if not  OTP.objects.filter(otp=request.data["otp"],validated=False,).exists():
+                return Response({"error":"Incorrect otp"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            raise serializers.ValidationError({'error':e},)
+        otp = OTP.objects.get(otp=request.data["otp"])
+        otp.validated=True
+        otp.save()
+        refresh = RefreshToken.for_user(user)
+        return Response({ 
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'username':user.first_name,
+            'role':user.user_type
+        }, status=status.HTTP_200_OK)
+    
+        
+        
 
 class ContactUsCreateAPIView(generics.CreateAPIView):
     serializer_class = ContactUsSerializer

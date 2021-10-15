@@ -25,7 +25,9 @@ class InspectionAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
-        print("report:",request.data.get('report'), type(request.data.get('report')))
+        print(kwargs["name"])
+        checklist_name = kwargs["name"]
+        # print("report:",request.data.get('report'), type(request.data.get('report')))
         # f = request.data.get('report')
         # input_data = {
         #     "project":"Logos",
@@ -76,12 +78,12 @@ class InspectionAPIView(views.APIView):
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
-                        approver_action(input_data, user,)
+                        approver_action(input_data, user,checklist_name)
                     elif  not created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
-                        approver_action(input_data, user,)
+                        approver_action(input_data, user,checklist_name)
             except Exception as e:
                 raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
             """Report generating logic"""
@@ -99,13 +101,13 @@ class InspectionAPIView(views.APIView):
                         query.reason =  que.get('reason',None)
                         query.save()
                         # print(input_data)
-                        approver_action(input_data, user,)
+                        approver_action(input_data, user, checklist_name)
                     elif not created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
                         # print(input_data)
-                        approver_action(input_data,user)
+                        approver_action(input_data,user, checklist_name)
             except Exception as e:
                 raise serializers.ValidationError({'error':e})
             """Report generating logic"""

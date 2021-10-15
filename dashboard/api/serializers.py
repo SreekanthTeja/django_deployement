@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from buildcorn.models import *
 from accounts.models import *
+from dashboard.models import *
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import status
 User = get_user_model()
@@ -57,10 +58,10 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
             }
         except Exception as e:
             raise serializers.ValidationError({'error':e})
-class ChecklistsAnalyticsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        fields = ["id","name","quality_checklist","safety_checklist"]
+# class ChecklistsAnalyticsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Project
+#         fields = ["id","name","quality_checklist","safety_checklist"]
     # def to_representation(self, instance):
     #     try:
     #         context = super(ChecklistsAnalyticsSerializer, self).to_representation(instance)
@@ -78,3 +79,14 @@ class ChecklistsAnalyticsSerializer(serializers.ModelSerializer):
     #         # return context
     #     except Exception as e:
     #         raise serializers.ValidationError({'error':e})
+
+
+class ProjectChecklistsUsageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ["id","name",]
+class ChecklistsUsageSerializer(serializers.ModelSerializer):
+    project = ProjectChecklistsUsageSerializer()
+    class Meta:
+        model = ChecklistsUsage
+        fields = ["id","name","count","project","typee"]
