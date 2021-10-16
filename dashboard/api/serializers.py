@@ -38,6 +38,8 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
             
             site_observation = SiteObservation.objects.filter(project=instance,)
             ncr = NCR.objects.filter(project=instance)
+            # checklist_usage_quality = ChecklistsUsage.objects.filter(project=instance, typee=ChecklistsUsage.Quality).values("name","count","typee")
+            
             return {
                 "project_id":instance.id,
                 "project_name":instance.name,
@@ -47,6 +49,7 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
                     "site_observation": site_observation.filter(category=Question.Quality).count(),
                     "ncr":ncr.filter(category=Question.Quality).count(),
                     # "checklists_by_quality":instance.quality_checklist.values("name"),
+                    "checklists":ChecklistsUsage.objects.filter(project=instance, typee=ChecklistsUsage.Quality).values("name","count","typee")
                 },
                 "safety":{
                     "total_inspections":total_safety_inspections,
@@ -54,6 +57,7 @@ class ProjectAnalyticDetailSerializer(serializers.ModelSerializer):
                     "site_observation": site_observation.filter(category=Question.Safety).count(),
                     "ncr":ncr.filter(category=Question.Safety).count(),
                     # "checklists_by_safety":instance.safety_checklist.values("name"),
+                    "checlists":ChecklistsUsage.objects.filter(project=instance, typee=ChecklistsUsage.Safety).values("name","count","typee")
                 }
             }
         except Exception as e:

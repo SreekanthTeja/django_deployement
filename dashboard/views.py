@@ -53,3 +53,5 @@ class ChecklistUsageReadAPIView(generics.RetrieveAPIView):
     permission_classes = (IsAuthenticated,IsTenentUser)
     queryset = ChecklistsUsage.objects.all()
     serializer_class = ChecklistsUsageSerializer
+    # def get_queryset(self):
+    #     return self.queryset.filter(company__user__email=self.request.user)
