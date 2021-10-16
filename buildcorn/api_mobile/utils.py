@@ -122,3 +122,24 @@ def generate_report(**kwargs):
             raise serializers.ValidationError({'error':e})
 
 
+
+
+        # print("report:",request.data.get('report'), type(request.data.get('report')))
+        # f = request.data.get('report')
+        # input_data = {
+        #     "project":"Logos",
+        #     "type":"Safety",
+        #     "question": [
+        #         {
+        #             "id": 20,
+        #             "question": "Why safety",
+        #             "status": "Complied",
+        #             "reason": None
+
+        #         }
+        #     ]
+        # }
+        # filee = request.FILES.get('report', None)
+        # input_data["report"] = filee
+        
+        # pdf = pdf_file(filee) if filee != None else "empty"

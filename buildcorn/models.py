@@ -90,6 +90,12 @@ class QualityCheckList(models.Model):
     def __str__(self):
         return self.name
 
+# class SiteDetails(models.Model):
+#     area = models.TextField(blank=True, null=True)
+#     vendor = models.ForeignKey("Vendor", on_delete = models.CASCADE, blank=True, null=True)
+#     def __str__(self):
+#         return self.area
+
 class AnswerChecklist(models.Model):
     COMPILED = 'Complied'
     UNCOMPLETED = 'Not Complied'
@@ -102,11 +108,16 @@ class AnswerChecklist(models.Model):
     safety_checklist = models.ForeignKey(SafetyCheckList, on_delete=models.CASCADE, blank=True, null=True)
     reason = models.TextField(blank=True, null=True)
     pic = models.ImageField(upload_to="images/answer/%Y/%m/%d", verbose_name="Inspection pic", null=True, blank=True)
+    shedule_date = models.DateTimeField(blank=True, null=True)
+    # site_details = models.ForeignKey(SiteDetails, on_delete=models.CASCADE, blank=True, null=True)
+    area = models.TextField(blank=True, null=True)
+    vendor = models.ForeignKey("Vendor", on_delete = models.CASCADE, blank=True, null=True)
+
     class Meta:
         ordering = ('-id',)
         unique_together = ["question","quality_checklist","safety_checklist"]
     def __str__(self):
-        return f"{self.quality_checklist}=>{self.question.question} "
+        return f"{self.project.name}=>{self.question.question} "
 
 
 class Vendor(models.Model):
@@ -248,6 +259,7 @@ class SiteObservation(models.Model):
     statement = models.TextField()
     is_cleared = models.BooleanField(default=False, blank=True, null=True)
     report = models.FileField(upload_to="siteobservation/", blank=True, null=True)
+    shedule_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ("-id",)
@@ -274,6 +286,9 @@ class NCR(models.Model):
     is_cleared = models.BooleanField(default=False, blank=True, null=True)
 
     report = models.FileField(upload_to="NCR/", blank=True, null=True)
+    shedule_date = models.DateTimeField(blank=True, null=True)
+    satiffaction_status = models.CharField(choices=NCR_STATUS, max_length=15, blank=True, null=True)
+    reason_to_satiffaction_status = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ("-id",)

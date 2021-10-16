@@ -25,55 +25,40 @@ class InspectionAPIView(views.APIView):
     permission_classes = (IsAuthenticated,IsTenentOrUser)
     queryset = AnswerChecklist.objects.all()
     def post(self, request, **kwargs):
-        print(kwargs["name"])
-        checklist_name = kwargs["name"]
-        # print("report:",request.data.get('report'), type(request.data.get('report')))
-        # f = request.data.get('report')
-        # input_data = {
-        #     "project":"Logos",
-        #     "type":"Safety",
-        #     "question": [
-        #         {
-        #             "id": 20,
-        #             "question": "Why safety",
-        #             "status": "Complied",
-        #             "reason": None
-
-        #         }
-        #     ]
-        # }
-        # filee = request.FILES.get('report', None)
-        # input_data["report"] = filee
-        
-        # pdf = pdf_file(filee) if filee != None else "empty"
-        # validation
         input_data = request.data
-        user = self.request.user
+        # validation
         if not  input_data.get("project") :
             raise serializers.ValidationError({'error':"project is missing"})
         if  not  input_data.get("type") :
             raise serializers.ValidationError({'error':"type is missing"})
         if not  input_data.get("question"):
             raise serializers.ValidationError({'error':"question is missing"})
-        # if not request.data.get('report', None):
-        #     raise serializers.ValidationError({'error':"report is missing"})
-        """Previous working logic"""
-        # if not request.FILES.get('report', None):
-        #     raise serializers.ValidationError({'error':"report is missing"})
-        # pdf = pdf_file(request.FILES.get('report'))
-        # print(">>>>>>>>",pdf)
-        """"""
-        # report = json.dumps(request.data.get('report'))
-        
-        # pdf = pdf_file(input_data.get('report'))
-        if input_data["type"] == 'Quality':
+        if not  input_data.get("area"):
+            raise serializers.ValidationError({'error':"area is missing"})
+        if not  input_data.get("material"):
+            raise serializers.ValidationError({'error':"material is missing"})
 
-            project = Project.objects.get(name=input_data["project"])
+        checklist_name = kwargs["name"]
+        user = self.request.user
+        try:
+            emp = Employee.objects.get(user=user)
+            # project = Project.objects.filter(company=emp.company,employee=emp.id,name=input_data["project"],vendors__id=input_data["vendor"],material__id=input_data["material"])
+            project = Project.objects.get(company=emp.company,employee__user=user,name=input_data["project"])
+            # print()
+            material = project.material.get(id=input_data["material"]["id"])
+            material.b_qty = input_data["material"]["quantity_used"]
+            material.b_uom = input_data["material"]["units"]
+            material.save()
+        except Exception as e:
+            raise serializers.ValidationError({"error":"You dont have permissions for inspections"})
+        
+        # project.vendors
+        if input_data["type"] == 'Quality':
             quality_checklist_name = QualityCheckList.objects.get(name__exact=kwargs['name'])
             try:
                 for que in input_data.get('question'):
                     question = Question.objects.get(id=que["id"])
-                    query, created = self.queryset.get_or_create(project=project,question=question, quality_checklist=quality_checklist_name)
+                    query, created = self.queryset.get_or_create(project=project,question=question, quality_checklist=quality_checklist_name,area=input_data.get("area"), vendor=material.maker)
                     if created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
@@ -85,28 +70,28 @@ class InspectionAPIView(views.APIView):
                         query.save()
                         approver_action(input_data, user,checklist_name)
             except Exception as e:
-                raise serializers.ValidationError({'error':e}, status=status.HTTP_400_BAD_REQUEST)
+                raise serializers.ValidationError({'error':e})
             """Report generating logic"""
             # report = generate_report(typee =input_data["type"],project=input_data["project"], checklist=kwargs['name'],submitted_by = self.request.user.first_name, pdf =pdf)
             return Response({'status':'Inspection submission done'},status=status.HTTP_200_OK)
         else:
             try:
                 safety_checklist_name = SafetyCheckList.objects.get(name__exact=kwargs['name'])
-                project = Project.objects.get(name=input_data["project"])
+                # project = Project.objects.get(name=input_data["project"])
                 for que in input_data.get('question'):
                     question = Question.objects.get(id=que["id"])
-                    query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name)
+                    query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name,area=input_data['area'], vendor=material.maker)
+                    # query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name,)
+                    print("{}=={}".format(query, created))
                     if created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
-                        # print(input_data)
                         approver_action(input_data, user, checklist_name)
                     elif not created:
                         query.status = que.get('status',None)
                         query.reason =  que.get('reason',None)
                         query.save()
-                        # print(input_data)
                         approver_action(input_data,user, checklist_name)
             except Exception as e:
                 raise serializers.ValidationError({'error':e})
