@@ -117,8 +117,8 @@ class InspectionAPIView(views.APIView):
                 # project = Project.objects.get(name=input_data["project"])
                 for que in input_data.get('question'):
                     question = Question.objects.get(id=que["id"])
-                    # query, created = self.queryset.get_or_create(project=project, question=question, safety_checklist=safety_checklist_name, area=input_data['area'], vendor=material.maker)
-                    query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name,)
+                    query, created = self.queryset.get_or_create(project=project, question=question, safety_checklist=safety_checklist_name, area=input_data['area'], vendor=material.maker)
+                    # query, created = self.queryset.get_or_create(project=project,question=question, safety_checklist=safety_checklist_name,)
                     print("{}=={}".format(query, created))
                     if created:
                         query.status = que.get('status', None)
