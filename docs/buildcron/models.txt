@@ -88,4 +88,4 @@ data:
 
 Report
 ======
-1) This table contains reports of respected companies
+1) This table contains reports of respected companies which is auto generated entry when a approver action happens

@@ -68,33 +68,39 @@ class ContactPersonSerializer(serializers.ModelSerializer):
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-        def validate(self, attrs):
-            credentials = {
-                'email': '',
-                'password': attrs.get("password")
-            }
-            username = attrs.get("email")
-            password = attrs.get("password")
-            user = authenticate(username=username, password= password)
-            if not user:
-                raise ParseError({'error':'In-valid username or password'})
-            credentials['email'] = user.email
-            data = super().validate(credentials)
-            try:
-                company_id = Company.objects.get(user__email=user.email)
-                if company_id:
-                    data['email'] = user.email
-                    data["first_name"] = user.first_name
-                    data['role'] = user.user_type
-                    data["company_id"] = company_id.id
-                    data["company_name"] = company_id.name
-                    data["license_count"] = company_id.license_purchased
-                    return data
-            except Exception as e:
+    """
+    {
+        "email":"david@gmail.com",
+        "password":"test1234" 
+    }
+    """
+    def validate(self, attrs):
+        credentials = {
+            'email': '',
+            'password': attrs.get("password")
+        }
+        username = attrs.get("email")
+        password = attrs.get("password")
+        user = authenticate(username=username, password= password)
+        if not user:
+            raise ParseError({'error':'In-valid username or password'})
+        credentials['email'] = user.email
+        data = super().validate(credentials)
+        try:
+            company_id = Company.objects.get(user__email=user.email)
+            if company_id:
                 data['email'] = user.email
                 data["first_name"] = user.first_name
                 data['role'] = user.user_type
-            return data
+                data["company_id"] = company_id.id
+                data["company_name"] = company_id.name
+                data["license_count"] = company_id.license_purchased
+                return data
+        except Exception as e:
+            data['email'] = user.email
+            data["first_name"] = user.first_name
+            data['role'] = user.user_type
+        return data
             
 """Password reset"""
 

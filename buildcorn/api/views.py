@@ -142,6 +142,12 @@ class QualityAssignProjectAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
 
     def post(self, request):
+        """
+        {
+            "project":1,
+            "quality":[1]
+        }
+        """
         data = request.data
         check = data.get('quality')
         if Project.objects.filter(id=data.get('project')).exists() and QualityCheckList.objects.filter(id__in=check).exists():
@@ -167,6 +173,12 @@ class SafetyAssignProjectAPIView(views.APIView):
     permission_classes = (IsAuthenticated, IsTenentUser,)
 
     def post(self, request):
+        """
+        {
+            "project":1,
+            "safety":[1]
+        }
+        """
         data = request.data
         check = data.get('safety')
         if Project.objects.filter(id=data.get('project')).exists() and SafetyCheckList.objects.filter(id__in=check).exists():

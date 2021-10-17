@@ -22,6 +22,13 @@ class AdminSafetyListView(generics.ListAPIView):
     #     return self.queryset.filter(question__typee=Question.Safety)
 
 class SafetyCreateView(generics.CreateAPIView):
+    """
+    {
+        "typee": "Safety",
+        "question": "safety-5",
+        "admin_status":"InValid"
+    }
+    """
     permission_classes = (IsAuthenticated, IsSuperUser)
     queryset = SafetyCheckList.objects.all()
     serializer_class = SafetySerializer
@@ -47,6 +54,13 @@ class AdminQualityListView(generics.ListAPIView):
     #     return self.queryset.filter(question__typee=Question.Quality)
 
 class QualityCreateiew(generics.CreateAPIView):
+    """
+    {
+        "typee": "Quality",
+        "question": "safety-5",
+        "admin_status":"InValid"
+    }
+    """
     permission_classes = (IsAuthenticated,IsSuperUser)
     queryset = QualityCheckList.objects.all()
     serializer_class = QualitySerializer
@@ -69,11 +83,26 @@ class QuestionListView(generics.ListAPIView):
     serializer_class = QuestionSerializer
 
 class QuestionCreateView(generics.CreateAPIView):
+    # refer docs for more info
+    """
+    {
+        "question": "Why deksha are not used",
+        "admin_status":"Valid",
+        "typee":"Quality/Safety" # either one of them
+        "type_id":1 
+    }
+    """
     permission_classes = (IsAuthenticated,IsSuperUser)
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
 class RUDQuestionlView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    {
+        "question": "Why deksha are not used",
+        "admin_status":"Valid"
+    }
+    """
     permission_classes = (IsAuthenticated,)
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer

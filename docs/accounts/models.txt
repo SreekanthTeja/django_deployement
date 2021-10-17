@@ -1,4 +1,8 @@
 account/models.py
+
+credentials for superusers
+email, password == admin@gmail.com, 123
+
 User
 ----
 1) We can register users by means of 3 roles SuperAdmin[buildcron members], Tenent[CEO], Normal users[company employess]

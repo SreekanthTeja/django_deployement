@@ -104,6 +104,30 @@ class PaymentResponseView(views.APIView):
 from accounts.razorpayment import *
 class PaymentView(views.APIView):
     def post(self, request, *args, **kwargs):
+        """
+        {
+            "user_details":{
+                "first_name":"Mark1 Rank",
+                "email":"mark1@gmail.com",
+                "phone_number":"+921099971174",
+                "password":"test1234"
+                
+            },
+            "company_details":{
+                "name": "Mark industries",
+                "gstin": "SDFGHJ741853",
+                "pincode": 5021478,
+                "state": "Texas",
+                "city": "Bostan",
+                "addres": "45-98/5"
+            },
+            "plan_details":{
+                "license_count":10,
+                "name":"Monthly Plan",
+                "ammount":5
+            }
+        }
+        """
         indata = request.data
         user_details = indata.get("user_details",None)
         company_details = indata.get("company_details", None)
@@ -112,6 +136,7 @@ class PaymentView(views.APIView):
         if user_details == None or company_details==None or plan_details==None:
             raise serializers.ValidationError({"error":"some details are missing"})
         amount = float(plan_details["ammount"])
+        """Future logic"""
         # cgst = float(indata('cgst'))
         # sgst = float(indata('sgst'))
         # gst = cgst+sgst
@@ -123,11 +148,6 @@ class PaymentView(views.APIView):
         print(schema, type(schema))
         url = "{schema}://{absolute_url}/accounts/api/payment/success".format(schema = schema, absolute_url =absolute_url)
         data = {
-            # "prefill":{
-            #     "name": user_details["first_name"],
-            #     "email":user_details["email"],
-            #     "contact":user_details["phone_number"],
-            # },
             "type": "link",
             "amount": amount*100,
             "currency": "INR",
@@ -199,7 +219,11 @@ class RestPasswordAPIView(generics.UpdateAPIView):
 #         return Response({'error':'Your credentials not found'})
 class OTPRequestAPIView(views.APIView):
     def post(self,request, **kwargs ):
-        # OTP.objects.filter(validated=True).delete()
+        """
+        {
+            "phone_number":"+918978428323"
+        }
+        """
         phone_number = request.data.get("phone_number",None)
         # emp = Employee.objects.filter(user__phone_number=phone_number, user__is_active=True).exists()
         # user_object = User.objects.filter(phone_number__iexact=phone_number, is_active=True).exists()
@@ -217,6 +241,12 @@ class OTPRequestAPIView(views.APIView):
 from rest_framework_simplejwt.tokens import RefreshToken
 class OTPVerifyAPIView(TokenObtainPairView):
     def post(self, request):
+        """
+        {
+            "otp":"614488",
+            "phone_number":"+918978428323"
+        }
+        """
         try:
             user = User.objects.get(phone_number=request.data["phone_number"])
             if not  OTP.objects.filter(otp=request.data["otp"],validated=False,).exists():
