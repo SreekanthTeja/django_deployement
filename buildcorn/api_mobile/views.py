@@ -98,11 +98,13 @@ class InspectionAPIView(views.APIView):
                     if created:
                         query.status = que.get('status', None)
                         query.reason = que.get('reason', None)
+                        query.shedule_date = input_data.get("shedule_date", None)
                         query.save()
                         approver_action(input_data, user, checklist_name)
                     elif not created:
                         query.status = que.get('status', None)
                         query.reason = que.get('reason', None)
+                        query.shedule_date = input_data.get("shedule_date", None)
                         query.save()
                         approver_action(input_data, user, checklist_name)
             except Exception as e:
@@ -123,11 +125,13 @@ class InspectionAPIView(views.APIView):
                     if created:
                         query.status = que.get('status', None)
                         query.reason = que.get('reason', None)
+                        query.shedule_date = input_data.get("shedule_date", None)
                         query.save()
                         approver_action(input_data, user, checklist_name)
                     elif not created:
                         query.status = que.get('status', None)
                         query.reason = que.get('reason', None)
+                        query.shedule_date = input_data.get("shedule_date", None)
                         query.save()
                         approver_action(input_data, user, checklist_name)
             except Exception as e:

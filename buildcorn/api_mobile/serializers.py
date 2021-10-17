@@ -194,7 +194,7 @@ class NCRSerailizer(WritableNestedModelSerializer):
     contractor = VendorForSiteObservationSerializer()
     class Meta:
         model=NCR
-        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause", "report",)
+        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause","satiffaction_status","reason_to_satiffaction_status","shedule_date", "report",)
         read_only_fields = ("id",'project',)
 
 class NCRUpdateSerailizer(WritableNestedModelSerializer):
@@ -202,7 +202,7 @@ class NCRUpdateSerailizer(WritableNestedModelSerializer):
     contractor = VendorForSiteObservationSerializer(required=False)
     class Meta:
         model=NCR
-        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause", "report",)
+        fields = ("id",'area','project', 'contractor',"status","reason_to_uncomplied","category","severity","root_cause_number","root_cause","satiffaction_status","reason_to_satiffaction_status","shedule_date", "report",)
         read_only_fields = ("id",'project',)
         
 
