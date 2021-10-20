@@ -45,7 +45,7 @@ def license_serial_generation(license_last_id,license_purchased_count):
 
 def licensee_create(company, plan):
     try:
-        last_obj = License.objects.first().last_license_id
+        last_obj = 0 if not License.objects.first() else License.objects.first().last_license_id
         license_purchased_count = plan["license_count"]
         if plan["name"] == 'Annual Plan':
             annual = today +  relativedelta(months=12)
