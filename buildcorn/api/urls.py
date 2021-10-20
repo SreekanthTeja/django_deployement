@@ -15,6 +15,7 @@ urlpatterns = [
     ###########  employee url's ##################
     path('emp/list_or_create', EmployeeAPIView.as_view()),
     path('emp/rud/<int:pk>', EmpRUDView.as_view()),
+    path('emp/license/active/list/<str:company>', LicenseActiveAPIView.as_view()),
 
     # ########### checklists   url's ##################
     # path('checklist/create',ChecklistCreateAPIView.as_view()),

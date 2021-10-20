@@ -38,15 +38,37 @@ class LicenseSerializer(serializers.ModelSerializer):
     company = LicenseCompanySerializer()
     class Meta:
         model = License
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ["last_license_id"]
+    def to_representation(self, instance):
+        context = super(LicenseSerializer, self).to_representation(instance)
+        emp_ids = json.loads(context['emp_license_ids'])
+        # for i in emp_ids:
+        #     if i["active"] == False:
+        #         emp_ids.remove(i)
+        context["emp_license_ids"] = emp_ids
+        return context
 
+class LicenseActiveSerializer(serializers.ModelSerializer):
+    company = LicenseCompanySerializer()
+    class Meta:
+        model = License
+        fields = ["emp_license_ids", "company",]
+    def to_representation(self, instance):
+        context = super(LicenseActiveSerializer, self).to_representation(instance)
+        active_ids = json.loads(context['emp_license_ids'])
+        for i in active_ids:
+            if i["active"] == False:
+                active_ids.remove(i)
+        context["emp_license_ids"] = active_ids
+        return context
 class LicenseEmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = License
         fields = ("created_at","end_at","tenure", "company")
     def to_representation(self, instance):
         context = super(LicenseEmployeeSerializer, self).to_representation(instance)
-        employee = Employee.objects.filter(company__id=context["company"]).values('eid')
+        employee = Employee.objects.filter(company__id=context["company"]).values('lid')
         context["employee"] = employee
         return context
 """License ends """
@@ -68,8 +90,27 @@ class EmployeeSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
     class Meta:
         model = Employee
-        fields = ("id","user",'eid', "company","created_at")
-        read_only_fields = ("id",'eid',"created_at")
+        fields = ("id","user",'eid', "company","created_at", "lid","license_approved")
+        read_only_fields = ("id",'eid',"created_at", "lid")
+    def create(self, validated_data):
+        id = self.initial_data["lid"]['id']
+        comp = Company.objects.get(user__email=self.context["request"].user)
+        user_obj = User.objects.create(**validated_data.get('user'))
+        emp_obj, created = Employee.objects.get_or_create(company=comp,user=user_obj, lid=id)
+        if created:
+            lic_obj = License.objects.get(company=comp)
+            lic_json_loads = json.loads(lic_obj.emp_license_ids)
+            for i in lic_json_loads:
+                if i["id"] == id:
+                    i["active"]= False
+            json_dumps = json.dumps(lic_json_loads)
+            lic_obj.emp_license_ids = json_dumps
+            lic_obj.save()
+            emp_obj.license_approved=True
+            emp_obj.save()
+            return emp_obj
+
+        
 """Normal user ends"""
 
 

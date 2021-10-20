@@ -29,8 +29,31 @@ class LicenseEmployeeAPIView(generics.ListAPIView):
     def get_queryset(self):
         return self.queryset.filter(Q(company__name=self.kwargs['company']) | Q(company__company_id=self.kwargs['company']))
 
+class LicenseActiveAPIView(generics.ListAPIView):
+    permission_classes = (IsTenentUser,)
+    queryset = License.objects.all()
+    serializer_class = LicenseActiveSerializer
+    def get_queryset(self):
+        return self.queryset.filter(Q(company__name=self.kwargs['company']) | Q(company__company_id=self.kwargs['company']))
 """Normal user view start"""
 
+
+# class EmployeeAPIView(generics.ListCreateAPIView):
+#     permission_classes = (IsAuthenticated, IsTenentUser)
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeSerializer
+
+#     def get_queryset(self):
+#         # print(self.request.user)
+#         if self.request.user.user_type == User.TENENT:
+#             return self.queryset.filter(company__user=self.request.user)
+
+#     def perform_create(self, serializer):
+#         comp = Company.objects.get(user__email=self.request.user)
+#         if comp.license_purchased == 0:
+#             raise serializers.ValidationError(
+#                 {'status': 'Sorry  License wallet 0'})
+#         serializer.save(company=comp)
 
 class EmployeeAPIView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsTenentUser)
@@ -38,18 +61,19 @@ class EmployeeAPIView(generics.ListCreateAPIView):
     serializer_class = EmployeeSerializer
 
     def get_queryset(self):
-        print(self.request.user)
+        # print(self.request.user)
         if self.request.user.user_type == User.TENENT:
             return self.queryset.filter(company__user=self.request.user)
 
     def perform_create(self, serializer):
+        # print(self)
         comp = Company.objects.get(user__email=self.request.user)
         if comp.license_purchased == 0:
             raise serializers.ValidationError(
                 {'status': 'Sorry  License wallet 0'})
-        # comp.license_purchased -= 1
-        comp.save()
+        
         serializer.save(company=comp)
+
 
 
 class EmpRUDView(generics.RetrieveUpdateDestroyAPIView):

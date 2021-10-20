@@ -11,17 +11,21 @@ from buildcorn.signals import generate_report
 
 
 def licenseid():
+
     return uuid.uuid4().node
 
 User = get_user_model()
 
 
 class License(models.Model):
+
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     created_at = models.DateField(verbose_name="Start Date", blank=True, null=True)
     end_at = models.DateField(verbose_name="End Date", blank=True, null=True)
     status = models.BooleanField(default=True)
     tenure = models.FloatField(blank=True, null=True, default=0)
+    emp_license_ids = models.TextField(blank=True, null=True)
+    last_license_id = models.IntegerField(blank=True, null=True, default=0)
     
     # designation = models.CharField(max_length=50, null=True, blank=True)
     # device_name = models.ForeignKey(DeviceName, on_delete = models.CASCADE, blank=True, null=True)
@@ -48,15 +52,36 @@ class License(models.Model):
 
 # post_save.connect(calculate_tenure, sender=License)
 
+def license_assign(sender, instance, **kwargs):
+    # id = self.initial_data["lid"]['id']
+    # comp = Company.objects.get(user__email=self.context["request"].user)
+    # print(validated_data)
+
+    # lic_obj = License.objects.get(company=comp)
+    # lic_json_loads = json.loads(lic_obj.emp_license_ids)
+    # for i in lic_json_loads:
+    #     if i["id"] == id:
+    #         i["active"]= False
+    # json_dumps = json.dumps(lic_json_loads)
+    # lic_obj.emp_license_ids = json_dumps
+    # lic_obj.save()
+    print("{}/{}/{}".format(kwargs, instance, sender))
 class Employee(models.Model):
+    lid = models.CharField(blank=True, null=True, verbose_name="Employee license", max_length=50)
     eid = models.CharField(default=licenseid, max_length=20)
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="employee_user", blank=True, null=True)
     company = models.ForeignKey(Company,on_delete=models.CASCADE, verbose_name="employee_company", blank=True, null=True)
     created_at = models.DateField(auto_now_add=True, blank=True, null=True)
+    license_approved = models.BooleanField(blank=True, null=True)
+    
     class Meta:
         ordering = ("-id",)
     def __str__(self):
         return self.user.email
+#     def save(self, *args, **kwargs):
+#         print(self)
+#         super(Employee, self).save(*args, **kwargs)
+# pre_save.connect(license_assign, sender=Employee)
 
 
 

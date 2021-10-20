@@ -10,6 +10,7 @@ from rest_framework.pagination import PageNumberPagination as PageSize
 User = get_user_model()
 
 
+
 class CustomPageSize(PageSize):
     page_size_query_param = '10'
 """ Users  Serializer """
