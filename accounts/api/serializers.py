@@ -1,20 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
-from rest_framework import serializers, status
+from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework.response import Response
-from rest_framework.parsers import ParseError
 from accounts.models import *
 from django.db.models import Q
-from rest_framework.pagination import PageNumberPagination as PageSize
 User = get_user_model()
 
 
-
-class CustomPageSize(PageSize):
-    page_size_query_param = '10'
 """ Users  Serializer """
-
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     class Meta:
@@ -32,22 +26,24 @@ class UserSerializer(serializers.ModelSerializer):
 """ Company register Serializer """
 class CompanySerializer(WritableNestedModelSerializer, serializers.ModelSerializer):
     user = UserSerializer()
-    pagination_class = CustomPageSize
     class Meta:
         model = Company
         fields = ("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
-        read_only_fields = ("id",'company_id',"status",)
+        read_only_fields = ("id",'company_id',"status","license_purchased")
+    
+    
+
+    
     
     
 class CompanyUpdateSerializer(WritableNestedModelSerializer):
-    user = UserSerializer(required=False)
+    user = UserSerializer()
     class Meta:
         model = Company
-        fields =("id",'user','name','company_id', 'gstin',"status","pincode","state","city", "addres","license_purchased")
-        read_only_fields = ("id",'user','company_id',"status")
+        fields = "__all__"
+        read_only_fields = ("id",'company_id',)
 
 class PlanSerializer(serializers.ModelSerializer):
-    pagination_class = CustomPageSize
     class Meta:
         model = Plan
         fields = "__all__"
@@ -69,62 +65,40 @@ class ContactPersonSerializer(serializers.ModelSerializer):
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """
-    {
-        "email":"david@gmail.com",
-        "password":"test1234" 
-    }
-    """
-    def validate(self, attrs):
-        credentials = {
-            'email': '',
-            'password': attrs.get("password")
-        }
-        username = attrs.get("email")
-        password = attrs.get("password")
-        user = authenticate(username=username, password= password)
-        if not user:
-            raise ParseError({'error':'In-valid username or password'})
-        credentials['email'] = user.email
-        data = super().validate(credentials)
-        try:
-            company_id = Company.objects.get(user__email=user.email)
-            if company_id:
+        def validate(self, attrs):
+            credentials = {
+                'email': '',
+                'password': attrs.get("password")
+            }
+            username = attrs.get("email")
+            password = attrs.get("password")
+            if username is None:
+                raise serializers.ValidationError('Username must required to login')
+            if password is None:
+                raise serializers.ValidationError('Password must required to login')
+            try:
+                user = authenticate(username=username, password= password)
+                print(user)
+                credentials['email'] = user.email
+            except User.DoesNotExist:
+                raise serializers.ValidationError('In-valid username or password')
+            
+            finally:
+                data = super().validate(credentials)
+                try:
+                    company_id = Company.objects.get(user__email=user.email)
+                    if company_id:
+                        data['email'] = user.email
+                        data["first_name"] = user.first_name
+                        data['role'] = user.user_type
+                        data["company_id"] = company_id.id
+                        return data
+                except Exception as e:
+                    pass
                 data['email'] = user.email
                 data["first_name"] = user.first_name
                 data['role'] = user.user_type
-                data["company_id"] = company_id.id
-                data["company_name"] = company_id.name
-                data["license_count"] = company_id.license_purchased
                 return data
-        except Exception as e:
-            data['email'] = user.email
-            data["first_name"] = user.first_name
-            data['role'] = user.user_type
-        return data
             
-"""Password reset"""
 
-class ResetPasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=False)
-    new_password = serializers.CharField(required=True)
-    confirm_new_password = serializers.CharField(required=True)
     
-
-class ForgotPasswordSerializer(serializers.Serializer):
-    email=serializers.EmailField(required=True)
-    new_password = serializers.CharField(required=True)
-    confirm_new_password = serializers.CharField(required=True)
-
-
-class ContactUsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContactUs
-        fields = "__all__"
-
-
-
-
-
-
-

@@ -4,208 +4,84 @@ from buildcorn.models import *
 from accounts.models import *
 from rest_framework.response import Response
 from drf_writable_nested.serializers import WritableNestedModelSerializer
-from django.core.files.storage import FileSystemStorage
-import datetime
-from django.conf import settings
-# from accounts.api.serializers import UserSerializer
+from accounts.api.serializers import UserSerializer
 import uuid
-import os
-import json
 User = get_user_model()
 
-"""License """
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("client_id",)
-class LicenseCompanySerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    class Meta:
-        model = Company
-        fields = ("name","company_id","gstin","license_purchased","user")
-    def to_representation(self, instance):
-        context = super(LicenseCompanySerializer, self).to_representation(instance)
-        license_used_count = Employee.objects.filter(company=instance).values('user').count()
-        return {
-            'name':context["name"],
-            "client_id":context["user"]["client_id"],
-            'gstin':context['gstin'],
-            'total_licenses':context['license_purchased'],
-            'license_used_count':license_used_count
-        }
+        fields = ("first_name","email")
 
 class LicenseSerializer(serializers.ModelSerializer):
-    company = LicenseCompanySerializer()
+    user = UserSerializer()
     class Meta:
         model = License
-        # fields = "__all__"
-        exclude = ["last_license_id"]
-    def to_representation(self, instance):
-        context = super(LicenseSerializer, self).to_representation(instance)
-        emp_ids = json.loads(context['emp_license_ids'])
-        # for i in emp_ids:
-        #     if i["active"] == False:
-        #         emp_ids.remove(i)
-        context["emp_license_ids"] = emp_ids
-        return context
+        fields = "__all__"
 
-class LicenseActiveSerializer(serializers.ModelSerializer):
-    company = LicenseCompanySerializer()
-    class Meta:
-        model = License
-        fields = ["emp_license_ids", "company",]
-    def to_representation(self, instance):
-        context = super(LicenseActiveSerializer, self).to_representation(instance)
-        active_ids = json.loads(context['emp_license_ids'])
-        for i in active_ids:
-            if i["active"] == False:
-                active_ids.remove(i)
-        context["emp_license_ids"] = active_ids
-        return context
-class LicenseEmployeeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = License
-        fields = ("created_at","end_at","tenure", "company")
-    def to_representation(self, instance):
-        context = super(LicenseEmployeeSerializer, self).to_representation(instance)
-        employee = Employee.objects.filter(company__id=context["company"]).values('lid')
-        context["employee"] = employee
-        return context
-"""License ends """
-
-"""Normal user"""
+"""Employee serializer"""
 
 class EmployeeUserSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True, required=False)
     class Meta:
         model = User
-        fields = ("id","first_name","email", "phone_number","is_active",)
-        read_only_fields = ("id",)
+        fields = ("email","first_name","id",)
+
     def create(self, validated_data):
         user = User.objects.create_user(password=str(uuid.uuid4().node), **validated_data)
-        # user = User.objects.create_user(**validated_data)
         user.save()
         return user
+
+class EmployeeCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ("name","id",)
+        read_only_fields = ("name",)
+    def create(self, validated_data):
+        company = Company.license_purchased =- 1
+        company.save()
+        return company
+
+class EmployeeProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ["id","name"]
 class EmployeeSerializer(WritableNestedModelSerializer):
     user = EmployeeUserSerializer()
+    company = EmployeeCompanySerializer()
+    projects = EmployeeProjectSerializer(many=True)
     class Meta:
         model = Employee
-        fields = ("id","user",'eid', "company","created_at", "lid","license_approved")
-        read_only_fields = ("id",'eid',"created_at", "lid")
-    def create(self, validated_data):
-        id = self.initial_data["lid"]['id']
-        comp = Company.objects.get(user__email=self.context["request"].user)
-        user_obj = User.objects.create(**validated_data.get('user'))
-        emp_obj, created = Employee.objects.get_or_create(company=comp,user=user_obj, lid=id)
-        if created:
-            lic_obj = License.objects.get(company=comp)
-            lic_json_loads = json.loads(lic_obj.emp_license_ids)
-            for i in lic_json_loads:
-                if i["id"] == id:
-                    i["active"]= False
-            json_dumps = json.dumps(lic_json_loads)
-            lic_obj.emp_license_ids = json_dumps
-            lic_obj.save()
-            emp_obj.license_approved=True
-            emp_obj.save()
-            return emp_obj
-
-        
-"""Normal user ends"""
-
-
-
-"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-class QuestionDataSerializer(serializers.ModelSerializer):
+        fields = ["id","eid","user","company","designation","projects","created_at","projects"]
+        read_only_fields = ["id","eid","created_at","projects"]
+class EmployeeCreateSerializer(WritableNestedModelSerializer):
+    user = EmployeeUserSerializer()
+    company = EmployeeCompanySerializer()
     class Meta:
-        model=Question
-        fields = ['id',"question"]
+        model = Employee
+        fields = ["id","eid","user","company","designation","projects","created_at",]
+        read_only_fields = ["id","eid","created_at"]
 
-class QualityDataSerializer(serializers.ModelSerializer):
-    question = QuestionDataSerializer(many=True)
+class EmployeeUpdateSerializer(WritableNestedModelSerializer):
     class Meta:
-        model=QualityCheckList
-        fields = ['id','name',"question","checklist_id"]
+        model = Employee
+        # fields = ["id","eid","user","company","designation","projects","created_at"]
+        # read_only_fields = ["id","eid","created_at"]
+        exclude = ["user"]
 
-class SafetyDataSerializer(serializers.ModelSerializer):
-    question = QuestionDataSerializer(many=True)
-    class Meta:
-        model=SafetyCheckList
-        fields = ['id','name',"checklist_id","question"]
-class ShowQualityProjectSerializer(serializers.ModelSerializer):
-    quality_checklist = QualityDataSerializer(many=True)
+    # def create(self, validated_data):
 
-    class Meta:
-        model = Project
-        fields = ['id','name','quality_checklist']
-        
-class ShowSafetyProjectSerializer(serializers.ModelSerializer):
-    safety_checklist = SafetyDataSerializer(many=True)
-
-    class Meta:
-        model = Project
-        fields = ['id','name','safety_checklist']
-"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-
-
-
-class FaqSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FAQ
-        fields = '__all__'
-
-
-
-
-class VendorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vendor
-        fields = '__all__'
-
-class VendorMaterialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vendor
-        fields = ("id","name", )
-        read_only_fields=("name",)
-
-class MaterialCreateSerializer(WritableNestedModelSerializer):
-    class Meta:
-        model = Material
-        fields = "__all__"
-
-class MaterialRUDSerializer(WritableNestedModelSerializer):
-    maker = VendorMaterialSerializer(required=False,)
-    class Meta:
-        model = Material
-        fields = "__all__"
-
-
+"""Employee serializer ends"""
 
 """Project serializer starts"""
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("id",'first_name','email',)
 class ApproverSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = EmployeeUserSerializer()
     class Meta:
-        model= Employee
-        fields = ("id","user")
-
-class VendorProjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vendor
-        fields = ("name", )
-
-class MaterialSerializer(serializers.ModelSerializer):
-    # maker = VendorSerializer()
-    class Meta:
-        model=Material
-        fields = ['id','name',]
+        model=Employee
+        fields = ("id","user",)
 class ProjectListSerializer(serializers.ModelSerializer):
     approver = ApproverSerializer()
     employee = ApproverSerializer(many=True)
-    material = MaterialSerializer(many=True)
     class Meta:
         model = Project
         fields = "__all__"
@@ -215,281 +91,73 @@ class ProjectCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 """Project serializer ends"""
 
-    # def update(self, instance, validated_data):
-    #     print(validated_data)
-        
-        # exclude = ['maker']
-
-"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
-# class BannerSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Banner
-#         fields = '__all__'
-
-#     def validate(self, data):
-#         images = self.context['request'].FILES
-#         # print(len(images.getlist('image')))
-#         if len(images.getlist('image')) > 2:
-#             raise serializers.ValidationError({'error':"Select minimum 2 images"})
-#         return data
-
-#     def create(self, validated_data):
-#         # images = self.context['request'].FILES
-#         picture = self.context['request'].FILES.getlist('image')
-#         all_pictures = []
-#         for pic in picture:
-#             location = '%s/banner'%(settings.MEDIA_ROOT)
-#             fs = FileSystemStorage(location=location)
-#             picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-#             f_save = fs.save(picname, pic)
-#             filepath = "%s/%s"%(location,picname)
-#             all_pictures.append(filepath)
-#         all_pictures = json.dumps(all_pictures)
-#         if self.context['request'].user.user_type == User.SUPER_ADMIN:
-#             user = User.objects.get(email=self.context['request'].user.email)
-#             banner = Banner.objects.create(name=validated_data.get('name',None),buildcron_user=user, multi_images=all_pictures)
-#             return banner
-#         else:
-#             user = User.objects.get(email=self.context['request'].user.email)
-#             banner = Banner.objects.create(name=validated_data.get('name',None),tenent_user=user, multi_images=all_pictures)
-#             banner.save()
-#             return banner
-#     def to_representation(self, instance):
-#         context = super(BannerSerializer, self).to_representation(instance)
-#         multi_images = json.loads(context['multi_images'])
-#         return {
-#             "id":context["id"],
-#             'images':multi_images,
-#             'name':context['name']
-#         }
-        
-# class BannerRUDSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Banner      
-#         exclude = ("buildcron_user","tenent_user")
-    
-#     def validate(self, data):
-#         images = self.context['request'].FILES
-#         if len(images.getlist('image')) > 2:
-#             raise serializers.ValidationError({'error':"Select minimum 2 images"})
-#         return data
-#     def update(self, instance, validated_data):
-#         print(self.initial_data)
-#         location = '%s/banner'%(settings.MEDIA_ROOT)
-#         pictures = self.context['request'].FILES.getlist('image')
-#         try:
-#             for pic in json.loads(instance.multi_images):
-#                 filename = pic.strip("media/banner/")
-#                 path = os.remove("%s/%s"%(location,filename))
-#         except Exception as e:
-#             pass
-#         all_pictures = []
-#         for pic in pictures:
-#             fs = FileSystemStorage(location=location)
-#             picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-#             f_save = fs.save(picname, pic)
-#             filepath = "%s/%s"%(location,picname)
-#             all_pictures.append(filepath)
-#         all_pictures = json.dumps(all_pictures)
-#         if self.context['request'].user.user_type == User.SUPER_ADMIN:
-#             user = User.objects.get(email=self.context['request'].user.email)
-#             instance.buildcron_user = user
-#             instance.name = self.initial_data.get('name')
-#             print(all_pictures)
-#             instance.multi_images = all_pictures
-#             instance.save()
-#             return instance
-#         else:
-#             user = User.objects.get(email=self.context['request'].user.email)
-#             instance.buildcron_user = user
-#             instance.name = self.initial_data.get('name')
-#             instance.multi_images =all_pictures
-#             instance.save()
-#             return instance
-#     def to_representation(self, instance):
-#         context = super(BannerRUDSerializer, self).to_representation(instance)
-#         multi_images = json.loads(context['multi_images'])
-#         return {
-#             "id":context["id"],
-#             'images':multi_images,
-#             'name':context['name']
-#         }
-
-class ReportSerializer(serializers.ModelSerializer):
+class CheckListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Report
-        fields = "__all__"
+        model = CheckList
+        fields = ["id","checklist_id","question","answer","status"] 
+        read_only_fields = ( "id","checklist_id",)
+
+    def create(self, validated_data):
+        quality = QualityLibrary.objects.get(id=self.initial_data["qid"])
+        checklist = CheckList.objects.create(**validated_data)
+        checklist.save()
+        quality.checklist.add(checklist)
+        quality.save()
+        return checklist
+
+    # def update(self, instance, validated_data):
+    #     print(instance)
+
+
+"""Quality starts"""
+class QualityCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QualityLibrary
+        fields = "__all__" 
+        read_only_fields = ('quality_id',"id",)
+class QualityListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = QualityLibrary
+        fields = ('quality_id',"id","name","checklist",) 
+        read_only_fields = ('quality_id',"id","checklist")
+
+class RUDQualitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QualityLibrary
+        fields = ("id","name")
+        read_only_fields = ("id",)
+
+class QualityCheckListSerializer(serializers.ModelSerializer):
+    checklist = CheckListSerializer(many=True)
+    class Meta:
+        model = QualityLibrary
+        fields = ("id","checklist",) 
+        read_only_fields = ("id","checklist")
+"""Quality ends"""
+
+class SafetySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SafetyLibrary
+        fields = "__all__" 
+        read_only_fields = ('safety_id', "id",)
+
+
 
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
-        fields = '__all__'
+        fields = "__all__" 
 
-    def validate(self, data):
-        images = self.context['request'].FILES
-        if len(images.getlist('images')) > 2:
-            raise serializers.ValidationError({'error':"Select minimum 2 images"})
-        return data
-
-    def create(self, validated_data):
-        # images = self.context['request'].FILES
-        picture = self.context['request'].FILES.getlist('images')
-        all_pictures = []
-        for pic in picture:
-            location = '%s/banner'%(settings.MEDIA_ROOT)
-            fs = FileSystemStorage(location=location)
-            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-            f_save = fs.save(picname, pic)
-            filepath = "%s/%s"%(location,picname)
-            all_pictures.append(filepath)
-        all_pictures = json.dumps(all_pictures)
-        user = User.objects.get(email=self.context['request'].user.email)
-        banner = Banner.objects.create(name=validated_data.get('name',None),buildcron_user=user, multi_images=all_pictures)
-        banner.save()
-        return banner
-    #     if self.context['request'].user.user_type == User.SUPER_ADMIN:
-    #     else:
-    #         user = User.objects.get(email=self.context['request'].user.email)
-    #         banner = Banner.objects.create(name=validated_data.get('name',None),tenent_user=user, multi_images=all_pictures)
-    #         banner.save()
-    #         return banner
-    def to_representation(self, instance):
-        context = super(BannerSerializer, self).to_representation(instance)
-        multi_images = json.loads(context['multi_images'])
-        return {
-            "id":context["id"],
-            'images':multi_images,
-            'name':context['name']
-        }
-        
-class BannerRUDSerializer(serializers.ModelSerializer):
+class FAQSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Banner      
-        exclude = ("buildcron_user",)
-    
-    def validate(self, data):
-        images = self.context['request'].FILES
-        if len(images.getlist('images')) > 2:
-            raise serializers.ValidationError({'error':"Select minimum 2 images"})
-        return data
-    def update(self, instance, validated_data):
-        print(self.initial_data)
-        location = '%s/banner'%(settings.MEDIA_ROOT)
-        pictures = self.context['request'].FILES.getlist('images')
-        try:
-            for pic in json.loads(instance.multi_images):
-                filename = pic.strip("media/banner/")
-                path = os.remove("%s/%s"%(location,filename))
-        except Exception as e:
-            pass
-        all_pictures = []
-        for pic in pictures:
-            fs = FileSystemStorage(location=location)
-            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-            f_save = fs.save(picname, pic)
-            filepath = "%s/%s"%(location,picname)
-            all_pictures.append(filepath)
-        all_pictures = json.dumps(all_pictures)
-        # if self.context['request'].user.user_type == User.SUPER_ADMIN:
-        user = User.objects.get(email=self.context['request'].user.email)
-        instance.buildcron_user = user
-        instance.name = self.initial_data.get('name')
-        instance.multi_images = all_pictures
-        instance.save()
-        return instance
-        
-    def to_representation(self, instance):
-        context = super(BannerRUDSerializer, self).to_representation(instance)
-        multi_images = json.loads(context['multi_images'])
-        return {
-            "id":context["id"],
-            'images':multi_images,
-            'name':context['name']
-        }
-
-class TenentBannerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TenentBanner
-        fields = ["id","name","tenent_images",]
-        # read_only_fields = ["company"]
+        model = FAQ
+        fields = "__all__" 
+        read_only_fields = ('faq_id', "id",)
 
 
-    def validate(self, data):
-        images = self.context['request'].FILES
-        if len(images.getlist('images')) > 2:
-            raise serializers.ValidationError({'error':"Select minimum 2 images"})
-        return data
 
-    def create(self, validated_data):
-        company = Company.objects.get(user__email=self.context["request"].user.email)
-        print(company)
-        picture = self.context['request'].FILES.getlist('images')
-        all_pictures = []
-        for pic in picture:
-            location = '%s/tenentbanner'%(settings.MEDIA_ROOT)
-            fs = FileSystemStorage(location=location)
-            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-            f_save = fs.save(picname, pic)
-            filepath = "%s/%s"%(location,picname)
-            all_pictures.append(filepath)
-        all_pictures = json.dumps(all_pictures)
-        # user = User.objects.get(email=self.context['request'].user.email)
-        print("fghjkl")
-        banner, created = TenentBanner.objects.get_or_create(company=company,name=validated_data.get('name',None),tenent_images=all_pictures)
-        if created:
-            banner.save()
-        return banner
-    def to_representation(self, instance):
-        context = super(TenentBannerSerializer, self).to_representation(instance)
-        multi_images = json.loads(context['tenent_images'])
-        return {
-            "id":context["id"],
-            'images':multi_images,
-            'name':context['name']
-        }
-        
-class TenentBannerRUDSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TenentBanner
-        fields = ["id","name","tenent_images",]
-    
-    def validate(self, data):
-        images = self.context['request'].FILES
-        if len(images.getlist('images')) > 2:
-            raise serializers.ValidationError({'error':"Select minimum 2 images"})
-        return data
-    def update(self, instance, validated_data):
-        print(self.initial_data)
-        location = '%s/tenentbanner'%(settings.MEDIA_ROOT)
-        pictures = self.context['request'].FILES.getlist('images')
-        try:
-            for pic in json.loads(instance.tenent_images):
-                filename = pic.strip("media/tenentbanner/")
-                path = os.remove("%s/%s"%(location,filename))
-        except Exception as e:
-            pass
-        all_pictures = []
-        for pic in pictures:
-            fs = FileSystemStorage(location=location)
-            picname = "IMG_%s.jpg"%(datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f'))
-            f_save = fs.save(picname, pic)
-            filepath = "%s/%s"%(location,picname)
-            all_pictures.append(filepath)
-        all_pictures = json.dumps(all_pictures)
-        # if self.context['request'].user.user_type == User.SUPER_ADMIN:
-        # user = User.objects.get(email=self.context['request'].user.email)
-        # instance.buildcron_user = user
-        instance.name = self.initial_data.get('name')
-        instance.tenent_images = all_pictures
-        instance.save()
-        return instance
-        
-    def to_representation(self, instance):
-        context = super(TenentBannerRUDSerializer, self).to_representation(instance)
-        multi_images = json.loads(context['tenent_images'])
-        return {
-            "id":context["id"],
-            'images':multi_images,
-            'name':context['name']
-        }
+ 
+
+

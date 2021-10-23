@@ -7,7 +7,7 @@
         <input class="form-control form-control-white" type="text" placeholder="Search" aria-label="Search">
         <ul class="navbar-nav px-3">
             {% if request.user.is_authenticated %}
-            {{request.user.email }}
+            {{request.user.username }}
             <li class="nav-item text-nowrap">
                 <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
             </li>

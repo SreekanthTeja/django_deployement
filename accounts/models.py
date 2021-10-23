@@ -39,16 +39,17 @@ class User(AbstractUser):
     email = models.EmailField(verbose_name="Email Address", max_length=255, unique=True)
     client_id = models.CharField(default=uniqueid,max_length=70, null=True, blank=True)
     phone_number = PhoneNumberField(unique=True)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.email
+        return f"{self.email}"
 """Here plans is License"""
 class Plan(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default="Annual Plan")
     license_count = models.PositiveIntegerField()
     features = models.TextField(blank=True, null=True, verbose_name = "Features")
     amount = models.FloatField()
@@ -61,9 +62,9 @@ class Plan(models.Model):
 
 class Company(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="company_user")
-    name = models.CharField(max_length=50,)
+    name = models.CharField(max_length=50, unique = True)
     company_id = models.CharField(default=uniqueid, max_length=50)
-    gstin = models.CharField(unique = True, max_length=50, blank=True, null=True)
+    gstin = models.CharField(max_length=50, blank=True, null=True)
     status = models.BooleanField(default=True, blank=True, null=True)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -75,7 +76,7 @@ class Company(models.Model):
         ordering = ("-id",)
         
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
 class Payment(models.Model):
     PAYMENT_DONE = 1
@@ -97,32 +98,21 @@ class Payment(models.Model):
     company_name = models.CharField(max_length=50, blank=True, null=True)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE,related_name="plan_payments",null=True,blank=True)
     holder = models.TextField(blank=True, null=True)
+    # deleted = models.BooleanField(default=False)
+    # coupon_applied = models.ForeignKey(Coupon,null=True,blank=True,on_delete=models.CASCADE)
+    # subscription_discount = models.ForeignKey(SubscriptionDiscount,null=True,blank=True,on_delete=models.CASCADE,related_name="sub_discounts_payments")
+    # user_subscription_discount = models.ForeignKey(SubscriptionUserDiscount,null=True,blank=True,on_delete=models.CASCADE,related_name="sub_user_discounts_payments")
+
     class Meta:
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'
     # def __str__(self):
     #     return self.payment_id
 
-from django.utils import timezone
-from datetime import timedelta
-current_time = timezone.now()
-class OTP(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp = models.PositiveIntegerField(blank=True, null=True)
-    # expiry = models.DateTimeField(default=timezone.now() + timedelta(hours=1), blank=True, null=True)
-    validated = models.BooleanField(default=False, blank=True, null=True)
-    def __str__(self):
-        return self.user.email
 
-class ContactUs(models.Model):
-    name = models.CharField(max_length=50,)
-    email = models.EmailField(max_length=30)
-    address = models.TextField(blank=True, null=True)
-    phone = PhoneNumberField()
 
-    def __str__(self):
-        return "Contacted by %s"%(self.name)
 
-    class Meta:
-        verbose_name_plural = "ContactUs"
-        ordering = ("-id",)
+# def send_email_to_admin(sender, instance, **kwargs):
+#     if not instance.username:
+#         instance.username = uuid.uuid4().node
+# pre_save.connect(set_username, sender=User)

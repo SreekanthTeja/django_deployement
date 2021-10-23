@@ -16,6 +16,3 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('payment_id','status',"amount")
 
 admin.site.register(Payment, PaymentAdmin)
-admin.site.register(OTP)
-
-admin.site.register(ContactUs)

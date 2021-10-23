@@ -13,7 +13,4 @@ class SignupView(generic.CreateView):
 
 class LoginView(Login):
     template_name = "accounts/registration/login.html"
-
-class EmployeeLoginView(Login):
-    template_name = "accounts/registration/employee.login.html"
     

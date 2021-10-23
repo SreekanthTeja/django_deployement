@@ -14,7 +14,6 @@ urlpatterns = [
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('signup', SignupView.as_view(), name='signup'),
     path('login', LoginView.as_view(), name='login'),
-    path('employee/login', EmployeeLoginView.as_view(), name='employee-login'),
     path('logout', LogoutView.as_view(), name='logout'),
     path('api/',include("accounts.api.urls")),
 ]
