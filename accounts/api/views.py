@@ -12,7 +12,9 @@ from rest_framework import views
 import json
 from rest_framework import serializers
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+import urllib.request
+import requests
+import random
 from accounts.api.utils import *
 
 User = get_user_model()
